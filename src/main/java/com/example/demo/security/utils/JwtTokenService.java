@@ -1,7 +1,7 @@
 package com.example.demo.security.utils;
 
-import com.example.iot.entity.UserRoles;
-import com.example.iot.security.entity.User;
+import com.example.demo.entity.UserRoles;
+import com.example.demo.security.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;

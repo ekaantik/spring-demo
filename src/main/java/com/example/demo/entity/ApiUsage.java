@@ -52,14 +52,6 @@ public class ApiUsage implements Serializable {
     @Column(name = "response_status")
     private int responseStatus;
 
-    @Column(name = "service_from")
-    @Enumerated(EnumType.STRING)
-    private ServiceTypes serviceFrom; // (USER/WRITEAPI)
-
-    @Column(name = "service_to")
-    @Enumerated(EnumType.STRING)
-    private ServiceTypes serviceTo; //(SELF/INFLUX/DASHBOARD/WRITEAPI)
-
     @Column(name = "start_time")
     private long startTime;
 

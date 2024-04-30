@@ -1,8 +1,8 @@
 package com.example.demo.security.service;
 
-import com.example.iot.security.dto.UserAuthRequest;
-import com.example.iot.security.dto.UserAuthResponse;
-import com.example.iot.security.dto.UserSignUpRequest;
+import com.example.demo.security.dto.UserAuthRequest;
+import com.example.demo.security.dto.UserAuthResponse;
+import com.example.demo.security.dto.UserSignUpRequest;
 
 public interface AuthServicesIf {
     UserAuthResponse performSignUp(UserSignUpRequest req);

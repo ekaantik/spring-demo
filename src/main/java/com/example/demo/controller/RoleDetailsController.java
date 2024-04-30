@@ -1,16 +1,13 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.pojos.request.RoleDetailsRequest;
+import com.example.demo.pojos.response.RoleDetailsResponse;
+import com.example.demo.security.entity.Role;
+import com.example.demo.service.impl.RoleDetailsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -39,7 +36,7 @@ public class RoleDetailsController {
     @PutMapping("/update")
     @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER_ADMIN')")
     public ResponseEntity<RoleDetailsResponse> updateRoleDetails(@RequestHeader(name = "Authorization") String token,
-            @RequestBody RoleDetailsRequest roleDetailsRequest) {
+                                                                 @RequestBody RoleDetailsRequest roleDetailsRequest) {
 
         // Update RoleDetails
         RoleDetailsResponse roleDetailsResponse = roleDetailsService.updateRoleDetails(token, roleDetailsRequest);
@@ -50,7 +47,7 @@ public class RoleDetailsController {
     @GetMapping("/get-by-role-name")
     @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER_ADMIN')")
     public ResponseEntity<Role> getRoleDetailsByRoleName(@RequestHeader(name = "Authorization") String token,
-            @RequestParam("roleName") String roleName) {
+                                                         @RequestParam("roleName") String roleName) {
 
         Role role = roleDetailsService.getRoleDetails(token, roleName);
 

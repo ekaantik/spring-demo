@@ -1,10 +1,10 @@
 package com.example.demo.security.controller;
 
-import com.example.iot.security.dto.UserAuthRequest;
-import com.example.iot.security.dto.UserAuthResponse;
-import com.example.iot.security.dto.UserResetPasswordRequest;
-import com.example.iot.security.dto.UserSignUpRequest;
-import com.example.iot.security.service.AuthServicesImpl;
+import com.example.demo.security.dto.UserAuthRequest;
+import com.example.demo.security.dto.UserAuthResponse;
+import com.example.demo.security.dto.UserResetPasswordRequest;
+import com.example.demo.security.dto.UserSignUpRequest;
+import com.example.demo.security.service.AuthServicesImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

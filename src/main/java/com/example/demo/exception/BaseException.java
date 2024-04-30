@@ -7,7 +7,7 @@ import lombok.ToString;
 import java.io.Serial;
 import java.time.ZonedDateTime;
 
-import com.example.iot.constants.ErrorCode;
+import com.example.demo.constants.ErrorCode;
 
 @Getter
 @Setter

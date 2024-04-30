@@ -1,19 +1,18 @@
 package com.example.demo.security.service;
 
-import com.example.iot.constants.CustomerInviteStatus;
-import com.example.iot.constants.UserRolesDefault;
-import com.example.iot.entity.CustomerDetails;
-import com.example.iot.exception.InvalidCredentialException;
-import com.example.iot.pojos.response.CustomerDetailResponse;
-import com.example.iot.repository.CustomerDetailsRepoService;
-import com.example.iot.repository.RoleRepoService;
-import com.example.iot.repository.UserRepoService;
-import com.example.iot.security.dto.UserAuthRequest;
-import com.example.iot.security.dto.UserAuthResponse;
-import com.example.iot.security.dto.UserResetPasswordRequest;
-import com.example.iot.security.dto.UserSignUpRequest;
-import com.example.iot.security.entity.User;
-import com.example.iot.security.utils.JwtTokenService;
+import com.example.demo.constants.UserRolesDefault;
+import com.example.demo.entity.CustomerDetails;
+import com.example.demo.exception.InvalidCredentialException;
+import com.example.demo.pojos.response.CustomerDetailResponse;
+import com.example.demo.repository.CustomerDetailsRepoService;
+import com.example.demo.repository.RoleRepoService;
+import com.example.demo.repository.UserRepoService;
+import com.example.demo.security.dto.UserAuthRequest;
+import com.example.demo.security.dto.UserAuthResponse;
+import com.example.demo.security.dto.UserResetPasswordRequest;
+import com.example.demo.security.dto.UserSignUpRequest;
+import com.example.demo.security.entity.User;
+import com.example.demo.security.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class AuthServicesImpl implements AuthServicesIf {
      * Performs Signup & assigns JWT Token.
      *
      * @param req : Incoming user auth request.
-     * @return {@link com.example.iot.security.dto.UserAuthResponse AuthResponse}
+     * @return {@link com.example.demo.security.dto.UserAuthResponse AuthResponse}
      * if succesfully signed-up,else error.
      */
     public UserAuthResponse performSignUp(UserSignUpRequest req) {
@@ -58,8 +57,6 @@ public class AuthServicesImpl implements AuthServicesIf {
         log.info("Customer Details with email " + req.getEmail() + " " + customerDetails);
 //            if (customer.getCustomerInviteStatus().equals(CustomerInviteStatus.INVITE_SENT) && customer.getInviteCode().equals(req.getInviteCode())) {
         if (req.getEmail() != null && req.getPassword() != null) {
-            customerDetails.setCustomerInviteStatus(CustomerInviteStatus.INVITE_ACCEPTED);
-
             User user = userDetailsRepoService.findByEmail(req.getEmail());
             user.setFirstName(req.getFirstName());
             user.setLastName(req.getLastName());

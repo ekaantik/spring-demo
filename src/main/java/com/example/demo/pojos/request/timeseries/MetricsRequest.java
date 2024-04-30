@@ -1,6 +1,6 @@
 package com.example.demo.pojos.request.timeseries;
 
-import com.example.iot.constants.Metrics;
+import com.example.demo.constants.Metrics;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

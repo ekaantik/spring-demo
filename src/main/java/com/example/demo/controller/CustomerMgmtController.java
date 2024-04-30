@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.pojos.request.CustomerDetailRequest;
+import com.example.demo.pojos.response.CustomerDetailResponse;
+import com.example.demo.service.impl.CustomerDetailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

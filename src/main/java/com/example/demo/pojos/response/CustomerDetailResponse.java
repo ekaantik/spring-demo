@@ -1,8 +1,8 @@
 package com.example.demo.pojos.response;
 
 
-import com.example.iot.constants.CustomerInviteStatus;
-import com.example.iot.constants.CustomerServiceStatus;
+import com.example.demo.constants.CustomerInviteStatus;
+import com.example.demo.constants.CustomerServiceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

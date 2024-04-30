@@ -1,7 +1,7 @@
 package com.example.demo.security.config;
 
 
-import com.example.iot.security.service.UserService;
+import com.example.demo.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

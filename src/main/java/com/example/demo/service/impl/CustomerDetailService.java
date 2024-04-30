@@ -1,18 +1,19 @@
 package com.example.demo.service.impl;
 
-import com.example.iot.constants.CustomerInviteStatus;
-import com.example.iot.constants.CustomerServiceStatus;
-import com.example.iot.constants.UserRolesDefault;
-import com.example.iot.entity.CustomerDetails;
-import com.example.iot.entity.UserRoles;
-import com.example.iot.pojos.request.CustomerDetailRequest;
-import com.example.iot.pojos.response.CustomerDetailResponse;
-import com.example.iot.repository.*;
-import com.example.iot.security.entity.Role;
-import com.example.iot.security.entity.User;
-import com.example.iot.security.utils.JwtTokenService;
-import com.example.iot.utils.MathUtil;
-import com.example.iot.utils.UserStatus;
+import com.example.demo.constants.UserRolesDefault;
+import com.example.demo.entity.CustomerDetails;
+import com.example.demo.entity.UserRoles;
+import com.example.demo.pojos.request.CustomerDetailRequest;
+import com.example.demo.pojos.response.CustomerDetailResponse;
+import com.example.demo.repository.CustomerDetailsRepoService;
+import com.example.demo.repository.RoleRepoService;
+import com.example.demo.repository.UserRepoService;
+import com.example.demo.repository.UserRoleRepoService;
+import com.example.demo.security.entity.Role;
+import com.example.demo.security.entity.User;
+import com.example.demo.security.utils.JwtTokenService;
+import com.example.demo.utils.MathUtil;
+import com.example.demo.utils.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,7 +35,6 @@ public class CustomerDetailService {
     private final RoleRepoService roleRepoService;
     private final CustomerDetailsRepoService customerDetailsRepoService;
     private final PasswordEncoder passwordEncoder;
-    private final AssetDetailsRepoService assetDetailsRepoService;
     private final JwtTokenService jwtTokenService;
     private final UserRoleRepoService userRoleRepoService;
 
@@ -62,11 +65,6 @@ public class CustomerDetailService {
                 .adminEmail(req.getAdminEmail())
                 .address(req.getAddress())
                 .customerId(MathUtil.getRandomNumberString())
-                .customerInviteStatus(CustomerInviteStatus.INVITE_SENT)
-                .customerServiceStatus(CustomerServiceStatus.INACTIVE)
-                .createdAt(ZonedDateTime.now())
-                .createdBy(creatorUserDetails)
-                .lastModifiedAt(ZonedDateTime.now())
                 .build();
         log.info("Built customer details: {}", customerDetails);
 
@@ -136,8 +134,6 @@ public class CustomerDetailService {
                 .companyEmail(savedCustomerDetails.getCompanyEmail())
                 .customerId(savedCustomerDetails.getCustomerId())
                 .address(savedCustomerDetails.getAddress())
-                .customerInviteStatus(savedCustomerDetails.getCustomerInviteStatus())
-                .customerServiceStatus(savedCustomerDetails.getCustomerServiceStatus())
                 .responseMessage("Invite Sent to Customer email")
                 .build();
         log.info("Built customer detail response: {}", response);
@@ -167,8 +163,6 @@ public class CustomerDetailService {
                     .contactNumber(customerDetails.getContactNumber())
                     .adminEmail(customerDetails.getAdminEmail())
                     .address(customerDetails.getAddress())
-                    .customerInviteStatus(customerDetails.getCustomerInviteStatus())
-                    .customerServiceStatus(customerDetails.getCustomerServiceStatus())
                     .responseMessage("SUCCESS")
                     .build();
         }
@@ -183,7 +177,6 @@ public class CustomerDetailService {
     /**
      * Retrieves an Customer Details record by its Id.
      *
-     * @param id : Id associated with the record.
      * @return CustomerDetailResponse representing the record.
      */
     public CustomerDetailResponse getCustomerDetailByCustomerId(String customerId) {
@@ -202,8 +195,6 @@ public class CustomerDetailService {
                 .contactNumber(customerDetails.getContactNumber())
                 .adminEmail(customerDetails.getAdminEmail())
                 .address(customerDetails.getAddress())
-                .customerInviteStatus(customerDetails.getCustomerInviteStatus())
-                .customerServiceStatus(customerDetails.getCustomerServiceStatus())
                 .responseMessage("SUCCESS")
                 .build();
         log.info("Built customer detail response: {}", customerDetailResponse);
@@ -262,8 +253,6 @@ public class CustomerDetailService {
                     .contactNumber(it.getContactNumber())
                     .adminEmail(it.getAdminEmail())
                     .address(it.getAddress())
-                    .customerInviteStatus(it.getCustomerInviteStatus())
-                    .customerServiceStatus(it.getCustomerServiceStatus())
                     .responseMessage("Customer Details")
                     .build();
             // Add to List
@@ -310,15 +299,6 @@ public class CustomerDetailService {
             // Try deleting customer's users
             userRepoService.deleteUserDetailsById(customerDetails);
             log.info("Customer's users deleted successfully");
-
-            // Deactivate Customer
-            customerDetails.setCustomerServiceStatus(CustomerServiceStatus.INACTIVE);
-            log.info("Customer deactivated");
-
-            // Try deleting customer's all assets
-            assetDetailsRepoService.deleteAll(customerDetails.getAssetDetailsList());
-            customerDetails.setAssetDetailsList(null);
-            log.info("Customer's all assets deleted");
 
             // Save CustomerDetails
             customerDetailsRepoService.save(customerDetails);

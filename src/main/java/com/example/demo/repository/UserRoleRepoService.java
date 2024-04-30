@@ -1,9 +1,9 @@
 package com.example.demo.repository;
 
-import com.example.iot.constants.Constants;
-import com.example.iot.entity.CustomerDetails;
-import com.example.iot.entity.UserRoles;
-import com.example.iot.security.entity.User;
+import com.example.demo.constants.Constants;
+import com.example.demo.entity.CustomerDetails;
+import com.example.demo.entity.UserRoles;
+import com.example.demo.security.entity.User;
 import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

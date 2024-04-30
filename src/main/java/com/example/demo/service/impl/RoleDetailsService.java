@@ -1,39 +1,29 @@
 package com.example.demo.service.impl;
 
-import com.example.iot.repository.RoleRepoService;
-import com.example.iot.security.entity.Role;
-import org.springframework.stereotype.Service;
-
-import com.example.iot.constants.ErrorCode;
-import com.example.iot.entity.AssetDetails;
-import com.example.iot.entity.CustomerDetails;
-import com.example.iot.exception.AlreadyExistsException;
-import com.example.iot.exception.NotFoundException;
-import com.example.iot.pojos.request.RoleDetailsRequest;
-import com.example.iot.pojos.response.RoleDetailsResponse;
-import com.example.iot.repository.AssetDetailsRepoService;
-import com.example.iot.repository.CustomerDetailsRepoService;
-import com.example.iot.security.utils.JwtTokenService;
-
+import com.example.demo.constants.ErrorCode;
+import com.example.demo.entity.CustomerDetails;
+import com.example.demo.exception.AlreadyExistsException;
+import com.example.demo.exception.NotFoundException;
+import com.example.demo.pojos.request.RoleDetailsRequest;
+import com.example.demo.pojos.response.RoleDetailsResponse;
+import com.example.demo.repository.CustomerDetailsRepoService;
+import com.example.demo.repository.RoleRepoService;
+import com.example.demo.security.entity.Role;
+import com.example.demo.security.utils.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.UUID;
-import java.util.Set;
-import java.util.HashSet;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class RoleDetailsService {
 
     private final RoleRepoService roleRepoService;
-    private final AssetDetailsRepoService assetDetailsRepoService;
     private final JwtTokenService jwtTokenService;
     private final CustomerDetailsRepoService customerDetailsRepoService;
 
-    RoleDetailsService(AssetDetailsRepoService assetDetailsRepoService,
+    RoleDetailsService(
             CustomerDetailsRepoService customerDetailsRepoService,
             JwtTokenService jwtTokenService, RoleRepoService roleRepoService) {
-        this.assetDetailsRepoService = assetDetailsRepoService;
         this.customerDetailsRepoService = customerDetailsRepoService;
         this.jwtTokenService = jwtTokenService;
         this.roleRepoService = roleRepoService;
@@ -53,7 +43,6 @@ public class RoleDetailsService {
             throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS,"RoleDetails", role.getId());
         }
 
-        Set<AssetDetails> assetDetailsSet = new HashSet<>();
 
         // No Assets (Invalid Request)
         if (roleDetailsRequest.getAssetDetailsId().isEmpty()) {
@@ -64,23 +53,12 @@ public class RoleDetailsService {
             throw new RuntimeException("AssetDetailsId cannot be empty");
         }
 
-        for (UUID assetDetailsId : roleDetailsRequest.getAssetDetailsId()) {
-            AssetDetails assetDetails = assetDetailsRepoService.findById(assetDetailsId);
 
-            if (assetDetails != null) {
-                assetDetailsSet.add(assetDetails);
-            }
-
-            else {
-                log.warn("AssetDetails with id {} not found", assetDetailsId);
-            }
-        }
 
         role = Role.builder()
                 .name(roleDetailsRequest.getRoleName())
                 .description(roleDetailsRequest.getDescription())
                 .customerDetails(customerDetails)
-                .assetDetails(assetDetailsSet)
                 .build();
         // Save RoleDetails
         Role savedRoleDetails = roleRepoService.save(role);
@@ -90,7 +68,6 @@ public class RoleDetailsService {
                 .id(savedRoleDetails.getId())
                 .roleName(savedRoleDetails.getName())
                 .description(savedRoleDetails.getDescription())
-                .assetDetailsId(savedRoleDetails.getAssetDetails().stream().map(AssetDetails::getId).toList())
                 .build();
 
         log.info("Successfully created RoleDetails with id {}", savedRoleDetails.getId());
@@ -111,7 +88,6 @@ public class RoleDetailsService {
             throw new NotFoundException(ErrorCode.NOT_EXISTS, roleDetailsRequest.getRoleName(), "RoleDetails");
         }
 
-        Set<AssetDetails> assetDetailsSet = new HashSet<>();
 
         // No Assets (Invalid Request)
         if (roleDetailsRequest.getAssetDetailsId().isEmpty()) {
@@ -122,22 +98,11 @@ public class RoleDetailsService {
             throw new RuntimeException("AssetDetailsId cannot be empty");
         }
 
-        for (UUID assetDetailsId : roleDetailsRequest.getAssetDetailsId()) {
-            AssetDetails assetDetails = assetDetailsRepoService.findById(assetDetailsId);
 
-            if (assetDetails != null) {
-                assetDetailsSet.add(assetDetails);
-            }
-
-            else {
-                log.warn("AssetDetails with id {} not found", assetDetailsId);
-            }
-        }
 
         // Update RoleDetails
         role.setName(roleDetailsRequest.getRoleName());
         role.setDescription(roleDetailsRequest.getDescription());
-        role.setAssetDetails(assetDetailsSet);
 
         Role savedRoleDetails = roleRepoService.save(role);
 
@@ -146,7 +111,6 @@ public class RoleDetailsService {
                 .id(savedRoleDetails.getId())
                 .roleName(savedRoleDetails.getName())
                 .description(savedRoleDetails.getDescription())
-                .assetDetailsId(savedRoleDetails.getAssetDetails().stream().map(AssetDetails::getId).toList())
                 .build();
 
         log.info("Successfully updated RoleDetails with id {}", savedRoleDetails.getId());

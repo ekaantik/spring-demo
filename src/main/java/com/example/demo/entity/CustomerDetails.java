@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.entity.base.BaseUuidEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -26,9 +27,6 @@ import java.util.List;
 @Table(name = "customer_details")
 public class CustomerDetails extends BaseUuidEntity implements Serializable {
 
-    @OneToMany(mappedBy = "customerDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // CascadeType.ALL,
-    @JsonIgnore
-    private List<AssetDetails> assetDetailsList;
 
     @Column(name = "name")
     @Size(max = 255, message = "Legal Name must be at most 255 characters.")
@@ -63,14 +61,6 @@ public class CustomerDetails extends BaseUuidEntity implements Serializable {
     @Size(max = 1000, message = "Legal Name must be at most 1000 characters.")
     private String address;
 
-    @Column(name = "invite_status")
-    @Enumerated(EnumType.STRING)
-    @NonNull
-    private CustomerInviteStatus customerInviteStatus;
 
-    @Column(name = "service_status")
-    @Enumerated(EnumType.STRING)
-    @NonNull
-    private CustomerServiceStatus customerServiceStatus;
 
 }

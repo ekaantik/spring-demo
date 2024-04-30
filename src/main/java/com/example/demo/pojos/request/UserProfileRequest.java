@@ -1,6 +1,6 @@
 package com.example.demo.pojos.request;
 
-import com.example.iot.utils.UserStatus;
+import com.example.demo.utils.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

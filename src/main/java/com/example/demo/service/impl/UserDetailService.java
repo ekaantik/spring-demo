@@ -1,8 +1,12 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.constants.UserRolesDefault;
+import com.example.demo.entity.CustomerDetails;
+import com.example.demo.entity.UserRoles;
 import com.example.demo.pojos.request.UserDetailsRequest;
 import com.example.demo.pojos.response.UserDetailsResponse;
 import com.example.demo.repository.*;
+import com.example.demo.security.entity.Role;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
 import com.example.demo.utils.MathUtil;

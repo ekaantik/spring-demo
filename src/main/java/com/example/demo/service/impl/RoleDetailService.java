@@ -1,10 +1,10 @@
 package com.example.demo.service.impl;
 
-import com.example.iot.pojos.request.RoleDetailRequest;
-import com.example.iot.pojos.response.RoleDetailResponse;
-import com.example.iot.repository.CustomerDetailsRepoService;
-import com.example.iot.repository.RoleRepoService;
-import com.example.iot.security.entity.Role;
+import com.example.demo.pojos.request.RoleDetailRequest;
+import com.example.demo.pojos.response.RoleDetailResponse;
+import com.example.demo.repository.CustomerDetailsRepoService;
+import com.example.demo.repository.RoleRepoService;
+import com.example.demo.security.entity.Role;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

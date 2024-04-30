@@ -3,7 +3,6 @@ package com.example.demo.exception;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,62 +62,6 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
                 return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        // @ExceptionHandler(ConstraintViolationException.class)
-        // public final ResponseEntity<Object>
-        // handleConstraintViolationException(Exception ex, WebRequest request) {
-        //
-        // //Logging
-        // log.info("ConstraintViolationException in exception handler", ex);
-        //
-        // //Build Header
-        // HttpHeaders headers = new HttpHeaders();
-        // headers.setContentType(MediaType.APPLICATION_JSON);
-        //
-        // //Build Error Details
-        // Details details = Details.builder()
-        // .appError(ErrorCode.INVALID_DATA.getAppError())
-        // .appErrorCode(ErrorCode.INVALID_DATA.getAppErrorCode())
-        // .appErrorMessage(ex.getMessage())
-        // .build();
-        //
-        // //Build Generic Response
-        // GenericResponse genericResponse = GenericResponse.builder()
-        // .timestamp(ZonedDateTime.now())
-        // .message(ex.getMessage())
-        // .responseCode(HttpStatus.BAD_REQUEST.value())
-        // .details(details)
-        // .build();
-        //
-        // return new ResponseEntity<>(genericResponse, headers,
-        // HttpStatus.BAD_REQUEST);
-        // }
-
-        @ExceptionHandler({ AssetMgmtValidationException.class })
-        public ResponseEntity<GenericResponse> handleAssetMgmtValidationException(final AssetMgmtValidationException ex,
-                        WebRequest request) {
-                log.info("AssetMgmtValidationException in exception handler", ex);
-
-                // Build Header
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                // Build Error Details
-                Details details = Details.builder()
-                                .appError(ex.getDetails().getAppError())
-                                .appErrorCode(ex.getDetails().getAppErrorCode())
-                                .appErrorMessage(ex.getDetails().getAppErrorMessage())
-                                .build();
-
-                // Build Generic Response
-                GenericResponse genericResponse = GenericResponse.builder()
-                                .timestamp(ZonedDateTime.now())
-                                .message(ex.getMessage())
-                                .responseCode(HttpStatus.BAD_REQUEST.value())
-                                .details(details)
-                                .build();
-
-                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
-        }
 
         @ExceptionHandler({ RequestValidationException.class })
         public ResponseEntity<GenericResponse> handleRequestValidationException(final RequestValidationException ex,
@@ -149,34 +92,6 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
 
-        @ExceptionHandler({ TimeSeriesDataNotFoundException.class })
-        public ResponseEntity<GenericResponse> handleTimeSeriesDataNotFoundException(
-                        final TimeSeriesDataNotFoundException ex,
-                        WebRequest request) {
-                // Logging
-                log.info("TimeSeriesDataNotFoundException in exception handler", ex);
-
-                // Build Header
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                // Build Error Details
-                Details details = Details.builder()
-                                .appError(ex.getDetails().getAppError())
-                                .appErrorCode(ex.getDetails().getAppErrorCode())
-                                .appErrorMessage(ex.getDetails().getAppErrorMessage())
-                                .build();
-
-                // Build Generic Response
-                GenericResponse genericResponse = GenericResponse.builder()
-                                .timestamp(ZonedDateTime.now())
-                                .message(ex.getMessage())
-                                .responseCode(HttpStatus.NOT_FOUND.value())
-                                .details(details)
-                                .build();
-
-                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
         @ExceptionHandler({ NotFoundException.class })
         public ResponseEntity<GenericResponse> handleNotFoundException(final NotFoundException ex, WebRequest request) {

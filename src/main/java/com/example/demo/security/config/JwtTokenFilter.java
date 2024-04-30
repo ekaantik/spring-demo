@@ -1,10 +1,9 @@
 package com.example.demo.security.config;
 
-import com.example.iot.entity.UserRoles;
-import com.example.iot.repository.ApiUsageRepoService;
-import com.example.iot.security.entity.Role;
-import com.example.iot.security.entity.User;
-import com.example.iot.security.utils.JwtTokenService;
+import com.example.demo.entity.UserRoles;
+import com.example.demo.security.entity.Role;
+import com.example.demo.security.entity.User;
+import com.example.demo.security.utils.JwtTokenService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,8 +33,8 @@ import java.util.stream.Collectors;
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenService jwtTokenService;
 
-    @Autowired
-    private ApiUsageRepoService apiUsageRepoService;
+//    @Autowired
+//    private ApiUsageRepoService apiUsageRepoService;
 
     private String getStringValue(byte[] contentAsByteArray, String characterEncoding) {
         try {
@@ -83,7 +81,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         responseWrapper.copyBodyToResponse();
         log.info("responseBody : {}  ",responseBody);
 
-        apiUsageRepoService.save(request, response, requestBody,responseBody,jwtToken, startTime);
+//        apiUsageRepoService.save(request, response, requestBody,responseBody,jwtToken, startTime);
 
     }
 
