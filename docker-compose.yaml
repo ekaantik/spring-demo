@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-demo:5432/ekaantik-gradle-starter
+      SPRING_DATASOURCE_USERNAME: ekaantik-admin
+      SPRING_DATASOURCE_PASSWORD: ekaantik@123
+    depends_on:
+      - postgres-demo
+
+  postgres-demo:
+    container_name: postgres-demo
+    image: postgres:15.2      
+    environment:
+      POSTGRES_DB: ekaantik-gradle-starter
+      POSTGRES_USER: ekaantik-admin
+      POSTGRES_PASSWORD: ekaantik@123
+    ports:
+      - "5432:5432"
