@@ -16,3 +16,6 @@ spring:
     show-sql: false
     properties.hibernate.format_sql: true
     properties.hibernate.jdbc.time_zone: UTC
+
+upload:
+  path: C:/Users/rohit/Desktop/Myfiles/
