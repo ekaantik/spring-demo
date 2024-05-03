@@ -1,6 +1,7 @@
 server:
   port: 8080
-
+  servlet:
+    context-path: '/demo'
 spring:
   application:
     name: demo
@@ -19,3 +20,10 @@ spring:
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
+
+token:
+  signing:
+    key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
+
+origin.host.list: http://localhost:80
+origin.host.flag: TRUE
