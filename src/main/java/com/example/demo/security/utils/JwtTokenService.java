@@ -32,7 +32,6 @@ public class JwtTokenService {
      * @return string representing the generated JWT.
      */
     public String generateToken(User user) {
-
         // Set token expiration date to 1 year from today
         Date today = new Date();
         Calendar cal = Calendar.getInstance();
@@ -48,7 +47,6 @@ public class JwtTokenService {
 
         // Create JWT claims containing user-related information
         Map<String, Object> claims = new HashMap<>();
-        claims.put("phoneNumber", user.getPhoneNumber());
         claims.put("userId", user.getId());
         claims.put("roles", user.getUserType());
 
@@ -56,7 +54,6 @@ public class JwtTokenService {
         String token = Jwts.builder()
                 .setIssuer("Demo")
                 .setClaims(claims)
-                .setId(UUID.randomUUID().toString())
                 .setExpiration(cal.getTime())
                 .setIssuedAt(today)
                 .signWith(getSigningKey())

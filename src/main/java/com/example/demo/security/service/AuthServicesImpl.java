@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AuthServicesImpl implements AuthServicesIf {
 
     private final AuthenticationManager authenticationManager;
+
     @Autowired
     private UserRepoService userRepoService;
 
@@ -66,17 +67,16 @@ public class AuthServicesImpl implements AuthServicesIf {
     public UserAuthResponse performLogin(UserAuthRequest req) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
-
         User user = userRepoService.findByPhoneNumber(req.getPhoneNumber());
         String jwtToken = jwtTokenService.generateToken(user);
         UserAuthResponse response = UserAuthResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .jwtToken(jwtToken)
                 .userType(user.getUserType())
                 .build();
         return response;
-
-
         //Email Authentication
 //        User user = authenticateLoginRequest(req);
 //        //Validating Role
@@ -84,23 +84,6 @@ public class AuthServicesImpl implements AuthServicesIf {
 //            throw new InvalidCredentialException("User does not have Web Admin Role.");
 //        }
 //        return buildLoginResponse(user);
-    }
-
-    /**
-     * Authenticate a UserAuthRequest.
-     *
-     * @param req : Incoming user auth request.
-     * @return The user associated with the email in request.
-     */
-    public User authenticateLoginRequest(UserAuthRequest req) {
-        //Email Authentication
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
-        // Get user if it exists, otherwise throw an exception
-        User user = userRepoService.findByPhoneNumber(req.getPhoneNumber());
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-//        System.out.println("User : " + user);
-        log.info("authenticateLoginRequest :: User :: {}",user);
-        return user;
     }
 
     /**
