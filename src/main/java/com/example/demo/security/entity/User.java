@@ -3,10 +3,7 @@ package com.example.demo.security.entity;
 
 import com.example.demo.constants.UserType;
 import com.example.demo.entity.base.BaseUuidEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -27,7 +24,7 @@ import java.util.List;
 @ToString
 @SuperBuilder
 @Entity
-@Table(name = "user")
+@Table(name = "user_details")
 public class User extends BaseUuidEntity implements UserDetails {
 
     @Column(name = "first_name")
@@ -50,8 +47,9 @@ public class User extends BaseUuidEntity implements UserDetails {
     @Pattern(regexp = "(^$|[0-9]{10})")
     private String phoneNumber;
 
-    @Column(name = "type", unique = true)
-    @Enumerated
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    @NonNull
     private UserType userType;
 
 

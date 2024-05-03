@@ -14,8 +14,8 @@ import java.util.Set;
 @Data
 @Builder
 @Entity
-@Table(name = "roles", uniqueConstraints = @UniqueConstraint(columnNames = { "name",
-        "customer_details_id" }))
+@Table(name = "roles")
+//, uniqueConstraints = @UniqueConstraint(columnNames = { "name", "customer_details_id"
 public class Role extends BaseUuidEntity implements Serializable {
 
     @Column(name = "name")
