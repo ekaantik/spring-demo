@@ -47,7 +47,7 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: "${springBootVersion}"
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: "${springBootVersion}"
+//	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: "${springBootVersion}"
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: "${springBootVersion}"
 
 	implementation 'com.auth0:java-jwt:3.11.0'

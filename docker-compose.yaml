@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+
+#  redis-cache:
+#    image: redis:7.2.4-alpine
+#    restart: always
+#    ports:
+#      - "6379:6379"
+#    command: ["sh", "-c", "rm -f /data/dump.rdb && redis-server"]
+#    volumes:
+#      - redis-cache:/data
+#  mysql-db:
+#    image: mysql:8.0
+#    cap_add:
+#      - SYS_NICE
+#    restart: always
+#    environment:
+#      - MYSQL_DATABASE=quotes
+#      - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
+#    ports:
+#      - '3306:3306'
+#    volumes:
+#      - db:/var/lib/mysql
+#      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres-db:
+      container_name: postgres-db
+      image: postgres:15.2
+      volumes:
+        - postgres_db_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: demo_db
+        POSTGRES_USER: demo_user
+        POSTGRES_PASSWORD: demo@123
+      ports:
+        - "5434:5432"
+#      healthcheck:
+#        test: ["CMD-SHELL", "pg_isready -d keycloak -U keycloak"]
+#        interval: 10s
+#        timeout: 3s
+#        retries: 3
+#
+#  dashboard:
+#    image: archit1012/dashboard:dashboard-dev
+#    container_name: dashboard
+##    environment:
+##      POSTGRES_DATABASE_HOST: postgres-ecard
+#    env_file:
+#      - dashboard/src/main/resources/local.env
+#    ports:
+#      - 8083:8083
+#    depends_on:
+#      - postgres-infra
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://dashboard:8083/infra/api/v1/healthcheck" ]
+#      interval: 7s
+#      timeout: 5s
+#      retries: 3
+#
+
+# Persisted data across application restarts
+volumes:
+  postgres_db_data: {}
+#  redis-cache:
+#    driver: local
