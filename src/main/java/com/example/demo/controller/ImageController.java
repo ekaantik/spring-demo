@@ -1,4 +1,4 @@
-package com.ekaantik.demo.controller;
+package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
