@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   demo:
+    container_name: spring-backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +16,7 @@ services:
       - postgres-demo
 
   postgres-demo:
-    container_name: postgres-demo
+    container_name: postgres-db
     image: postgres:15.2      
     environment:
       POSTGRES_DB: ekaantik-gradle-starter
@@ -23,3 +24,17 @@ services:
       POSTGRES_PASSWORD: ekaantik@123
     ports:
       - "5432:5432"
+
+  redis-cache:
+    container_name: redis-cache
+    image: redis:7.2.4-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["sh", "-c", "rm -f /data/dump.rdb && redis-server"]
+    volumes:
+      - redis-cache:/data
+
+volumes:
+  redis-cache:
+    driver : local
