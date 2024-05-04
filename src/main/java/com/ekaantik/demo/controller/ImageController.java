@@ -26,15 +26,26 @@ public class ImageController {
     @Value("${upload.pathcoverimage}")
     private String pathcoverimage;
 
-    @PostMapping("/uploadimage/license")
-    public ResponseEntity<String> uploadimagelicense(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/uploadimage")
+    public ResponseEntity<String> uploadimagelicense(@RequestHeader(value = "image") String imagetype,
+                                                     @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
         }
-
+        Path path = null;
         try {
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(pathlicense + file.getOriginalFilename());
+            if (imagetype.equals("license")) {
+                path = Paths.get(pathlicense + file.getOriginalFilename());
+            } else if (imagetype.equals("identitycard")) {
+                path = Paths.get(pathidentitycard + file.getOriginalFilename());
+            } else if (imagetype.equals("logo")) {
+                path = Paths.get(pathlogo + file.getOriginalFilename());
+            } else if (imagetype.equals("cover")) {
+                path = Paths.get(pathcoverimage + file.getOriginalFilename());
+            }else{
+                return new ResponseEntity<>("Folder Type not Valid", HttpStatus.BAD_REQUEST);
+            }
             Files.write(path, bytes);
             return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
         } catch (IOException e) {
@@ -43,118 +54,29 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/downloadimage/license/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadimagelicense(@PathVariable String fileName) {
-        File file = new File(pathlicense + fileName);
+    @GetMapping("/downloadimage/{fileName:.+}")
+    public ResponseEntity<byte[]> downloadimagelicense(@RequestHeader(value = "image") String imagetype,@PathVariable String fileName) throws IOException {
+        File file = null;
+        if (imagetype.equals("license")) {
+            file = new File(pathlicense + fileName);
+        } else if (imagetype.equals("identitycard")) {
+            file = new File(pathlicense + fileName);
+        } else if (imagetype.equals("logo")) {
+            file = new File(pathlicense + fileName);
+        } else if (imagetype.equals("cover")) {
+            file = new File(pathlicense + fileName);
+        }else{
+            return new ResponseEntity<>(HttpStatus.valueOf("Not Type Found"));
+        }
         if (!file.exists()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        String contentType = Files.probeContentType(file.toPath());
+        MediaType mediaType = MediaType.parseMediaType(contentType);
         try {
             byte[] videoBytes = Files.readAllBytes(file.toPath());
             return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("image/png"))
-                    .body(videoBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/uploadimage/identitycard")
-    public ResponseEntity<String> uploadimageidentitycard(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(pathidentitycard + file.getOriginalFilename());
-            Files.write(path, bytes);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/downloadimage/identitycard/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadimageidentitycard(@PathVariable String fileName) {
-        File file = new File(pathidentitycard + fileName);
-        if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        try {
-            byte[] videoBytes = Files.readAllBytes(file.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("image/png"))
-                    .body(videoBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/uploadimage/logo")
-    public ResponseEntity<String> uploadimagelogo(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(pathlogo + file.getOriginalFilename());
-            Files.write(path, bytes);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/downloadimage/logo/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadimagelogo(@PathVariable String fileName) {
-        File file = new File(pathlogo + fileName);
-        if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        try {
-            byte[] videoBytes = Files.readAllBytes(file.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("image/png"))
-                    .body(videoBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/uploadimage/cover")
-    public ResponseEntity<String> uploadimagecover(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(pathcoverimage + file.getOriginalFilename());
-            Files.write(path, bytes);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/downloadimage/cover/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadimagecover(@PathVariable String fileName) {
-        File file = new File(pathcoverimage + fileName);
-        if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        try {
-            byte[] videoBytes = Files.readAllBytes(file.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("image/png"))
+                    .contentType(MediaType.valueOf(""+mediaType+""))
                     .body(videoBytes);
         } catch (IOException e) {
             e.printStackTrace();
