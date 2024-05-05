@@ -25,3 +25,8 @@ spring:
       timeout: 60000
       lock.lease-time: 10000
       lock.wait-time: 5000
+
+
+jwt:
+  secret: lnURiTvAdG7EcKSTUtcln7k80UhxDvj+h4wSFfGSVEargLf8UOkP/aeUO2UVvxOm
+  validity : 86400000
