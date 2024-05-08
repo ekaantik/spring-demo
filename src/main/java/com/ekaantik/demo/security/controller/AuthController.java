@@ -3,6 +3,7 @@ package com.ekaantik.demo.security.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +13,6 @@ import com.ekaantik.demo.security.pojos.response.AuthenticationResponse;
 import com.ekaantik.demo.security.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +34,14 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest) {
 
         AuthenticationResponse res = authService.authenticate(authRequest);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestHeader("Authorization") String token) {
+
+        AuthenticationResponse res = authService.refreshToken(token);
 
         return ResponseEntity.ok(res);
     }
