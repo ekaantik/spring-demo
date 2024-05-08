@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,18 +46,41 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
+
+        String requestBody = null;
+        String responseBody = null;
+
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
+            log.info("return from first");
             filterChain.doFilter(request, response);
             return;
         }
+
         jwtToken = authHeader.split(" ")[1].trim();
         if (!jwtTokenService.validateToken(jwtToken)) {
+            log.info("return from second");
             filterChain.doFilter(request, response);
             return;
         }
+
         setAuthenticationContext(jwtToken, request);
+        log.info("return from third");
+//        filterChain.doFilter(request, response);
+        filterChain.doFilter(requestWrapper, responseWrapper);
+
+        requestBody = getStringValue(requestWrapper.getContentAsByteArray(),
+                request.getCharacterEncoding());
+        responseBody = getStringValue(responseWrapper.getContentAsByteArray(),
+                response.getCharacterEncoding());
+        responseWrapper.copyBodyToResponse();
+
+//        log.info("responseBody : {}  ",responseBody);
+
     }
 
     private void setAuthenticationContext(String token, HttpServletRequest request) {
@@ -77,14 +102,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         User userDetails = new User();
         Claims claims = jwtTokenService.extractAllClaims(token);
         String roles = (String) claims.get("roles");
-        String phoneNumber = (String) claims.get("phoneNumber");
+        String phoneNumber = (String) claims.get("userPn");
 
         roles = roles.replace("[", "").replace("]", "");
         String[] roleNames = roles.replaceAll("\\s", "").split(",");
-
+        log.info("get uer roleNames : {}",roleNames);
         for (String aRoleName : roleNames) {
-            userDetails.setUserType(UserType.ADMIN);
+//            userDetails.setUserType(UserType.valueOf(aRoleName));
+            userDetails.setUserType(UserType.valueOf(aRoleName));
         }
+        userDetails.setPhoneNumber(phoneNumber);
+        log.info("get uer details : {}",userDetails);
         return userDetails;
     }
 
