@@ -14,10 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/video")
+@RequestMapping("/api/v1/video")
 public class VideoController {
 
-    @Value("${upload.path}")
+    @Value("${upload.pathicovervideo}")
     private String uploadPath;
 
     @PostMapping("/uploadvideo")
@@ -28,7 +28,7 @@ public class VideoController {
 
         try {
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(uploadPath + file.getOriginalFilename());
+            Path path = Paths.get(uploadPath+ file.getOriginalFilename());
             Files.write(path, bytes);
             return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
         } catch (IOException e) {
@@ -43,10 +43,13 @@ public class VideoController {
         if (!file.exists()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         try {
             byte[] videoBytes = Files.readAllBytes(file.toPath());
+            String contentType = Files.probeContentType(file.toPath());
+            MediaType mediaType = MediaType.parseMediaType(contentType);
             return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("video/mp4"))
+                    .contentType(MediaType.valueOf(""+mediaType+""))
                     .body(videoBytes);
         } catch (IOException e) {
             e.printStackTrace();
