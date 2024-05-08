@@ -65,6 +65,7 @@ public class AuthServicesImpl implements AuthServicesIf {
      * @return The user authentication response containing the JWT token and user information.
      */
     public UserAuthResponse performLogin(UserAuthRequest req) {
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
         User user = userRepoService.findByPhoneNumber(req.getPhoneNumber());
@@ -77,13 +78,6 @@ public class AuthServicesImpl implements AuthServicesIf {
                 .userType(user.getUserType())
                 .build();
         return response;
-        //Email Authentication
-//        User user = authenticateLoginRequest(req);
-//        //Validating Role
-//        if (Objects.isNull(user) || !hasRole(user, UserRolesDefault.WEB_ADMIN)) {
-//            throw new InvalidCredentialException("User does not have Web Admin Role.");
-//        }
-//        return buildLoginResponse(user);
     }
 
     /**

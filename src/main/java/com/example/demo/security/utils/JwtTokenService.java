@@ -1,5 +1,6 @@
 package com.example.demo.security.utils;
 
+import com.example.demo.constants.UserType;
 import com.example.demo.security.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -45,10 +46,14 @@ public class JwtTokenService {
         //                    .setExpiration(cal.getTime()) //a java.util.Date
 //                    .setIssuedAt(today) // for example, now
 
+        List<String> roleList = new ArrayList<>();
+        roleList.add(user.getUserType().toString());
+//        roleList.add(user.getUserType());
         // Create JWT claims containing user-related information
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
-        claims.put("roles", user.getUserType());
+        claims.put("userPn", user.getPhoneNumber());
+        claims.put("roles", roleList.toString());
 
         // Generate JWT token with provided claims and signing key
         String token = Jwts.builder()
@@ -94,11 +99,6 @@ public class JwtTokenService {
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSigningKey.getBytes(StandardCharsets.UTF_8));
-
-//        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
-//        return Keys.hmacShaKeyFor(keyBytes);
-        //SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
-//        final SecretKey signingKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     // Extract the username from the JWT token
@@ -132,9 +132,6 @@ public class JwtTokenService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public UUID extractClaimsCustId(String token) {
-        return UUID.fromString((String) extractAllClaims(token).get("custId"));
-    }
 }
 
 
