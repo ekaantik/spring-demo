@@ -12,11 +12,15 @@ spring:
     driverClassName: org.postgresql.Driver
 
   jpa:
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create
     hibernate.default_schema: public
     show-sql: false
     properties.hibernate.format_sql: true
     properties.hibernate.jdbc.time_zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
