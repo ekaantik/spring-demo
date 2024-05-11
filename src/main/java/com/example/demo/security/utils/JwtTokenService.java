@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JwtTokenService {
-//    Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    // Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${token.signing.key}")
     private String jwtSigningKey;
@@ -43,12 +43,12 @@ public class JwtTokenService {
         final String authorities = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        //                    .setExpiration(cal.getTime()) //a java.util.Date
-//                    .setIssuedAt(today) // for example, now
+        // .setExpiration(cal.getTime()) //a java.util.Date
+        // .setIssuedAt(today) // for example, now
 
         List<String> roleList = new ArrayList<>();
         roleList.add(user.getUserType().toString());
-//        roleList.add(user.getUserType());
+        // roleList.add(user.getUserType());
         // Create JWT claims containing user-related information
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
@@ -65,7 +65,6 @@ public class JwtTokenService {
                 .compact();
         return token;
     }
-
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
@@ -118,7 +117,6 @@ public class JwtTokenService {
         return claimsResolvers.apply(claims);
     }
 
-
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token.replace("Bearer ", ""))
                 .getBody();
@@ -128,79 +126,87 @@ public class JwtTokenService {
         return UUID.fromString((String) extractAllClaims(token).get("userId"));
     }
 
+    public String extractPhoneNumber(String token) {
+        return (String) extractAllClaims(token).get("userPn");
+    }
+
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
 }
 
-
-//    public String generateJwtKey(User user, CustomerDetails customerDetails, String role) {
-//        Date today = new Date();
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(today);
-//        cal.add(Calendar.YEAR, 1);
+// public String generateJwtKey(User user, CustomerDetails customerDetails,
+// String role) {
+// Date today = new Date();
+// Calendar cal = Calendar.getInstance();
+// cal.setTime(today);
+// cal.add(Calendar.YEAR, 1);
 //
-//        try {
-//            final SecretKey signingKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-//            return Jwts.builder()
-//                    .setIssuer("Glokal")
-//                    .setSubject("token")
-//                    .setAudience("you")
-//                    .claim("userId", user != null ? user.getId() : null)
-//                    .claim("businessId", business != null ? business.getId() : null)
-//                    .claim("user", user != null ? userMapper.basicDto(user) : null)
-//                    .claim("business", business != null ? businessMapper.toBasicModel(business) : null)
-//                    .claim("roles", role)
-//                    .setExpiration(cal.getTime()) //a java.util.Date
-//                    .setIssuedAt(today) // for example, now
-//                    .setId(UUID.randomUUID().toString())
-//                    .signWith(signingKey)
-//                    .compact();
-//        } catch (Exception ex) {
-//            logger.error("jwt token generation failed", ex);
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "token generation failed with reason " + ex.getMessage());
-//        }
-//    }
+// try {
+// final SecretKey signingKey =
+// Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+// return Jwts.builder()
+// .setIssuer("Glokal")
+// .setSubject("token")
+// .setAudience("you")
+// .claim("userId", user != null ? user.getId() : null)
+// .claim("businessId", business != null ? business.getId() : null)
+// .claim("user", user != null ? userMapper.basicDto(user) : null)
+// .claim("business", business != null ? businessMapper.toBasicModel(business) :
+// null)
+// .claim("roles", role)
+// .setExpiration(cal.getTime()) //a java.util.Date
+// .setIssuedAt(today) // for example, now
+// .setId(UUID.randomUUID().toString())
+// .signWith(signingKey)
+// .compact();
+// } catch (Exception ex) {
+// logger.error("jwt token generation failed", ex);
+// throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "token
+// generation failed with reason " + ex.getMessage());
+// }
+// }
 
+// public String createAuthToken(VerifyOtpReq req) throws Exception {
+// try {
+// authenticationManager.authenticate(
+// new UsernamePasswordAuthenticationToken(req.getUserMobileNumber(), "")
+// );
+// }
+// catch (BadCredentialsException e) {
+// throw new Exception("Incorrect username or password", e);
+// }
+//// final UserDetails userDetails = userDetailsService
+//// .loadUserByUsername(req.getUserMobileNumber());
+//// Generate Token
+//// jwtTokenUtil.generateToken(userDetails);
+// return null;
+// }
 
-//    public String createAuthToken(VerifyOtpReq req) throws Exception {
-//        try {
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(req.getUserMobileNumber(), "")
-//            );
-//        }
-//        catch (BadCredentialsException e) {
-//            throw new Exception("Incorrect username or password", e);
-//        }
-////        final UserDetails userDetails = userDetailsService
-////                .loadUserByUsername(req.getUserMobileNumber());
-////        Generate Token
-////        jwtTokenUtil.generateToken(userDetails);
-//        return null;
-//    }
-
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(today);
-//        cal.add(Calendar.YEAR, 1);
+// Calendar cal = Calendar.getInstance();
+// cal.setTime(today);
+// cal.add(Calendar.YEAR, 1);
 //
-//        try {
-//      final SecretKey signingKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-//            return Jwts.builder()
-//                    .setIssuer("Glokal")
-//                    .setSubject("token")
-//                    .setAudience("you")
-//                    .claim("userId", user != null ? user.getId() : null)
-//                    .claim("businessId", business != null ? business.getId() : null)
-//                    .claim("user", user != null ? userMapper.basicDto(user) : null)
-//                    .claim("business", business != null ? businessMapper.toBasicModel(business) : null)
-//                    .claim("roles", role)
-//                    .setExpiration(cal.getTime()) //a java.util.Date
-//                    .setIssuedAt(today) // for example, now
-//                    .setId(UUID.randomUUID().toString())
-//                    .signWith(signingKey)
-//                    .compact();
+// try {
+// final SecretKey signingKey =
+// Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+// return Jwts.builder()
+// .setIssuer("Glokal")
+// .setSubject("token")
+// .setAudience("you")
+// .claim("userId", user != null ? user.getId() : null)
+// .claim("businessId", business != null ? business.getId() : null)
+// .claim("user", user != null ? userMapper.basicDto(user) : null)
+// .claim("business", business != null ? businessMapper.toBasicModel(business) :
+// null)
+// .claim("roles", role)
+// .setExpiration(cal.getTime()) //a java.util.Date
+// .setIssuedAt(today) // for example, now
+// .setId(UUID.randomUUID().toString())
+// .signWith(signingKey)
+// .compact();
 
-//                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-//                .signWith(SignatureAlgorithm.HS512, key)
-//                .signWith(keyLocal)
+// .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+// .signWith(SignatureAlgorithm.HS512, key)
+// .signWith(keyLocal)
