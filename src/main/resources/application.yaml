@@ -12,7 +12,7 @@ spring:
     driverClassName: org.postgresql.Driver
 
   jpa:
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
     hibernate.default_schema: public
     show-sql: false
     properties.hibernate.format_sql: true
@@ -24,6 +24,11 @@ spring:
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
+  pathLicense: abc
+  pathidentitycard : abc
+  pathlogo : abc
+  pathcoverimage : abc
+  pathicovervideo : abc
 
 token:
   signing:
