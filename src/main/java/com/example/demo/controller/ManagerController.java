@@ -1,41 +1,39 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Manager;
+import com.example.demo.pojos.request.ManagerRequest;
+import com.example.demo.pojos.response.ManagerResponse;
 import com.example.demo.service.ManagerService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/manager")
 public class ManagerController {
 
-    @Autowired
-    ManagerService managerService;
+    private final ManagerService managerService;
 
-    @PostMapping("/add")
-    public ResponseEntity<Manager> manageradd(@RequestBody Manager req)
-    {
-        return ResponseEntity.ok(managerService.manageradd(req));
-    }
-
-    @GetMapping("/get-by-id")
-    public Optional<Manager> managergetbyid(@RequestParam("id") UUID id)
-    {
-        return managerService.managerfindbyid(id);
+    @PostMapping("create")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<ManagerResponse> createManager(@RequestHeader("Authorization") String token,
+            @RequestBody ManagerRequest req) {
+        return ResponseEntity.ok(managerService.createManager(token, req));
     }
 
-    @PutMapping("/update/{id}")
-    public Manager managerupdate(@PathVariable UUID id,@RequestBody Manager req)
-    {
-        return  managerService.managerupdate(id,req);
+    @GetMapping("get-by-id")
+    public ResponseEntity<ManagerResponse> getManagerById(@RequestParam UUID id) {
+        return ResponseEntity.ok(managerService.getManagerById(id));
     }
-    @DeleteMapping("/delete-by-id")
-    public String managerdeletebyid(@RequestParam("id") UUID id)
-    {
-        return managerService.managerdeletebyid(id);
+
+    @DeleteMapping("delete-by-id")
+    public ResponseEntity<String> deleteManagerById(@RequestParam UUID id) {
+        return ResponseEntity.ok(managerService.deleteManagerById(id));
     }
+
 }

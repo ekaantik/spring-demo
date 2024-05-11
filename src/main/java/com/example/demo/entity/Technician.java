@@ -2,26 +2,31 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
+import org.springframework.lang.NonNull;
+
+import com.example.demo.entity.base.BaseUuidEntity;
+import com.example.demo.security.entity.User;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "technician")
-public class Technician {
+@Table(name = "technician_mapping")
+public class Technician extends BaseUuidEntity {
 
-    @Id
-    @Column(name = "technician_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @ManyToOne
+    @JoinColumn(name = "managed_by_id")
+    private User managedByUser;
 
-    private String firstName;
-    private String lastName;
-    private String password;
-    private String phoneNum;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    @NonNull
+    private User technicianUser;
 }

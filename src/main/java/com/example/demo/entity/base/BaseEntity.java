@@ -31,5 +31,4 @@ public abstract class BaseEntity {
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private ZonedDateTime updatedAt;
-
 }

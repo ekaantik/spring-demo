@@ -5,13 +5,13 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Entity
-@Data
+// @Entity
+// @Data
 public class Configuration {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
-    @Column(columnDefinition = "TEXT")
-    private String jsonConfig;
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // private UUID id;
+    // @Column(columnDefinition = "TEXT")
+    // private String jsonConfig;
 
 }
