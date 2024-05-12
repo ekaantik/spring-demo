@@ -20,7 +20,7 @@ import com.example.demo.security.entity.User;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "store_mapping")
+@Table(name = "store")
 public class Store extends BaseUuidEntity {
 
     @Column(name = "name")

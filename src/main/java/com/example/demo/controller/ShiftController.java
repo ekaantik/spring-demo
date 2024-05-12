@@ -1,39 +1,38 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Shift;
+import com.example.demo.pojos.request.ShiftRequest;
+import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.service.ShiftService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/shift")
 public class ShiftController {
-    @Autowired
-    ShiftService shiftService;
-    @PostMapping("/add")
-    public ResponseEntity<Shift> shiftadd(@RequestBody Shift req)
-    {
-        return ResponseEntity.ok(shiftService.shiftadd(req));
+    private final ShiftService ShiftService;
+
+    @PostMapping("create")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
+    public ResponseEntity<ShiftResponse> createShift(@RequestBody ShiftRequest req) {
+        return ResponseEntity.ok(ShiftService.createShift(req));
     }
 
-    @GetMapping("/get-by-id")
-    public Optional<Shift> shiftgetbyid(@RequestParam("id") UUID id)
-    {
-        return shiftService.shiftfindbyid(id);
+    @GetMapping("get-by-id")
+    public ResponseEntity<ShiftResponse> getShiftById(@RequestParam UUID id) {
+        return ResponseEntity.ok(ShiftService.getShiftById(id));
     }
 
-    @PutMapping("/update/{id}")
-    public Shift shiftupdate(@PathVariable UUID id,@RequestBody Shift req)
-    {
-        return  shiftService.shiftupdate(id,req);
+    @DeleteMapping("delete-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
+    public ResponseEntity<String> deleteShiftById(@RequestParam UUID id) {
+        return ResponseEntity.ok(ShiftService.deleteShiftById(id));
     }
-    @DeleteMapping("/delete-by-id")
-    public String shiftdeletebyid(@RequestParam("id") UUID id)
-    {
-        return shiftService.shiftdeletebyid(id);
-    }
+
 }

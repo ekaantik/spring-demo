@@ -1,0 +1,19 @@
+package com.example.demo.pojos.response;
+
+import java.util.UUID;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
+public class ShiftResponse {
+
+    private UUID id;
+    private String shiftType;
+    private UUID storeId;
+}

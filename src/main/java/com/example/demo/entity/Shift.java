@@ -1,26 +1,28 @@
 package com.example.demo.entity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
+import com.example.demo.constants.ShiftType;
+import com.example.demo.entity.base.BaseUuidEntity;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "shift")
-public class Shift {
+public class Shift extends BaseUuidEntity {
 
-    @Id
-    @Column(name = "manager_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(name = "shift_type")
+    private ShiftType shiftType;
 
-    private String name;
-    private String startTime; //ZonedDateTime
-    private String endTime; //ZonedDateTime
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
 }
