@@ -26,6 +26,7 @@ public class StoreController {
     }
 
     @GetMapping("get-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<StoreResponse> getStoreById(@RequestParam UUID id) {
         return ResponseEntity.ok(storeService.getStoreById(id));
     }

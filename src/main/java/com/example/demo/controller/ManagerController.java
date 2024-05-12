@@ -27,7 +27,7 @@ public class ManagerController {
     }
 
     @GetMapping("get-by-id")
-    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ManagerResponse> getManagerById(@RequestParam UUID id) {
         return ResponseEntity.ok(managerService.getManagerById(id));
     }

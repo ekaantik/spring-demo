@@ -25,6 +25,7 @@ public class ShiftController {
     }
 
     @GetMapping("get-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ShiftResponse> getShiftById(@RequestParam UUID id) {
         return ResponseEntity.ok(ShiftService.getShiftById(id));
     }
