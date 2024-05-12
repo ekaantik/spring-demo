@@ -4,6 +4,8 @@ import com.example.demo.security.dto.UserAuthRequest;
 import com.example.demo.security.dto.UserAuthResponse;
 import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.service.AuthServicesImpl;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,11 @@ public class UserAuthController {
     public ResponseEntity<UserAuthResponse> login(@RequestBody UserAuthRequest req) {
         UserAuthResponse response = authServices.performLogin(req);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("refresh-token")
+    public ResponseEntity<UserAuthResponse> refreshToken(@RequestParam("token") String token) {
+        return ResponseEntity.ok(authServices.refreshToken(token));
     }
 
     // @PostMapping("/reset-password")

@@ -26,7 +26,7 @@ public class Technician extends BaseUuidEntity {
     private User managedByUser;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "technician_user_id")
     @NonNull
     private User technicianUser;
 }
