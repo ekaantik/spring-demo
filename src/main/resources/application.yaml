@@ -24,6 +24,11 @@ spring:
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
+  pathLicense: abc
+  pathidentitycard : abc
+  pathlogo : abc
+  pathcoverimage : abc
+  pathicovervideo : abc
 
 token:
   signing:
