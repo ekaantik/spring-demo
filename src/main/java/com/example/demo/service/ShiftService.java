@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class ShiftService {
         Shift shift = Shift.builder()
                 .shiftType(shiftRequest.getShiftType())
                 .store(store)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         // Saving Shift

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ public class StoreService {
                 .address(storeRequest.getAddress())
                 .serviceType(storeRequest.getServiceType())
                 .vendorUser(vendorUser)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         // Saving Store

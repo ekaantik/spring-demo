@@ -62,6 +62,8 @@ public class ManagerService {
         Manager manager = Manager.builder()
                 .vendorUser(vendorUser)
                 .managerUser(savedUser)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         // Saving Manager
