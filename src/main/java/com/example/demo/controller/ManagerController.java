@@ -27,11 +27,13 @@ public class ManagerController {
     }
 
     @GetMapping("get-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ManagerResponse> getManagerById(@RequestParam UUID id) {
         return ResponseEntity.ok(managerService.getManagerById(id));
     }
 
     @DeleteMapping("delete-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<String> deleteManagerById(@RequestParam UUID id) {
         return ResponseEntity.ok(managerService.deleteManagerById(id));
     }

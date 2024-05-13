@@ -1,48 +1,87 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Shift;
-import com.example.demo.repository.ShiftRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.entity.Store;
+import com.example.demo.pojos.request.ShiftRequest;
+import com.example.demo.pojos.response.ShiftResponse;
+import com.example.demo.repository.ShiftRepoService;
+import com.example.demo.repository.StoreRepoService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class ShiftService {
 
-    @Autowired
-    ShiftRepository shiftRepository;
+    private final ShiftRepoService shiftRepoService;
+    private final StoreRepoService storeRepoService;
 
-    public Shift shiftadd(Shift request) {
-        return shiftRepository.save(request);
+    public ShiftResponse createShift(ShiftRequest req) {
+
+        // Extracting User from JWT Token
+        Store store = storeRepoService.findStoreById(req.getStoreId());
+
+        // Creating Shift
+        Shift shift = Shift.builder()
+                .storeId(store.getId())
+                .name(req.getShiftName())
+                .startTime(req.getStartTime())
+                .endTime(req.getEndTime())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+
+        // Saving Shift
+        Shift savedShift = shiftRepoService.save(shift);
+
+        // Creating Shift Response
+        ShiftResponse response = ShiftResponse.builder()
+                .id(savedShift.getId())
+                .storeId(store.getId())
+                .shiftName(savedShift.getName())
+                .startTime(savedShift.getStartTime())
+                .endTime(savedShift.getEndTime())
+                .storeId(savedShift.getStoreId())
+                .build();
+
+        log.info("Shift Created : {}", response);
+
+        return response;
     }
 
-    public Optional<Shift> shiftfindbyid(UUID uuid) {
-        if (shiftRepository.existsById(uuid)) {
-            Optional<Shift> response = shiftRepository.findById(uuid);
-            return response;
-        }
-        return null;
+    /**
+     * Finds a Shift by its id.
+     * 
+     * @param id The id of the Shift.
+     * @return The Shift object.
+     */
+    public ShiftResponse getShiftById(UUID id) {
+        Shift shift = shiftRepoService.findShiftById(id);
+        ShiftResponse response = ShiftResponse.builder()
+                .id(shift.getId())
+                .storeId(shift.getStoreId())
+                .shiftName(shift.getName())
+                .startTime(shift.getStartTime())
+                .endTime(shift.getEndTime())
+                .storeId(shift.getStoreId())
+                .build();
+        log.info("Shift Found : {}", response);
+        return response;
     }
 
-    public Shift shiftupdate(UUID uuid, Shift shift) {
-        if (shiftRepository.existsById(uuid)) {
-            shift.setId(uuid);
-            shift.setName(shift.getName());
-            shift.setEndTime(shift.getEndTime());
-            shift.setStartTime(shift.getStartTime());
-            return shiftRepository.save(shift);
-        }
-        return null;
+    /**
+     * Deletes a Shift by its id.
+     * 
+     * @param id The id of the Shift.
+     * @return The message indicating the status of the deletion.
+     */
+    public String deleteShiftById(UUID id) {
+        shiftRepoService.deleteShiftById(id);
+        return "Shift with id : " + id + " Deleted Successfully";
     }
-
-    public String shiftdeletebyid(UUID uuid) {
-        if (shiftRepository.existsById(uuid)) {
-            shiftRepository.deleteById(uuid);
-            return "Shift Deleted...";
-        }
-        return "Shift Not Exist..";
-    }
-
 }

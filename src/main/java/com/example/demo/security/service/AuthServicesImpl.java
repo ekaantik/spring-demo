@@ -102,6 +102,24 @@ public class AuthServicesImpl implements AuthServicesIf {
         return response;
     }
 
+    public UserAuthResponse refreshToken(String token) {
+        if (jwtTokenService.validateToken(token)) {
+
+            User user = userRepo.findByPhoneNumber(jwtTokenService.extractPhoneNumber(token));
+            String refToken = jwtTokenService.generateToken(user);
+
+            return UserAuthResponse.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .phoneNumber(user.getPhoneNumber())
+                    .jwtToken(refToken)
+                    .userType(user.getUserType())
+                    .build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Token");
+        }
+    }
+
     /**
      * @param user : User associated with the request.
      * @return UserAuthResponse that contains details about user.

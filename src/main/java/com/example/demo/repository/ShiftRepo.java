@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface ShiftRepository extends JpaRepository<Shift, UUID> {
+public interface ShiftRepo extends JpaRepository<Shift, UUID> {
 
 }

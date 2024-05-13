@@ -26,6 +26,7 @@ public class TechnicianController {
     }
 
     @GetMapping("get-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<TechnicianResponse> getTechnicianById(@RequestParam UUID id) {
         return ResponseEntity.ok(technicianService.getTechnicianById(id));
     }
