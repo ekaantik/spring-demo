@@ -27,7 +27,7 @@ public class Manager extends BaseUuidEntity {
 
     // TODO : Mutiple Manger can be in different vedors?
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "manager_user_id")
+    @JoinColumn(name = "user_id")
     @NonNull
     private User managerUser;
 }

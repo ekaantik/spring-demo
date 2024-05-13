@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.entity.base.BaseUuidEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,10 +8,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import com.example.demo.entity.base.BaseUuidEntity;
-
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
@@ -20,11 +20,14 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "shift")
-public class Shift extends BaseUuidEntity {
+public class Shift extends BaseUuidEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 480487557972577024L;
 
     @ManyToOne
-    @Column(name = "store_id")
-    private UUID storeId;
+    @JoinColumn(name = "store_details_id")
+    private Store store;
 
     @Column(name = "name")
     private String name;

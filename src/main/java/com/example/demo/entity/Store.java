@@ -14,6 +14,10 @@ import com.example.demo.constants.ServiceType;
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.example.demo.security.entity.User;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +25,10 @@ import com.example.demo.security.entity.User;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "store")
-public class Store extends BaseUuidEntity {
+public class Store extends BaseUuidEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 8592895910447049554L;
 
     @Column(name = "name")
     @Size(max = 255, message = "Name must be at most 255 characters.")
@@ -38,4 +45,8 @@ public class Store extends BaseUuidEntity {
     @ManyToOne
     @JoinColumn(name = "vendor_user_id")
     private User vendorUser;
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Shift> shiftList;
+
 }

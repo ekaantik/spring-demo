@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/shift")
+@RequestMapping("/api/v1/shift-schedule")
 public class ShiftSchedulerController {
     private final ShiftService ShiftService;
 
