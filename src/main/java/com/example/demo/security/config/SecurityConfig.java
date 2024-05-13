@@ -42,12 +42,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
-    @Value("${origin.host.list}")
-    private String originHostList;
-
-    @Value("${origin.host.flag}")
-    private boolean originHostflag;
-
 
     private final JwtTokenFilter jwtTokenFilter;
     private final UserService userService;
@@ -56,7 +50,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/alarms/data/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())
                 .formLogin(withDefaults())
@@ -90,14 +83,12 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        if (originHostflag) {
             log.info("---- CorsConfigurationSource corsConfigurationSource----   ");
-            configuration.setAllowedOrigins(List.of("*"));
-            configuration.setAllowedMethods(Arrays.asList("*"));
-            configuration.setAllowCredentials(false);
-            configuration.addAllowedHeader("*");
-            configuration.addExposedHeader("*");
-        }
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowCredentials(false);
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("*");
         configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

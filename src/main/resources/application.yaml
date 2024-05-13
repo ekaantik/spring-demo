@@ -19,8 +19,8 @@ spring:
     properties.hibernate.jdbc.time_zone: UTC
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 1MB
+      max-request-size: 1MB
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
@@ -33,6 +33,3 @@ upload:
 token:
   signing:
     key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
-
-origin.host.list: http://localhost:80
-origin.host.flag: TRUE

@@ -1,19 +1,17 @@
 package com.example.demo.service;
 
-import java.time.ZonedDateTime;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import com.example.demo.entity.Shift;
 import com.example.demo.entity.Store;
 import com.example.demo.pojos.request.ShiftRequest;
 import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.repository.ShiftRepoService;
 import com.example.demo.repository.StoreRepoService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -23,15 +21,17 @@ public class ShiftService {
     private final ShiftRepoService shiftRepoService;
     private final StoreRepoService storeRepoService;
 
-    public ShiftResponse createShift(ShiftRequest shiftRequest) {
+    public ShiftResponse createShift(ShiftRequest req) {
 
         // Extracting User from JWT Token
-        Store store = storeRepoService.findStoreById(shiftRequest.getStoreId());
+        Store store = storeRepoService.findStoreById(req.getStoreId());
 
         // Creating Shift
         Shift shift = Shift.builder()
-                .shiftType(shiftRequest.getShiftType())
-                .store(store)
+                .storeId(store.getId())
+                .name(req.getShiftName())
+                .startTime(req.getStartTime())
+                .endTime(req.getEndTime())
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())
                 .build();
@@ -40,15 +40,18 @@ public class ShiftService {
         Shift savedShift = shiftRepoService.save(shift);
 
         // Creating Shift Response
-        ShiftResponse shiftResponse = ShiftResponse.builder()
+        ShiftResponse response = ShiftResponse.builder()
                 .id(savedShift.getId())
-                .shiftType(savedShift.getShiftType().toString())
-                .storeId(savedShift.getStore().getId())
+                .storeId(store.getId())
+                .shiftName(savedShift.getName())
+                .startTime(savedShift.getStartTime())
+                .endTime(savedShift.getEndTime())
+                .storeId(savedShift.getStoreId())
                 .build();
 
-        log.info("Shift Created : {}", shiftResponse);
+        log.info("Shift Created : {}", response);
 
-        return shiftResponse;
+        return response;
     }
 
     /**
@@ -59,15 +62,16 @@ public class ShiftService {
      */
     public ShiftResponse getShiftById(UUID id) {
         Shift shift = shiftRepoService.findShiftById(id);
-
-        ShiftResponse shiftResponse = ShiftResponse.builder()
+        ShiftResponse response = ShiftResponse.builder()
                 .id(shift.getId())
-                .shiftType(shift.getShiftType().toString())
-                .storeId(shift.getStore().getId())
+                .storeId(shift.getStoreId())
+                .shiftName(shift.getName())
+                .startTime(shift.getStartTime())
+                .endTime(shift.getEndTime())
+                .storeId(shift.getStoreId())
                 .build();
-
-        log.info("Shift Found : {}", shiftResponse);
-        return shiftResponse;
+        log.info("Shift Found : {}", response);
+        return response;
     }
 
     /**
@@ -78,6 +82,6 @@ public class ShiftService {
      */
     public String deleteShiftById(UUID id) {
         shiftRepoService.deleteShiftById(id);
-        return "Shift Deleted Successfully";
+        return "Shift with id : " + id + " Deleted Successfully";
     }
 }
