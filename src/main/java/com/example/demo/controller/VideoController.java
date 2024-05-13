@@ -17,10 +17,10 @@ import java.nio.file.Paths;
 @RequestMapping("/api/v1/video")
 public class VideoController {
 
-    @Value("${upload.pathicovervideo}")
+    @Value("${video.pathicovervideo}")
     private String uploadPath;
 
-    @PostMapping("/uploadvideo")
+    @PostMapping("/upload-video")
     public ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
@@ -37,7 +37,7 @@ public class VideoController {
         }
     }
 
-    @GetMapping("/downloadvideo/{fileName:.+}")
+    @GetMapping("/download-video/{fileName:.+}")
     public ResponseEntity<byte[]> downloadVideo(@PathVariable String fileName) {
         File file = new File(uploadPath + fileName);
         if (!file.exists()) {
