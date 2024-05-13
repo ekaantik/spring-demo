@@ -20,9 +20,6 @@ import java.util.UUID;
 @Table(name = "api_usage") // Plant
 public class ApiUsage implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 8592895910447049554L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

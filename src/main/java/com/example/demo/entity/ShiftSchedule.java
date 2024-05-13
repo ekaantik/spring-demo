@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 @Table(name = "shift")
 public class ShiftSchedule extends BaseUuidEntity {
 
-    @ManyToOne
     @Column(name = "store_id")
     private String storeId;
 

@@ -58,6 +58,7 @@ public class ManagerService {
         User savedUser = userRepo.save(user);
 
         // TODO : if manager failed to create then rollaback the user creation
+        // Create into 1 method and make @Transactional
         // Creating Manager
         Manager manager = Manager.builder()
                 .vendorUser(vendorUser)

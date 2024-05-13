@@ -16,24 +16,30 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/shift")
 public class ShiftController {
-    private final ShiftService ShiftService;
+    private final ShiftService shiftService;
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
     public ResponseEntity<ShiftResponse> createShift(@RequestBody ShiftRequest req) {
-        return ResponseEntity.ok(ShiftService.createShift(req));
+        return ResponseEntity.ok(shiftService.createShift(req));
     }
 
     @GetMapping("get-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ShiftResponse> getShiftById(@RequestParam UUID id) {
-        return ResponseEntity.ok(ShiftService.getShiftById(id));
+        return ResponseEntity.ok(shiftService.getShiftById(id));
+    }
+
+    @GetMapping("get-by-store-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
+    public ResponseEntity<ShiftResponse> getShiftByStoreId(@RequestParam UUID id) {
+        return ResponseEntity.ok(shiftService.getShiftByStoreId(id));
     }
 
     @DeleteMapping("delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
     public ResponseEntity<String> deleteShiftById(@RequestParam UUID id) {
-        return ResponseEntity.ok(ShiftService.deleteShiftById(id));
+        return ResponseEntity.ok(shiftService.deleteShiftById(id));
     }
 
 }

@@ -1,12 +1,11 @@
 package com.example.demo.repository;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.entity.Store;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import com.example.demo.constants.Constants;
-import com.example.demo.entity.Store;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +25,7 @@ public class StoreRepoService {
      * @return The found Store, or null if Exception.
      */
     public Store findStoreById(UUID id) {
-
-        // Trying to find Store details by id
         try {
-
-            // Succesfully found Store
             Optional<Store> optionalStore = storeRepo.findById(id);
 
             if (optionalStore.isPresent()) {
@@ -43,8 +38,6 @@ public class StoreRepoService {
             }
 
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
@@ -58,17 +51,11 @@ public class StoreRepoService {
      * @return A list of all Store entities, or null if Exception.
      */
     public List<Store> findAll() {
-
-        // Trying to find all Store
         try {
-
-            // Succesfully found all Store
             List<Store> Stores = storeRepo.findAll();
             log.info("Successfully found all Store.");
             return Stores;
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
@@ -82,17 +69,11 @@ public class StoreRepoService {
      * @return The saved Store, or throws PersistenceException.
      */
     public Store save(Store Store) {
-
-        // Trying to save Store
         try {
-
-            // Store saved succesfully
             Store savedStore = storeRepo.save(Store);
             log.info("Successfully saved Store with id " + Store.getId());
             return savedStore;
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
             log.error("Failed to create Store, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create Store record into database!", ex);
@@ -105,16 +86,10 @@ public class StoreRepoService {
      * @param id The Id of the Store to be deleted.
      */
     public void deleteStoreById(UUID id) {
-
-        // Trying to delete Store
         try {
-
-            // Store deleted succesfully
             storeRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);

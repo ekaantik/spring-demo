@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class ShiftService {
 
         // Creating Shift
         Shift shift = Shift.builder()
-                .storeId(store.getId())
+                .store(store)
                 .name(req.getShiftName())
                 .startTime(req.getStartTime())
                 .endTime(req.getEndTime())
@@ -46,7 +47,6 @@ public class ShiftService {
                 .shiftName(savedShift.getName())
                 .startTime(savedShift.getStartTime())
                 .endTime(savedShift.getEndTime())
-                .storeId(savedShift.getStoreId())
                 .build();
 
         log.info("Shift Created : {}", response);
@@ -64,16 +64,39 @@ public class ShiftService {
         Shift shift = shiftRepoService.findShiftById(id);
         ShiftResponse response = ShiftResponse.builder()
                 .id(shift.getId())
-                .storeId(shift.getStoreId())
+                .storeId(shift.getStore().getId())
                 .shiftName(shift.getName())
                 .startTime(shift.getStartTime())
                 .endTime(shift.getEndTime())
-                .storeId(shift.getStoreId())
                 .build();
         log.info("Shift Found : {}", response);
         return response;
     }
 
+    /**
+     * Finds a Shift by its id.
+     *
+     * @param id The id of the Shift.
+     * @return The Shift object.
+     */
+    public ShiftResponse getShiftByStoreId(UUID id) {
+        Store store = storeRepoService.findStoreById(id);
+        Shift shift = shiftRepoService.findShiftByStoreId(store.getId());
+
+        ShiftResponse response = new ShiftResponse();
+        if (!Objects.isNull(shift)){
+            response = ShiftResponse.builder()
+                    .id(shift.getId())
+                    .storeId(shift.getStore().getId())
+                    .shiftName(shift.getName())
+                    .startTime(shift.getStartTime())
+                    .endTime(shift.getEndTime())
+                    .build();
+        }
+
+        log.info("Shift Found : {}", response);
+        return response;
+    }
     /**
      * Deletes a Shift by its id.
      * 

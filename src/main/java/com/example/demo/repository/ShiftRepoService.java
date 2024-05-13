@@ -26,13 +26,8 @@ public class ShiftRepoService {
      * @return The found Shift, or null if Exception.
      */
     public Shift findShiftById(UUID id) {
-
-        // Trying to find Shift details by id
         try {
-
-            // Succesfully found Shift
             Optional<Shift> optionalShift = shiftRepo.findById(id);
-
             if (optionalShift.isPresent()) {
                 Shift Shift = optionalShift.get();
                 log.info("Successfully found Shift with id " + Shift.getId());
@@ -43,13 +38,34 @@ public class ShiftRepoService {
             }
 
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
         }
+    }
 
+    /**
+     * Handles Repo Exception & finds a Shift by its Id.
+     *
+     * @param id The Id of the Shift to find.
+     * @return The found Shift, or null if Exception.
+     */
+    public Shift findShiftByStoreId(UUID id) {
+        try {
+            Optional<Shift> optionalShift = shiftRepo.findByStoreId(id);
+            if (optionalShift.isPresent()) {
+                Shift Shift = optionalShift.get();
+                log.info("Successfully found Shift with id " + Shift.getId());
+                return Shift;
+            } else {
+                log.warn("Shift with id " + id + " not found.");
+                return null;
+            }
+        }
+        catch (Exception ex) {
+            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
+            throw new PersistenceException(ex);
+        }
     }
 
     /**
@@ -82,19 +98,13 @@ public class ShiftRepoService {
      * @return The saved Shift, or throws PersistenceException.
      */
     public Shift save(Shift Shift) {
-
-        // Trying to save Shift
         try {
-
-            // Shift saved succesfully
             Shift savedShift = shiftRepo.save(Shift);
             log.info("Successfully saved Shift with id " + Shift.getId());
             return savedShift;
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
-            log.error("Failed to create Shift, Exception : " + ex.getMessage(), ex);
+            log.error("Failed to create Shift, Exception : {}",ex.getMessage());
             throw new PersistenceException("Failed To create Shift record into database!", ex);
         }
     }
@@ -105,16 +115,10 @@ public class ShiftRepoService {
      * @param id The Id of the Shift to be deleted.
      */
     public void deleteShiftById(UUID id) {
-
-        // Trying to delete Shift
         try {
-
-            // Shift deleted succesfully
             shiftRepo.deleteById(id);
             log.info("Successfully deleted Shift with id " + id);
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
