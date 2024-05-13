@@ -2,7 +2,9 @@ package com.example.demo.security.entity;
 
 
 import com.example.demo.constants.UserType;
+import com.example.demo.entity.Manager;
 import com.example.demo.entity.base.BaseUuidEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -51,6 +53,10 @@ public class User extends BaseUuidEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @NonNull
     private UserType userType;
+
+    @OneToMany(mappedBy = "vendorUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Manager> managerList;
 
 
     @Override

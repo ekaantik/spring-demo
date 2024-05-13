@@ -41,7 +41,7 @@ public class ApiUsageRepoService {
             ApiUsage apiUsage = ApiUsage.builder()
                     .userId(userId)
                     .requestMethod(request.getMethod())
-                    .requestUrl(request.getRequestURI())
+                    .requestUrl(request.getRequestURI()+ "?" + request.getQueryString())
                     .requestBody(requestBody)
                     .responseBody(responseBody)
                     .responseStatus(response.getStatus())

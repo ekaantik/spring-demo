@@ -22,7 +22,7 @@ import com.example.demo.security.entity.User;
 public class Manager extends BaseUuidEntity {
 
     @ManyToOne
-    @JoinColumn(name = "vender_id")
+    @JoinColumn(name = "vendor_id")
     private User vendorUser;
 
     // TODO : Mutiple Manger can be in different vedors?
