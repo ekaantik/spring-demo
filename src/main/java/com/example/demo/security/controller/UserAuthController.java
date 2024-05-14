@@ -5,7 +5,6 @@ import com.example.demo.security.dto.UserAuthResponse;
 import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.service.AuthServicesImpl;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +40,5 @@ public class UserAuthController {
     // authServices.resetPassword(token, req);
     // return ResponseEntity.ok("Password changed successfully!");
     // }
-
-    // TODO : Remove this unnecessary endpoint
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Ok");
-    }
 
 }

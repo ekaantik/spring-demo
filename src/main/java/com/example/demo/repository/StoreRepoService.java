@@ -37,10 +37,9 @@ public class StoreRepoService {
                 return null;
             }
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Store with Id " + id + ".", ex);
         }
 
     }
@@ -55,10 +54,9 @@ public class StoreRepoService {
             List<Store> Stores = storeRepo.findAll();
             log.info("Successfully found all Store.");
             return Stores;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Stores.", ex);
         }
     }
 
@@ -73,8 +71,7 @@ public class StoreRepoService {
             Store savedStore = storeRepo.save(Store);
             log.info("Successfully saved Store with id " + Store.getId());
             return savedStore;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Failed to create Store, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create Store record into database!", ex);
         }
@@ -89,10 +86,10 @@ public class StoreRepoService {
         try {
             storeRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Store with Id " + id + ".", ex);
+
         }
     }
 

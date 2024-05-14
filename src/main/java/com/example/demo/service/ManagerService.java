@@ -1,13 +1,19 @@
 package com.example.demo.service;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.entity.Manager;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.request.ManagerRequest;
 import com.example.demo.pojos.response.ManagerResponse;
 import com.example.demo.repository.ManagerRepoService;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
+
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.Transactional;
 
 import java.time.ZonedDateTime;
 
@@ -37,13 +43,17 @@ public class ManagerService {
      * @param managerRequest The request object containing manager information.
      * @return The response object containing details of the created manager user.
      */
+    @Transactional
     public ManagerResponse createManager(String token, ManagerRequest managerRequest) {
 
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
 
-        //TODO: Throw Error If Vendor User Not Found
+        if (vendorUser == null) {
+            log.error("Vendor User Not Found for Id : {}", userId);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, userId, Constants.FIELD_ID, Constants.TABLE_VENDOR);
+        }
 
         // Creating Manager User
         User user = User.builder()
@@ -59,8 +69,6 @@ public class ManagerService {
         // Saving Manager User
         User savedUser = userRepo.save(user);
 
-        // TODO : if manager failed to create then rollaback the user creation
-        // Create into 1 method and make @Transactional
         // Creating Manager
         Manager manager = Manager.builder()
                 .vendorUser(vendorUser)

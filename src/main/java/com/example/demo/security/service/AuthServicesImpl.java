@@ -1,6 +1,9 @@
 package com.example.demo.security.service;
 
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
+import com.example.demo.exception.AlreadyExistsException;
+import com.example.demo.exception.InvalidCredentialException;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
 import com.example.demo.security.dto.UserAuthResponse;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,9 +53,8 @@ public class AuthServicesImpl implements AuthServicesIf {
         if (existingUser != null) {
             log.error("User already exists with PhoneNumber : {}", req.getPhoneNumber());
 
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "User already exists with PhoneNumber : " + req.getPhoneNumber());
+            throw new AlreadyExistsException(
+                    ErrorCode.ALREADY_EXISTS, "User", req.getPhoneNumber());
         }
 
         User user = User.builder()
@@ -88,18 +91,25 @@ public class AuthServicesImpl implements AuthServicesIf {
      */
     public UserAuthResponse performLogin(UserAuthRequest req) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
-        User user = userRepo.findByPhoneNumber(req.getPhoneNumber());
-        String jwtToken = jwtTokenService.generateToken(user);
-        UserAuthResponse response = UserAuthResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phoneNumber(user.getPhoneNumber())
-                .jwtToken(jwtToken)
-                .userType(user.getUserType())
-                .build();
-        return response;
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
+            User user = userRepo.findByPhoneNumber(req.getPhoneNumber());
+
+            String jwtToken = jwtTokenService.generateToken(user);
+            UserAuthResponse response = UserAuthResponse.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .phoneNumber(user.getPhoneNumber())
+                    .jwtToken(jwtToken)
+                    .userType(user.getUserType())
+                    .build();
+
+            return response;
+        } catch (Exception e) {
+            log.error("Invalid Credentials : {}", e.getMessage());
+            throw new InvalidCredentialException(ErrorCode.INVALID_DATA, "PhoneNumber/Password");
+        }
     }
 
     public UserAuthResponse refreshToken(String token) {

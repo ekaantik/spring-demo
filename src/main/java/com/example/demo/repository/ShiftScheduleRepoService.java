@@ -47,7 +47,7 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Shift Schedule with Id " + id + ".", ex);
         }
 
     }
@@ -71,7 +71,7 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Shift Schedules.", ex);
         }
     }
 
@@ -117,7 +117,8 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Shift Schedule with Id " + id + ".", ex);
+
         }
     }
 

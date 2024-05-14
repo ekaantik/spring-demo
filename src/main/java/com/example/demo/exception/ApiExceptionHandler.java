@@ -3,10 +3,15 @@ package com.example.demo.exception;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,23 +21,76 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import jakarta.persistence.PersistenceException;
 
-@RestControllerAdvice // (basePackages = {""})
+@RestControllerAdvice
 @Slf4j
-public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler {
 
-        // @ExceptionHandler(MethodArgumentNotValidException.class)
-        // public ResponseEntity<?> notValid(MethodArgumentNotValidException ex,
-        // HttpServletRequest request) {
-        // List<String> errors = new ArrayList<>();
-        //
-        // ex.getAllErrors().forEach(err -> errors.add(err.getDefaultMessage()));
-        //
-        // Map<String, List<String>> result = new HashMap<>();
-        // result.put("errors", errors);
-        //
-        // return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        // }
+        @ExceptionHandler(DataAccessException.class)
+        public ResponseEntity<Map<String, Object>> handleDataAccessException(DataAccessException ex,
+                        WebRequest request) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", ZonedDateTime.now());
+                body.put("message", "Database error occurred");
+                body.put("error", ex.getMessage());
+
+                log.error("DataAccessException: ", ex);
+
+                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @ExceptionHandler(EmptyResultDataAccessException.class)
+        public ResponseEntity<Map<String, Object>> handleEmptyResultDataAccessException(
+                        EmptyResultDataAccessException ex, WebRequest request) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", ZonedDateTime.now());
+                body.put("message", "No data found");
+                body.put("error", ex.getMessage());
+
+                log.error("EmptyResultDataAccessException: ", ex);
+
+                return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(DataIntegrityViolationException.class)
+        public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(
+                        DataIntegrityViolationException ex, WebRequest request) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", ZonedDateTime.now());
+                body.put("message", "Data integrity violation");
+                body.put("error", ex.getMessage());
+
+                log.error("DataIntegrityViolationException: ", ex);
+
+                return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(TransactionException.class)
+        public ResponseEntity<Map<String, Object>> handleTransactionException(TransactionException ex,
+                        WebRequest request) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", ZonedDateTime.now());
+                body.put("message", "Transaction failed");
+                body.put("error", ex.getMessage());
+
+                log.error("TransactionException: ", ex);
+
+                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @ExceptionHandler(PersistenceException.class)
+        public ResponseEntity<Map<String, Object>> handlePersistanceException(PersistenceException ex,
+                        WebRequest request) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", ZonedDateTime.now());
+                body.put("message", "Persistance error occurred");
+                body.put("error", ex.getMessage());
+
+                log.error("PersistenceException: ", ex);
+
+                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -62,7 +120,6 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
                 return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-
         @ExceptionHandler({ RequestValidationException.class })
         public ResponseEntity<GenericResponse> handleRequestValidationException(final RequestValidationException ex,
                         WebRequest request) {
@@ -91,8 +148,6 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
 
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
-
-
 
         @ExceptionHandler({ NotFoundException.class })
         public ResponseEntity<GenericResponse> handleNotFoundException(final NotFoundException ex, WebRequest request) {
@@ -143,4 +198,24 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.CONFLICT);
         }
 
+        @ExceptionHandler({ InvalidCredentialException.class })
+        public ResponseEntity<GenericResponse> handleInvalidCredentialException(final InvalidCredentialException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("InvalidCredentialException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.UNAUTHORIZED.value())
+                                .details(ex.getDetails())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.UNAUTHORIZED);
+        }
 }

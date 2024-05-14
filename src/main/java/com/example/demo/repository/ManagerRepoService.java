@@ -47,9 +47,8 @@ public class ManagerRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Manager with Id " + id + ".", ex);
         }
-
     }
 
     /**
@@ -71,7 +70,7 @@ public class ManagerRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Managers.", ex);
         }
     }
 
@@ -117,7 +116,7 @@ public class ManagerRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Manager with Id " + id + ".", ex);
         }
     }
 

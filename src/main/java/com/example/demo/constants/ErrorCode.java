@@ -14,7 +14,7 @@ public enum ErrorCode {
                         Constants.INVALID_REQUEST, "The value of field %s is invalid!"),
 
         NOT_EXISTS("Resource not found", HttpStatus.NOT_FOUND.value(), "IOT-404101", "NOT_FOUND",
-                        "The value %s of field %s does not exist!"),
+                        "The value %s of field %s of table %s does not exist!"),
 
         ALREADY_EXISTS("Resource already exists", HttpStatus.CONFLICT.value(), "IOT-409101",
                         "ALREADY_EXISTS", "%s already exists with id %s!"),
