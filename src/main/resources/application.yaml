@@ -17,13 +17,19 @@ spring:
     show-sql: false
     properties.hibernate.format_sql: true
     properties.hibernate.jdbc.time_zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
 
 upload:
   path: C:/Users/rohit/Desktop/Myfiles/
+  pathLicense: abc
+  pathidentitycard : abc
+  pathlogo : abc
+  pathcoverimage : abc
+  pathicovervideo : abc
 
 token:
   signing:
     key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
-
-origin.host.list: http://localhost:80
-origin.host.flag: TRUE

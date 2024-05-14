@@ -1,6 +1,7 @@
 package com.example.demo.security.config;
 
 import com.example.demo.constants.UserType;
+import com.example.demo.repository.ApiUsageRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
 import io.jsonwebtoken.Claims;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +35,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtTokenService;
 
+    @Autowired
+    private ApiUsageRepoService apiUsageRepoService;
+
     private String getStringValue(byte[] contentAsByteArray, String characterEncoding) {
         try {
             return new String(contentAsByteArray, 0, contentAsByteArray.length, characterEncoding);
@@ -48,6 +53,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+
+        long startTime = System.currentTimeMillis();
 
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
@@ -78,6 +85,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         responseBody = getStringValue(responseWrapper.getContentAsByteArray(),
                 response.getCharacterEncoding());
         responseWrapper.copyBodyToResponse();
+
+        apiUsageRepoService.save(request, response, requestBody,responseBody,jwtToken, startTime);
 
 //        log.info("responseBody : {}  ",responseBody);
 
