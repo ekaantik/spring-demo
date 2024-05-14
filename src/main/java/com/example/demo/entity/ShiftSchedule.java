@@ -4,7 +4,6 @@ import com.example.demo.entity.base.BaseUuidEntity;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -20,14 +20,14 @@ import java.time.ZonedDateTime;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "shift")
+@Table(name = "shift_schedule")
 public class ShiftSchedule extends BaseUuidEntity {
 
     @Column(name = "store_id")
-    private String storeId;
+    private UUID storeId;
 
     @Column(name = "shift_id")
-    private String shiftId;
+    private UUID shiftId;
 
     @Column(name = "name")
     private String name;

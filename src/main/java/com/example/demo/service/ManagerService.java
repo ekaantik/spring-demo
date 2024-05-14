@@ -43,6 +43,8 @@ public class ManagerService {
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
 
+        //TODO: Throw Error If Vendor User Not Found
+
         // Creating Manager User
         User user = User.builder()
                 .firstName(managerRequest.getFirstName())

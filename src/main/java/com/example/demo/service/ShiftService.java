@@ -27,6 +27,8 @@ public class ShiftService {
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
 
+        //TODO : Throw Error If Store Not Found
+
         // Creating Shift
         Shift shift = Shift.builder()
                 .store(store)
