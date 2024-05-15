@@ -17,12 +17,12 @@ import java.util.UUID;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "store")
+@Table(name = "videos")
 public class Videos extends BaseUuidEntity {
 
     @ManyToOne
-    @Column(name = "store_id")
-    private UUID storeId;
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @Column(name = "path")
     private String path;

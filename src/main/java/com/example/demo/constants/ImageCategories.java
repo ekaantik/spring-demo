@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ImageCategories {
-    LICENSE("LICENSE"), IDENTITY_CARD("IDENTITY_CARD"), LOGO("LOGO"), IMAGE_COVER("IMAGE_COVER");
+    LICENSE("license"), IDENTITY_CARD("identity_card"), LOGO("logo"), IMAGE_COVER("image_cover");
 
     private final String imageCategories;
 }

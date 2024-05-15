@@ -25,10 +25,16 @@ spring:
 image:
     path: C:/Users/rohit/Desktop/Myfiles/
     img-max-file-size: 1 #MB
+    file-format:
+      - jpg
+      - jpeg
+      - png
 
 video:
     path: C:/Users/rohit/Desktop/Myfiles/
     video-max-file-size: 10 #MB
+    file-format:
+      - mp4
 
 token:
   signing:

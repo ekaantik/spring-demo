@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 @RequestMapping("/api/v1/video")
 public class VideoController {
 
-    @Value("${video.pathicovervideo}")
+    @Value("${video.path}")
     private String uploadPath;
 
     @PostMapping("/upload-video")

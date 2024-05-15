@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.constants.Constants;
+import com.example.demo.entity.Images;
 import com.example.demo.entity.Store;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
@@ -16,104 +17,57 @@ import java.util.UUID;
 @Slf4j
 public class ImageRepoService {
 
-    private final StoreRepo storeRepo;
+    private final ImageRepo imageRepo;
 
-    /**
-     * Handles Repo Exception & finds a Store by its Id.
-     *
-     * @param id The Id of the Store to find.
-     * @return The found Store, or null if Exception.
-     */
-    public Store findStoreById(UUID id) {
-
-        // Trying to find Store details by id
+    public Images findStoreById(UUID id) {
         try {
-
-            // Succesfully found Store
-            Optional<Store> optionalStore = storeRepo.findById(id);
+            Optional<Images> optionalStore = imageRepo.findById(id);
 
             if (optionalStore.isPresent()) {
-                Store Store = optionalStore.get();
-                log.info("Successfully found Store with id " + Store.getId());
-                return Store;
+                Images images = optionalStore.get();
+                log.info("Successfully found Store with id " + images.getId());
+                return images;
             } else {
-                log.warn("Store with id " + id + " not found.");
+                log.info("Store with id  {} not found ", id);
                 return null;
             }
-
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
         }
-
     }
 
-    /**
-     * Handles Repo Exception & finds all Store entities.
-     *
-     * @return A list of all Store entities, or null if Exception.
-     */
-    public List<Store> findAll() {
-
-        // Trying to find all Store
+    public List<Images> findAll() {
         try {
-
-            // Succesfully found all Store
-            List<Store> Stores = storeRepo.findAll();
+            List<Images> images = imageRepo.findAll();
             log.info("Successfully found all Store.");
-            return Stores;
+            return images;
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
         }
     }
 
-    /**
-     * Handles Repo Exception & saves a Store entity.
-     *
-     * @param Store The Store to be saved.
-     * @return The saved Store, or throws PersistenceException.
-     */
-    public Store save(Store Store) {
-
-        // Trying to save Store
+    public Images save(Images images) {
         try {
-
-            // Store saved succesfully
-            Store savedStore = storeRepo.save(Store);
-            log.info("Successfully saved Store with id " + Store.getId());
-            return savedStore;
+            Images image = imageRepo.save(images);
+            log.info("Successfully saved Store with id  {} ", image.getId());
+            return image;
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
             log.error("Failed to create Store, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create Store record into database!", ex);
         }
     }
 
-    /**
-     * Handles Repo Exception & deletes a Store by its Id.
-     *
-     * @param id The Id of the Store to be deleted.
-     */
+
     public void deleteStoreById(UUID id) {
-
-        // Trying to delete Store
         try {
-
-            // Store deleted succesfully
-            storeRepo.deleteById(id);
+            imageRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);

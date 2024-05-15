@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.constants.ImageCategories;
+import com.example.demo.constants.ImageTypes;
 import com.example.demo.service.ImageService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,23 +20,14 @@ public class ImageController {
     @Autowired
     public ImageService imageService;
 
-    @Value("${image.img-max-file-size}")
-    private String imageFileSize;
-
-    private static final long IMAGE_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max size
-
     @PostMapping("/upload-image")
-    public ResponseEntity<String> uploadImage(@RequestHeader(value = "image") String imageType,
+    public ResponseEntity<String> uploadImage(@Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
                                                      @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
         }
-        // Check file size
-        if (file.getSize() > IMAGE_MAX_FILE_SIZE) {
-            return new ResponseEntity<>("Please upload file smaller then " + imageFileSize + " MB",HttpStatus.BAD_REQUEST);
-        }
 
-        return imageService.uploadImage(imageType, file);
+        return imageService.processImageForUpload(imageCategory, file);
     }
 
 //    @GetMapping("/download-image/{fileName:.+}")
