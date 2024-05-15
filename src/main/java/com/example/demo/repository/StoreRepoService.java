@@ -27,7 +27,6 @@ public class StoreRepoService {
     public Store findStoreById(UUID id) {
         try {
             Optional<Store> optionalStore = storeRepo.findById(id);
-
             if (optionalStore.isPresent()) {
                 Store Store = optionalStore.get();
                 log.info("Successfully found Store with id " + Store.getId());
@@ -36,7 +35,6 @@ public class StoreRepoService {
                 log.warn("Store with id " + id + " not found.");
                 return null;
             }
-
         }
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
@@ -71,11 +69,11 @@ public class StoreRepoService {
     public Store save(Store Store) {
         try {
             Store savedStore = storeRepo.save(Store);
-            log.info("Successfully saved Store with id " + Store.getId());
+            log.info("Successfully saved Store with id {} ", Store.getId());
             return savedStore;
         }
         catch (Exception ex) {
-            log.error("Failed to create Store, Exception : " + ex.getMessage(), ex);
+            log.error("Failed to create Store, Exception : {} " , ex.getMessage());
             throw new PersistenceException("Failed To create Store record into database!", ex);
         }
     }
