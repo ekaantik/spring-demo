@@ -33,10 +33,10 @@ public class ImageRepoService {
 
     public Images findStoreById(UUID id) {
         try {
-            Optional<Images> optionalStore = imageRepo.findById(id);
+            Optional<Images> optionalImage = imageRepo.findById(id);
 
-            if (optionalStore.isPresent()) {
-                Images images = optionalStore.get();
+            if (optionalImage.isPresent()) {
+                Images images = optionalImage.get();
                 log.info("Successfully found Store with id " + images.getId());
                 return images;
             } else {

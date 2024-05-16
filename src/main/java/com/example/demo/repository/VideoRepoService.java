@@ -1,119 +1,97 @@
 package com.example.demo.repository;
 
 import com.example.demo.constants.Constants;
+import com.example.demo.constants.ImageCategories;
+import com.example.demo.constants.VideoCategories;
+import com.example.demo.entity.Images;
 import com.example.demo.entity.Store;
+import com.example.demo.entity.Videos;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class VideoRepoService {
 
-    private final StoreRepo storeRepo;
+    private final VideoRepo videoRepo;
+    private final StoreRepoService storeRepoService;
 
-    /**
-     * Handles Repo Exception & finds a Store by its Id.
-     *
-     * @param id The Id of the Store to find.
-     * @return The found Store, or null if Exception.
-     */
-    public Store findStoreById(UUID id) {
+    @Autowired
+    public VideoRepoService(VideoRepo videoRepo, StoreRepoService storeRepoService){
+        this.videoRepo = videoRepo;
+        this.storeRepoService = storeRepoService;
+    }
 
-        // Trying to find Store details by id
+
+    public Videos findStoreById(UUID id) {
         try {
-
-            // Succesfully found Store
-            Optional<Store> optionalStore = storeRepo.findById(id);
-
-            if (optionalStore.isPresent()) {
-                Store Store = optionalStore.get();
-                log.info("Successfully found Store with id " + Store.getId());
-                return Store;
+            Optional<Videos> optionalVideo = videoRepo.findById(id);
+            if (optionalVideo.isPresent()) {
+                Videos videos = optionalVideo.get();
+                log.info("Successfully found Store with id " + videos.getId());
+                return videos;
             } else {
                 log.warn("Store with id " + id + " not found.");
                 return null;
             }
-
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
         }
-
     }
 
-    /**
-     * Handles Repo Exception & finds all Store entities.
-     *
-     * @return A list of all Store entities, or null if Exception.
-     */
-    public List<Store> findAll() {
-
-        // Trying to find all Store
+    public List<Videos> findAll() {
         try {
-
-            // Succesfully found all Store
-            List<Store> Stores = storeRepo.findAll();
+            List<Videos> videos = videoRepo.findAll();
             log.info("Successfully found all Store.");
-            return Stores;
+            return videos;
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);
         }
     }
 
-    /**
-     * Handles Repo Exception & saves a Store entity.
-     *
-     * @param Store The Store to be saved.
-     * @return The saved Store, or throws PersistenceException.
-     */
-    public Store save(Store Store) {
 
-        // Trying to save Store
+    public Videos save(String path, UUID storeId, VideoCategories videoCategory) {
         try {
-
-            // Store saved succesfully
-            Store savedStore = storeRepo.save(Store);
-            log.info("Successfully saved Store with id " + Store.getId());
-            return savedStore;
+            Store store = storeRepoService.findStoreById(storeId);
+            if(!Objects.isNull(store)){
+                Videos video = Videos.builder()
+                        .store(store)
+                        .path(path)
+                        .category(videoCategory)
+                        .createdAt(ZonedDateTime.now())
+                        .updatedAt(ZonedDateTime.now())
+                        .build();
+                Videos savedVideos =  videoRepo.save(video);
+                log.info("Successfully saved video with id  {} ", video.getId());
+                return savedVideos;
+            }else{
+                throw new Exception();
+            }
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
             log.error("Failed to create Store, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create Store record into database!", ex);
         }
     }
 
-    /**
-     * Handles Repo Exception & deletes a Store by its Id.
-     *
-     * @param id The Id of the Store to be deleted.
-     */
     public void deleteStoreById(UUID id) {
-
-        // Trying to delete Store
         try {
-
-            // Store deleted succesfully
-            storeRepo.deleteById(id);
+            videoRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);
         }
-
-        // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
             throw new PersistenceException(ex);

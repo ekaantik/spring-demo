@@ -41,17 +41,17 @@ public class ImageService {
         this.jwtTokenService = jwtTokenService;
     }
 
-    public ResponseEntity<String> processImageForUpload(ImageCategories imageType, MultipartFile file, UUID storeId){
+    public ResponseEntity<String> processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId){
         log.info("File format list : {} ", fileFormat);
-        validateImageSpec(imageType, file);
+        validateImageSpec(imageCategory, file);
 
         String path = null;
         try {
-            path = imagePath + storeId + "/"+ imageType + "/" + file.getOriginalFilename();
+            path = storeId + imagePath + "/"+ imageCategory.name() + "/" + file.getOriginalFilename();
             log.info("Path where image is getting stored : {} ", path);
-            createUploadDirectoryIfNotExists(imagePath + storeId + "/"+ imageType + "/");
+            createUploadDirectoryIfNotExists(storeId + imagePath + "/"+ imageCategory + "/");
             file.transferTo(new File(path));
-            imageRepoService.save(path,storeId,imageType);
+            imageRepoService.save(path,storeId,imageCategory);
             return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
         } catch (IOException e) {
 //            e.printStackTrace();
@@ -86,11 +86,8 @@ public class ImageService {
     }
 
     private boolean validateImageSpec(ImageCategories imageType, MultipartFile file){
-        log.info(" imageFileSize : ----- {}  file name {}   ",file.getOriginalFilename(),file.getName());
-        log.info(" imageFileSize : ----- {}    ",file.getContentType());
-        for(String it : fileFormat){
-            log.info(" fileformat  {} ",it);
-        }
+//        log.info(" imageFileSize : ----- {}  file name {}   ",file.getOriginalFilename(),file.getName());
+//        log.info(" imageFileSize : ----- {}    ",file.getContentType());
         if (file.getSize() > imageFileSize) {
             return false;
 //            return new ResponseEntity<>("Please upload file smaller then " + imageFileSize + " MB",HttpStatus.BAD_REQUEST);
