@@ -69,6 +69,17 @@ public class ImageRepoService {
         }
     }
 
+    public Images findById(UUID id) {
+        try {
+            Optional<Images> image = imageRepo.findById(id);
+            return image.orElse(null);
+        }
+        catch (Exception ex) {
+            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
+            throw new PersistenceException(ex);
+        }
+    }
+
     public void deleteById(UUID id) {
         try {
             imageRepo.deleteById(id);

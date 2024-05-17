@@ -7,14 +7,17 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/v1/image")
@@ -58,37 +61,10 @@ public class ImageController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/download/")
+    @GetMapping("/download/{imageId}")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<byte[]> downloadImage(@RequestParam("storeId") UUID storeId) {
-        //throws IOException
-//        File file = null;
-//        if (imagetype.equals("license")) {
-//            file = new File(imagePath + "pathlicense/" + fileName);
-//        } else if (imagetype.equals("identitycard")) {
-//            file = new File(imagePath + "pathlicense/" + fileName);
-//        } else if (imagetype.equals("logo")) {
-//            file = new File(imagePath + "pathlicense/" + fileName);
-//        } else if (imagetype.equals("cover")) {
-//            file = new File(imagePath + "pathlicense/" + fileName);
-//        }else{
-//            return new ResponseEntity<>(HttpStatus.valueOf("Not Type Found"));
-//        }
-//        if (!file.exists()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        String contentType = Files.probeContentType(file.toPath());
-//        MediaType mediaType = MediaType.parseMediaType(contentType);
-//        try {
-//            byte[] videoBytes = Files.readAllBytes(file.toPath());
-//            return ResponseEntity.ok()
-//                    .contentType(MediaType.valueOf(""+mediaType+""))
-//                    .body(videoBytes);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-        return null;
+    public ResponseEntity<InputStreamResource> downloadImage(@PathVariable UUID imageId) throws IOException {
+        return imageService.downloadImage(imageId);
     }
 
     //Get All image for a store

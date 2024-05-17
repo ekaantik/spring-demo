@@ -1,20 +1,24 @@
 package com.example.demo.controller;
 
 import com.example.demo.constants.VideoCategories;
-import com.example.demo.pojos.response.ImageUploadResponse;
 import com.example.demo.pojos.response.VideoUploadResponse;
 import com.example.demo.service.VideoService;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,22 +66,15 @@ public class VideoController {
     }
 
 //    @GetMapping("/download-video/{fileName:.+}")
-//    public ResponseEntity<byte[]> downloadVideo(@PathVariable String fileName) {
-//        File file = new File(uploadPath + fileName);
-//        if (!file.exists()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-////        try {
-////            videoService.downloadVideo();
-//////            byte[] videoBytes = Files.readAllBytes(file.toPath());
-//////            String contentType = Files.probeContentType(file.toPath());
-//////            MediaType mediaType = MediaType.parseMediaType(contentType);
-////            return null;
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-////        }
-//        return null;
-//    }
+//@GetMapping("/download/{videoId}")
+//public ResponseEntity<Resource> downloadVideo(@PathVariable String videoId) throws IOException {
+//    Path videoPath = Paths.get(VIDEO_DIRECTORY, videoId);
+//    Resource resource = new PathResource(videoPath.toFile());
+//
+//    return ResponseEntity.ok()
+//            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+//            .contentType(MediaType.parseMediaType(Files.probeContentType(videoPath)))
+//            .body(resource);
+//}
 }
 

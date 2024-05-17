@@ -8,12 +8,18 @@ import com.example.demo.security.utils.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,27 +71,33 @@ public class ImageService {
         return null;
     }
 
-    public ResponseEntity<String> downloadImage(String imageType, MultipartFile file){
-        String path = null;
+    public ResponseEntity<InputStreamResource> downloadImage(UUID imageId){
         try {
-            if (imageType.equals("license")) {
-                path = imagePath + "license/" + file.getOriginalFilename();
-            } else if (imageType.equals("id-card")) {
-                path = imagePath + "id_card/" + file.getOriginalFilename();
-            } else if (imageType.equals("logo")) {
-                path = imagePath + "logo/" + file.getOriginalFilename();
-            } else if (imageType.equals("cover")) {
-                path = imagePath + "cover/" + file.getOriginalFilename();
-            }else{
-                return new ResponseEntity<>("Please select correct file Type", HttpStatus.BAD_REQUEST);
+            Images image = imageRepoService.findById(imageId);
+            if (image == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            file.transferTo(new File(path));
-//            Files.write(path, bytes);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+            File file = new File(image.getPath());
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            log.info("file.getName() ... ");
+            // Set content type and headers
+            MediaType mediaType = determineMediaType(file.getName());
+
+            // Prepare the response entity
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .contentLength(file.length())
+//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .body(resource);
         } catch (IOException e) {
 //            e.printStackTrace();
             log.info("Exception : {} ", e.getMessage() );
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+//            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -106,6 +118,16 @@ public class ImageService {
             String name = fileName.substring(0, dotIndex);
             String extension = fileName.substring(dotIndex);
             return name + "_1" + extension;
+        }
+    }
+
+    private MediaType determineMediaType(String fileName) {
+        if (fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG;
+        } else if (fileName.toLowerCase().endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        } else {
+            return MediaType.APPLICATION_OCTET_STREAM;
         }
     }
 
