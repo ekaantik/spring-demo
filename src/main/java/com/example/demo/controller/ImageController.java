@@ -1,16 +1,19 @@
 package com.example.demo.controller;
 
 import com.example.demo.constants.ImageCategories;
+import com.example.demo.pojos.response.ImageUploadResponse;
 import com.example.demo.service.ImageService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,23 +21,46 @@ import java.util.UUID;
 @Slf4j
 public class ImageController {
 
+    @Value("${image.max-file-size}")
+    private Integer imageFileSize;
+
+    @Value("${image.file-format}")
+    private List<String> fileFormat;
+
     @Autowired
     public ImageService imageService;
 
-    @PostMapping("/upload-image")
-    @PreAuthorize("hasAnyAuthority('VENDOR')") //'ROLE_ADMIN'
-    public ResponseEntity<String> uploadImage(@Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
-                                                     @RequestParam("file") MultipartFile file,
-                                              @RequestParam("storeId") UUID storeId ) {
+    @PostMapping("/upload")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<ImageUploadResponse> uploadImage(@Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
+                                                           @RequestParam("file") MultipartFile file,
+                                                           @RequestParam("storeId") UUID storeId ) {
+        ImageUploadResponse response ;
         if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
+            response = ImageUploadResponse.builder().message("Please select a file to upload")
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        if (file.getSize() > imageFileSize) {
+            response = ImageUploadResponse.builder().message("Please select a file with size less than " + imageFileSize + " bytes" )
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 
-        return imageService.processImageForUpload(imageCategory, file, storeId);
+        }
+        log.info("file.getContentType() : {} ", file.getContentType());
+
+        if (!fileFormat.contains(file.getContentType().replace("image/",""))){
+            response = ImageUploadResponse.builder().message("Please select a valid file to upload")
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        response = imageService.processImageForUpload(imageCategory, file, storeId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/download-image/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadImage(@RequestHeader(value = "image") String imagetype,@PathVariable String fileName) {
+    @GetMapping("/download/")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<byte[]> downloadImage(@RequestParam("storeId") UUID storeId) {
         //throws IOException
 //        File file = null;
 //        if (imagetype.equals("license")) {
@@ -64,5 +90,7 @@ public class ImageController {
 //        }
         return null;
     }
+
+    //Get All image for a store
 }
 

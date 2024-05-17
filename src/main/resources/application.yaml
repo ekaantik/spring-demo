@@ -17,15 +17,19 @@ spring:
     show-sql: false
     properties.hibernate.format_sql: true
     properties.hibernate.jdbc.time_zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 50MB
 
 image:
     path: /home/archit/demo/ #./images/
-    img-max-file-size: 5242880 # bytes = 5 MB
+    max-file-size: 5242880 # bytes = 5 MB
     file-format: jpg, jpeg , png
 
 video:
     path: /home/archit/demo/
-    video-max-file-size: 10485760 #bytes = 10MB
+    max-file-size: 10000000 #bytes = 10MB
     file-format: mp4
 
 token:

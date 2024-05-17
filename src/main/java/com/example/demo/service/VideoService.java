@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.constants.VideoCategories;
+import com.example.demo.entity.Videos;
+import com.example.demo.pojos.response.VideoUploadResponse;
 import com.example.demo.repository.VideoRepoService;
 import com.example.demo.security.utils.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -41,22 +44,29 @@ public class VideoService {
         this.jwtTokenService = jwtTokenService;
     }
 
-    public ResponseEntity<String> processVideoForUpload(VideoCategories videoCategory, MultipartFile file, UUID storeId){
-        log.info("File format list : {} ", fileFormat);
-        validateVideoSpec(videoCategory, file);
-
-        String path = null;
+    public VideoUploadResponse processVideoForUpload(VideoCategories videoCategory, MultipartFile file, UUID storeId){
+        String dirPath =  new StringBuilder().append(videoPath).append(storeId)
+                .append("/videos/").append(videoCategory.name()).append("/").toString();
         try {
-            path = storeId + videoPath + "/"+ videoCategory.name() + "/" + file.getOriginalFilename();
-            log.info("Path where image is getting stored : {} ", path);
-            createUploadDirectoryIfNotExists(storeId + videoPath + "/"+ videoCategory + "/");
-            file.transferTo(new File(path));
-            videoRepoService.save(path,storeId,videoCategory);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+            String filePath = new StringBuilder(dirPath).append(file.getOriginalFilename()).toString();
+
+            if (! Objects.isNull(videoRepoService.findByPath(filePath))){
+                String updatedFileName = addSuffixToFileName(file.getOriginalFilename());
+                filePath = new StringBuilder(dirPath).append(updatedFileName).toString();
+            }
+            log.info("file path : {} dire path : {} " , filePath, dirPath);
+            createUploadDirectoryIfNotExists(dirPath);
+            file.transferTo(new File(filePath));
+            Videos savedVideo = videoRepoService.save(filePath,storeId,videoCategory);
+            VideoUploadResponse response = VideoUploadResponse.builder()
+                    .videoId(savedVideo.getId())
+                    .storeId(savedVideo.getStore().getId())
+                    .category(savedVideo.getCategory())
+                    .message("Successfully Uploaded File")
+                    .build();
+            return response;
         } catch (IOException e) {
-//            e.printStackTrace();
             log.info("Exception : {} ", e.getMessage() );
-//            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return null;
     }
@@ -79,19 +89,6 @@ public class VideoService {
         }
     }
 
-    private boolean validateVideoSpec(VideoCategories videoCategory, MultipartFile file){
-        if (file.getSize() > videoFileSize) {
-            return false;
-        }
-        log.info("file.getContentType() : {} ", file.getContentType());
-
-        if (!fileFormat.contains(file.getContentType().replace("video/",""))){
-            log.info("inside if");
-            return false;
-        }
-        return true;
-    }
-
     private void createUploadDirectoryIfNotExists(String uploadDirPAth) throws IOException {
         Path path = Paths.get(uploadDirPAth);
         if (!Files.exists(path)) {
@@ -99,5 +96,17 @@ public class VideoService {
         }
     }
 
+    private String addSuffixToFileName(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex == -1) {
+            // No extension
+            return fileName + "_1";
+        } else {
+            // With extension
+            String name = fileName.substring(0, dotIndex);
+            String extension = fileName.substring(dotIndex);
+            return name + "_1" + extension;
+        }
+    }
 
 }

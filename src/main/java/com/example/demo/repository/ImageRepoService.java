@@ -3,6 +3,7 @@ package com.example.demo.repository;
 import com.example.demo.constants.Constants;
 import com.example.demo.constants.ImageCategories;
 import com.example.demo.entity.Images;
+import com.example.demo.entity.Shift;
 import com.example.demo.entity.Store;
 import com.example.demo.security.utils.JwtTokenService;
 import jakarta.persistence.PersistenceException;
@@ -31,36 +32,6 @@ public class ImageRepoService {
         this.storeRepoService = storeRepoService;
     }
 
-    public Images findStoreById(UUID id) {
-        try {
-            Optional<Images> optionalImage = imageRepo.findById(id);
-
-            if (optionalImage.isPresent()) {
-                Images images = optionalImage.get();
-                log.info("Successfully found Store with id " + images.getId());
-                return images;
-            } else {
-                log.info("Store with id  {} not found ", id);
-                return null;
-            }
-        }
-        catch (Exception ex) {
-            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
-        }
-    }
-
-    public List<Images> findAll() {
-        try {
-            List<Images> images = imageRepo.findAll();
-            log.info("Successfully found all Store.");
-            return images;
-        }
-        catch (Exception ex) {
-            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
-        }
-    }
 
     public Images save(String path, UUID storeId, ImageCategories imageCategories) {
         try {
@@ -86,7 +57,19 @@ public class ImageRepoService {
         }
     }
 
-    public void deleteStoreById(UUID id) {
+
+    public Images findByPath(String path) {
+        try {
+            Optional<Images> image = imageRepo.findByPath(path);
+            return image.orElse(null);
+        }
+        catch (Exception ex) {
+            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
+            throw new PersistenceException(ex);
+        }
+    }
+
+    public void deleteById(UUID id) {
         try {
             imageRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);

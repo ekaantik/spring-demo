@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.constants.ImageCategories;
+import com.example.demo.entity.Images;
+import com.example.demo.pojos.response.ImageUploadResponse;
 import com.example.demo.repository.ImageRepoService;
 import com.example.demo.security.utils.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class ImageService {
-
-    @Value("${image.img-max-file-size}")
-    private Integer imageFileSize;
-
-    @Value("${image.file-format}")
-    private List<String> fileFormat;
 
     @Value("${image.path}")
     private String imagePath;
@@ -41,22 +38,29 @@ public class ImageService {
         this.jwtTokenService = jwtTokenService;
     }
 
-    public ResponseEntity<String> processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId){
-        log.info("File format list : {} ", fileFormat);
-        validateImageSpec(imageCategory, file);
-
-        String path = null;
+    public ImageUploadResponse processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId){
+        String dirPath =  new StringBuilder().append(imagePath).append(storeId)
+                .append("/images/").append(imageCategory.name()).append("/").toString();
         try {
-            path = storeId + imagePath + "/"+ imageCategory.name() + "/" + file.getOriginalFilename();
-            log.info("Path where image is getting stored : {} ", path);
-            createUploadDirectoryIfNotExists(storeId + imagePath + "/"+ imageCategory + "/");
-            file.transferTo(new File(path));
-            imageRepoService.save(path,storeId,imageCategory);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+            String filePath = new StringBuilder(dirPath).append(file.getOriginalFilename()).toString();
+
+            if (! Objects.isNull(imageRepoService.findByPath(filePath))){
+                String updatedFileName = addSuffixToFileName(file.getOriginalFilename());
+                filePath = new StringBuilder(dirPath).append(updatedFileName).toString();
+            }
+            log.info("file path : {} dire path : {} " , filePath, dirPath);
+            createUploadDirectoryIfNotExists(dirPath);
+            file.transferTo(new File(filePath));
+            Images savedImage = imageRepoService.save(filePath,storeId,imageCategory);
+            ImageUploadResponse response = ImageUploadResponse.builder()
+                    .imageId(savedImage.getId())
+                    .storeId(savedImage.getStore().getId())
+                    .category(savedImage.getCategory())
+                    .message("Successfully Uploaded File")
+                    .build();
+            return response;
         } catch (IOException e) {
-//            e.printStackTrace();
             log.info("Exception : {} ", e.getMessage() );
-//            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return null;
     }
@@ -85,38 +89,23 @@ public class ImageService {
         }
     }
 
-    private boolean validateImageSpec(ImageCategories imageType, MultipartFile file){
-//        log.info(" imageFileSize : ----- {}  file name {}   ",file.getOriginalFilename(),file.getName());
-//        log.info(" imageFileSize : ----- {}    ",file.getContentType());
-        if (file.getSize() > imageFileSize) {
-            return false;
-//            return new ResponseEntity<>("Please upload file smaller then " + imageFileSize + " MB",HttpStatus.BAD_REQUEST);
-        }
-        log.info("file.getContentType() : {} ", file.getContentType());
-
-        if (!fileFormat.contains(file.getContentType().replace("image/",""))){
-            log.info("inside if");
-            return false;
-        }
-
-
-//        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-//        if (file.getOriginalFilename().toLowerCase().endsWith(".jpg") || file.getOriginalFilename().toLowerCase().endsWith(".jpeg")) {
-//
-//            mediaType = MediaType.IMAGE_JPEG;
-//        } else if (file.toLowerCase().endsWith(".png")) {
-//            mediaType = MediaType.IMAGE_PNG;
-//        }
-
-
-        ////                return new ResponseEntity<>("Please select correct file Type", HttpStatus.BAD_REQUEST);
-        return true;
-    }
-
     private void createUploadDirectoryIfNotExists(String uploadDirPAth) throws IOException {
         Path path = Paths.get(uploadDirPAth);
         if (!Files.exists(path)) {
             Files.createDirectories(path);
+        }
+    }
+
+    private String addSuffixToFileName(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex == -1) {
+            // No extension
+            return fileName + "_1";
+        } else {
+            // With extension
+            String name = fileName.substring(0, dotIndex);
+            String extension = fileName.substring(dotIndex);
+            return name + "_1" + extension;
         }
     }
 

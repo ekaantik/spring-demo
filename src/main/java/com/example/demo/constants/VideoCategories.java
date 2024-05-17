@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum VideoCategories {
-    IMAGE_COVER("IMAGE_COVER");
+    IMAGE_COVER("image_cover");
 
     private final String videoCategories;
 }

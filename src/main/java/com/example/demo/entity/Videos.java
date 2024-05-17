@@ -24,7 +24,7 @@ public class Videos extends BaseUuidEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @Column(name = "path")
+    @Column(name = "path"  , columnDefinition = "TEXT" )
     private String path;
 
     @Column(name = "category")

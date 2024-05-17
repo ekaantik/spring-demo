@@ -32,37 +32,6 @@ public class VideoRepoService {
     }
 
 
-    public Videos findStoreById(UUID id) {
-        try {
-            Optional<Videos> optionalVideo = videoRepo.findById(id);
-            if (optionalVideo.isPresent()) {
-                Videos videos = optionalVideo.get();
-                log.info("Successfully found Store with id " + videos.getId());
-                return videos;
-            } else {
-                log.warn("Store with id " + id + " not found.");
-                return null;
-            }
-        }
-        catch (Exception ex) {
-            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
-        }
-    }
-
-    public List<Videos> findAll() {
-        try {
-            List<Videos> videos = videoRepo.findAll();
-            log.info("Successfully found all Store.");
-            return videos;
-        }
-        catch (Exception ex) {
-            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
-        }
-    }
-
-
     public Videos save(String path, UUID storeId, VideoCategories videoCategory) {
         try {
             Store store = storeRepoService.findStoreById(storeId);
@@ -87,7 +56,19 @@ public class VideoRepoService {
         }
     }
 
-    public void deleteStoreById(UUID id) {
+
+    public Videos findByPath(String path) {
+        try {
+            Optional<Videos> videos = videoRepo.findByPath(path);
+            return videos.orElse(null);
+        }
+        catch (Exception ex) {
+            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
+            throw new PersistenceException(ex);
+        }
+    }
+
+    public void deleteById(UUID id) {
         try {
             videoRepo.deleteById(id);
             log.info("Successfully deleted Store with id " + id);
@@ -97,5 +78,6 @@ public class VideoRepoService {
             throw new PersistenceException(ex);
         }
     }
+
 
 }
