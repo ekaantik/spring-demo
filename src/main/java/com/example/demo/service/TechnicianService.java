@@ -53,6 +53,8 @@ public class TechnicianService {
         Technician technician = Technician.builder()
                 .managedByUser(managedByUser)
                 .technicianUser(savedUser)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         // Saving Technician
