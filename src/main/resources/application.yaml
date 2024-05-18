@@ -19,16 +19,18 @@ spring:
     properties.hibernate.jdbc.time_zone: UTC
   servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 1MB
+      max-file-size: 30MB
+      max-request-size: 50MB
 
-upload:
-  path: C:/Users/rohit/Desktop/Myfiles/
-  pathLicense: abc
-  pathidentitycard : abc
-  pathlogo : abc
-  pathcoverimage : abc
-  pathicovervideo : abc
+image:
+    path: /home/archit/demo/ #./images/
+    max-file-size: 5242880 # bytes = 5 MB
+    file-format: jpg, jpeg , png
+
+video:
+    path: /home/archit/demo/
+    max-file-size: 10000000 #bytes = 10MB
+    file-format: mp4
 
 token:
   signing:

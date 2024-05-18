@@ -1,87 +1,72 @@
 package com.example.demo.controller;
 
+import com.example.demo.constants.ImageCategories;
+import com.example.demo.pojos.response.ImageUploadResponse;
+import com.example.demo.service.ImageService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/v1/image")
+@Slf4j
 public class ImageController {
 
-    @Value("${upload.pathlicense}")
-    private String pathlicense;
-    @Value("${upload.pathidentitycard}")
-    private String pathidentitycard;
-    @Value("${upload.pathlogo}")
-    private String pathlogo;
-    @Value("${upload.pathcoverimage}")
-    private String pathcoverimage;
+    @Value("${image.max-file-size}")
+    private Integer imageFileSize;
 
-    @PostMapping("/uploadimage")
-    public ResponseEntity<String> uploadimagelicense(@RequestHeader(value = "image") String imagetype,
-                                                     @RequestParam("file") MultipartFile file) {
+    @Value("${image.file-format}")
+    private List<String> fileFormat;
+
+    @Autowired
+    public ImageService imageService;
+
+    @PostMapping("/upload")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<ImageUploadResponse> uploadImage(@Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
+                                                           @RequestParam("file") MultipartFile file,
+                                                           @RequestParam("storeId") UUID storeId ) {
+        ImageUploadResponse response ;
         if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload", HttpStatus.BAD_REQUEST);
+            response = ImageUploadResponse.builder().message("Please select a file to upload")
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        Path path = null;
-        try {
-            byte[] bytes = file.getBytes();
-            if (imagetype.equals("license")) {
-                path = Paths.get(pathlicense + file.getOriginalFilename());
-            } else if (imagetype.equals("identitycard")) {
-                path = Paths.get(pathidentitycard + file.getOriginalFilename());
-            } else if (imagetype.equals("logo")) {
-                path = Paths.get(pathlogo + file.getOriginalFilename());
-            } else if (imagetype.equals("cover")) {
-                path = Paths.get(pathcoverimage + file.getOriginalFilename());
-            }else{
-                return new ResponseEntity<>("Folder Type not Valid", HttpStatus.BAD_REQUEST);
-            }
-            Files.write(path, bytes);
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (file.getSize() > imageFileSize) {
+            response = ImageUploadResponse.builder().message("Please select a file with size less than " + imageFileSize + " bytes" )
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
         }
+        log.info("file.getContentType() : {} ", file.getContentType());
+
+        if (!fileFormat.contains(file.getContentType().replace("image/",""))){
+            response = ImageUploadResponse.builder().message("Please select a valid file to upload")
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        response = imageService.processImageForUpload(imageCategory, file, storeId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/downloadimage/{fileName:.+}")
-    public ResponseEntity<byte[]> downloadimagelicense(@RequestHeader(value = "image") String imagetype,@PathVariable String fileName) throws IOException {
-        File file = null;
-        if (imagetype.equals("license")) {
-            file = new File(pathlicense + fileName);
-        } else if (imagetype.equals("identitycard")) {
-            file = new File(pathlicense + fileName);
-        } else if (imagetype.equals("logo")) {
-            file = new File(pathlicense + fileName);
-        } else if (imagetype.equals("cover")) {
-            file = new File(pathlicense + fileName);
-        }else{
-            return new ResponseEntity<>(HttpStatus.valueOf("Not Type Found"));
-        }
-        if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        String contentType = Files.probeContentType(file.toPath());
-        MediaType mediaType = MediaType.parseMediaType(contentType);
-        try {
-            byte[] videoBytes = Files.readAllBytes(file.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf(""+mediaType+""))
-                    .body(videoBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/download/{imageId}")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<InputStreamResource> downloadImage(@PathVariable UUID imageId) throws IOException {
+        return imageService.downloadImage(imageId);
     }
+
+    //Get All image for a store
 }
 

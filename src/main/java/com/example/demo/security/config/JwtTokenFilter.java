@@ -26,6 +26,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+
 import java.util.stream.Collectors;
 
 @Component
@@ -86,11 +89,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 response.getCharacterEncoding());
         responseWrapper.copyBodyToResponse();
 
+
         apiUsageRepoService.save(request, response, requestBody,responseBody,jwtToken, startTime);
 
 //        log.info("responseBody : {}  ",responseBody);
 
     }
+
 
     private void setAuthenticationContext(String token, HttpServletRequest request) {
         UserDetails userDetails = getUserDetails(token);
