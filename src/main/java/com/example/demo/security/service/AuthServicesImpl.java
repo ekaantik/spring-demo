@@ -1,6 +1,7 @@
 package com.example.demo.security.service;
 
 import com.example.demo.constants.UserType;
+import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
 import com.example.demo.security.dto.UserAuthResponse;
@@ -19,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.ZonedDateTime;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -102,6 +105,29 @@ public class AuthServicesImpl implements AuthServicesIf {
         return response;
     }
 
+    /**
+     * Get the vendor by their ID.
+     *
+     * @param vendorId The ID of the vendor to retrieve.
+     * @return The vendor information.
+     */
+    public UserResponse getVendorById(UUID vendorId) {
+        User user = userRepo.findById(vendorId);
+
+        return UserResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .userType(user.getUserType().toString())
+                .build();
+    }
+
+    /**
+     * Refresh the JWT token.
+     *
+     * @param token The JWT token to refresh.
+     * @return The refreshed JWT token.
+     */
     public UserAuthResponse refreshToken(String token) {
         if (jwtTokenService.validateToken(token)) {
 
