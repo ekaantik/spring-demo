@@ -22,6 +22,15 @@ spring:
       max-file-size: 30MB
       max-request-size: 50MB
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
 image:
     path: /home/archit/demo/ #./images/
     max-file-size: 5242880 # bytes = 5 MB
