@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("/api/v1/image")
 @Slf4j
@@ -35,24 +34,28 @@ public class ImageController {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<ImageUploadResponse> uploadImage(@Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
-                                                           @RequestParam("file") MultipartFile file,
-                                                           @RequestParam("storeId") UUID storeId ) {
-        ImageUploadResponse response ;
+    public ResponseEntity<ImageUploadResponse> uploadImage(
+            @Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("storeId") UUID storeId) {
+
+        // TODO : Move Business Logic to Service Layer
+        ImageUploadResponse response;
         if (file.isEmpty()) {
             response = ImageUploadResponse.builder().message("Please select a file to upload")
                     .build();
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         if (file.getSize() > imageFileSize) {
-            response = ImageUploadResponse.builder().message("Please select a file with size less than " + imageFileSize + " bytes" )
+            response = ImageUploadResponse.builder()
+                    .message("Please select a file with size less than " + imageFileSize + " bytes")
                     .build();
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 
         }
         log.info("file.getContentType() : {} ", file.getContentType());
 
-        if (!fileFormat.contains(file.getContentType().replace("image/",""))){
+        if (!fileFormat.contains(file.getContentType().replace("image/", ""))) {
             response = ImageUploadResponse.builder().message("Please select a valid file to upload")
                     .build();
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -67,6 +70,10 @@ public class ImageController {
         return imageService.downloadImage(imageId);
     }
 
-    //Get All image for a store
+    @DeleteMapping("/delete-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<String> deleteImageById(@RequestParam("id") UUID imageId) {
+        imageService.deleteImageById(imageId);
+        return new ResponseEntity<>("Image deleted successfully", HttpStatus.OK);
+    }
 }
-

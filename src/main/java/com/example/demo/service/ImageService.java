@@ -1,17 +1,15 @@
 package com.example.demo.service;
 
+import com.example.demo.Utils;
 import com.example.demo.constants.ImageCategories;
 import com.example.demo.entity.Images;
 import com.example.demo.pojos.response.ImageUploadResponse;
 import com.example.demo.repository.ImageRepoService;
-import com.example.demo.security.utils.JwtTokenService;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.PathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class ImageService {
@@ -36,99 +31,128 @@ public class ImageService {
     private String imagePath;
 
     private final ImageRepoService imageRepoService;
-    private final JwtTokenService jwtTokenService;
 
-    @Autowired
-    public ImageService(ImageRepoService imageRepoService , JwtTokenService jwtTokenService){
-        this.imageRepoService = imageRepoService;
-        this.jwtTokenService = jwtTokenService;
-    }
+    /**
+     * Processes and uploads an image file for a specific store and category.
+     *
+     * @param imageCategory The category of the image.
+     * @param file          The image file to be uploaded.
+     * @param storeId       The unique identifier of the store.
+     * @return ImageUploadResponse containing information about the uploaded image
+     *         if successful.
+     * @throws RuntimeException if an error occurs during the upload process.
+     */
+    public ImageUploadResponse processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId) {
 
-    public ImageUploadResponse processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId){
-        String dirPath =  new StringBuilder().append(imagePath).append(storeId)
-                .append("/images/").append(imageCategory.name()).append("/").toString();
         try {
-            String filePath = new StringBuilder(dirPath).append(file.getOriginalFilename()).toString();
 
-            if (! Objects.isNull(imageRepoService.findByPath(filePath))){
-                String updatedFileName = addSuffixToFileName(file.getOriginalFilename());
-                filePath = new StringBuilder(dirPath).append(updatedFileName).toString();
+            // Original Path
+            String originalPath = Utils.buildDirectoryPath(imagePath,
+                    storeId,
+                    "images",
+                    imageCategory.toString(),
+                    file.getOriginalFilename());
+
+            String filePath = originalPath;
+
+            // Create Unique Path
+            int counter = 1;
+            while (!Objects.isNull(imageRepoService.findByPath(filePath))) {
+                filePath = Utils.addSuffixToFilePath(originalPath, counter);
+                counter++;
             }
-            log.info("file path : {} dire path : {} " , filePath, dirPath);
-            createUploadDirectoryIfNotExists(dirPath);
-            file.transferTo(new File(filePath));
-            Images savedImage = imageRepoService.save(filePath,storeId,imageCategory);
+
+            // Create Directory
+            Utils.createDirectory(filePath);
+
+            // Save File
+            File imageFile = new File(filePath);
+            file.transferTo(imageFile);
+
+            // Save Image
+            Images savedImage = imageRepoService.save(filePath, storeId, imageCategory);
+
             ImageUploadResponse response = ImageUploadResponse.builder()
                     .imageId(savedImage.getId())
-                    .storeId(savedImage.getStore().getId())
-                    .category(savedImage.getCategory())
-                    .message("Successfully Uploaded File")
+                    .storeId(storeId)
+                    .category(imageCategory)
+                    .message("Image uploaded successfully")
                     .build();
+
+            log.info("Image uploaded successfully with id : {} ", savedImage.getId());
             return response;
         } catch (IOException e) {
-            log.info("Exception : {} ", e.getMessage() );
+            log.error("IO Exception while uploading : {} ", e.getMessage());
+            throw new RuntimeException("Error while uploading image, Exception : " + e.getMessage());
         }
-        return null;
     }
 
-    public ResponseEntity<InputStreamResource> downloadImage(UUID imageId){
+    /**
+     * Downloads an image file by its unique identifier.
+     *
+     * @param imageId The unique identifier of the image.
+     * @return ResponseEntity containing the image file if successful.
+     */
+    public ResponseEntity<InputStreamResource> downloadImage(UUID imageId) {
         try {
+
+            // Get Image
             Images image = imageRepoService.findById(imageId);
-            if (image == null){
+
+            // No Image Found
+            if (image == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
+
+            // Get File
             File file = new File(image.getPath());
+
+            // No File Found
             if (!file.exists()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            log.info("file.getName() ... ");
-            // Set content type and headers
-            MediaType mediaType = determineMediaType(file.getName());
-
-            // Prepare the response entity
+            // Open Stream
+            MediaType mediaType = Utils.determineMediaType(image.getPath());
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
             return ResponseEntity.ok()
                     .contentType(mediaType)
                     .contentLength(file.length())
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
-        } catch (IOException e) {
-//            e.printStackTrace();
-            log.info("Exception : {} ", e.getMessage() );
-//            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+
+        } catch (Exception e) {
+            log.error("IO Exception while downloading : {} ", e.getMessage());
+            throw new RuntimeException("Error while downloading image, Exception : " + e.getMessage());
         }
     }
 
-    private void createUploadDirectoryIfNotExists(String uploadDirPAth) throws IOException {
-        Path path = Paths.get(uploadDirPAth);
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
+    /**
+     * Deletes a image file identified by the given imageId.
+     *
+     * @param imageId The unique identifier of the image to be deleted.
+     * @throws RuntimeException if an error occurs during the deletion process.
+     */
+    public void deleteImageById(UUID imageId) {
+
+        // Get Image
+        Images image = imageRepoService.findById(imageId);
+
+        // Delete Image
+        if (image != null) {
+            File file = new File(image.getPath());
+            if (file.exists()) {
+                file.delete();
+            }
+
+            // TODO : Handle case where file does not exist but data is present in DB
+            imageRepoService.deleteById(imageId);
+        }
+
+        // Log
+        else {
+            log.warn("Image not found with id : {} ", imageId);
+            // TODO : Throw Exception?
         }
     }
-
-    private String addSuffixToFileName(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex == -1) {
-            // No extension
-            return fileName + "_1";
-        } else {
-            // With extension
-            String name = fileName.substring(0, dotIndex);
-            String extension = fileName.substring(dotIndex);
-            return name + "_1" + extension;
-        }
-    }
-
-    private MediaType determineMediaType(String fileName) {
-        if (fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg")) {
-            return MediaType.IMAGE_JPEG;
-        } else if (fileName.toLowerCase().endsWith(".png")) {
-            return MediaType.IMAGE_PNG;
-        } else {
-            return MediaType.APPLICATION_OCTET_STREAM;
-        }
-    }
-
 }
