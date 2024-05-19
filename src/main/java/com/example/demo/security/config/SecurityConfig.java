@@ -48,8 +48,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(
+//                (request, response, exception) -> {
+//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
+//                }));
+
         httpSecurity.authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**","/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())
                 .formLogin(withDefaults())
