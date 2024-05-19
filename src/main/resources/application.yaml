@@ -33,3 +33,12 @@ upload:
 token:
   signing:
     key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
+
+app:
+  s3:
+    bucket-name: abcbucket
+  credentials:
+    accessKey: AFKSDNLKCNLA
+    secretKey: afsdja;cdjlc
+  region:
+    static: ap-south-1

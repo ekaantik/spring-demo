@@ -69,6 +69,10 @@ dependencies {
 // https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api
     implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0-M1'
 
+    //aws
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.663'
+
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
