@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.UUID;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class ShiftResponse {
+public class ShiftResponse implements Serializable {
     private UUID id;
     private UUID storeId;
     private String shiftName;

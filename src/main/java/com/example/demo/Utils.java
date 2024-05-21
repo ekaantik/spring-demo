@@ -8,9 +8,17 @@ import java.util.UUID;
 
 import org.springframework.http.MediaType;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 @UtilityClass
+@Slf4j
 public class Utils {
 
     /**
@@ -109,4 +117,41 @@ public class Utils {
                 return MediaType.APPLICATION_OCTET_STREAM;
         }
     }
+
+    private static ObjectMapper createMapper() {
+        mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(new Jdk8Module());
+        mapper.findAndRegisterModules();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+        return mapper;
+    }
+
+    private static ObjectMapper mapper = createMapper();
+
+    public static ObjectMapper getObjectMapper() {
+        return mapper;
+    }
+
+    public static <T> T fromJson(String json, Class<T> clazz) {
+
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static String toJson(Object obj) {
+        try {
+            return mapper.writeValueAsString(obj);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
 }
