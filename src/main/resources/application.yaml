@@ -10,7 +10,11 @@ spring:
     username: demo_user
     password: demo@123
     driverClassName: org.postgresql.Driver
-
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
   jpa:
     hibernate.ddl-auto: update
     hibernate.default_schema: public
@@ -32,12 +36,12 @@ management:
       show-details: always
 
 image:
-    path: /home/archit/demo/ #./images/
+    path: E:\Temp_Spring_Demo
     max-file-size: 5242880 # bytes = 5 MB
     file-format: jpg, jpeg , png
 
 video:
-    path: /home/archit/demo/
+    path: E:\Temp_Spring_Demo
     max-file-size: 10000000 #bytes = 10MB
     file-format: mp4
 
