@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
 import java.util.Objects;
+import java.util.UUID;
 
+import com.example.demo.pojos.response.ManagerResponse;
+import com.example.demo.pojos.response.UserResponse;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RedisCacheService {
 
     private static final String SHIFT_BY_ID_KEY_PREFIX = "shift_by_id_";
+    private static final String USER_BY_ID_KEY_PREFIX = "user_by_id_";
+    private static final String MANAGER_BY_ID_KEY_PREFIX = "manager_by_id_";
+
+
     private final RedisTemplate<String, ShiftResponse> shiftTemplate;
+    private final RedisTemplate<String, UserResponse> userTemplate;
+    private final RedisTemplate<String, ManagerResponse> managerTemplate;
 
     /**
      * Save Shift Response to Redis Cache.
@@ -52,5 +61,35 @@ public class RedisCacheService {
      */
     public void clearShiftById(String key) {
         shiftTemplate.delete(SHIFT_BY_ID_KEY_PREFIX + key);
+    }
+
+    public UserResponse getUserById(String key) {
+        log.info("Getting UserResponse from Redis Cache for key : {}", key);
+        return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
+    }
+
+    public void saveUserById(String key, UserResponse value) {
+
+        if (Objects.isNull(key)) {
+            log.warn("Key is null. Cannot save vendor response to Redis Cache.");
+            return;
+        }
+
+        userTemplate.opsForValue().set(USER_BY_ID_KEY_PREFIX + key, value);
+    }
+
+    public ManagerResponse getManagerById(UUID key) {
+        log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
+        return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
+    }
+
+    public void saveManagerById(String key, ManagerResponse value) {
+
+        if (Objects.isNull(key)) {
+            log.warn("Key is null. Cannot save manager response to Redis Cache.");
+            return;
+        }
+
+        managerTemplate.opsForValue().set(USER_BY_ID_KEY_PREFIX + key, value);
     }
 }

@@ -19,20 +19,20 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
-    @PostMapping("create")
+    @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<ManagerResponse> createManager(@RequestHeader("Authorization") String token,
             @RequestBody ManagerRequest req) {
         return ResponseEntity.ok(managerService.createManager(token, req));
     }
 
-    @GetMapping("get-by-id")
+    @GetMapping("/get-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ManagerResponse> getManagerById(@RequestParam UUID id) {
         return ResponseEntity.ok(managerService.getManagerById(id));
     }
 
-    @DeleteMapping("delete-by-id")
+    @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<String> deleteManagerById(@RequestParam UUID id) {
         return ResponseEntity.ok(managerService.deleteManagerById(id));

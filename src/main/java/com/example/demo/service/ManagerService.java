@@ -4,10 +4,13 @@ import com.example.demo.constants.UserType;
 import com.example.demo.entity.Manager;
 import com.example.demo.pojos.request.ManagerRequest;
 import com.example.demo.pojos.response.ManagerResponse;
+import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.ManagerRepoService;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
+
+import com.example.demo.service.RedisCacheService;
 
 import java.time.ZonedDateTime;
 
@@ -28,6 +31,7 @@ public class ManagerService {
     private final JwtTokenService jwtTokenService;
     private final UserRepoService userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RedisCacheService redisCacheService;
 
     /**
      * Creates a new manager user associated with a vendor user and returns the
@@ -93,6 +97,11 @@ public class ManagerService {
      * @return The manager object.
      */
     public ManagerResponse getManagerById(UUID id) {
+        ManagerResponse response = redisCacheService.getManagerById(id);
+
+        if (response != null)
+            return response;
+
         Manager manager = managerRepoService.findManagerById(id);
 
         ManagerResponse managerResponse = ManagerResponse.builder()
@@ -104,7 +113,10 @@ public class ManagerService {
                 .build();
 
         log.info("Manager Found : {}", managerResponse);
+        redisCacheService.saveManagerById(id.toString(), managerResponse);
+        log.info("vendor Saved to Redis Cache : {}", manager);
         return managerResponse;
+
     }
 
     /**

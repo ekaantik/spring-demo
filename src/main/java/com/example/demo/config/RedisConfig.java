@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.pojos.response.ManagerResponse;
+import com.example.demo.pojos.response.UserResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +46,44 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ShiftResponse.class));
+
+        // Set Connection Factory
+        template.setConnectionFactory(connectionFactory);
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, UserResponse> userTemplate(RedisConnectionFactory connectionFactory) {
+
+        // Initialize RedisTemplate
+        RedisTemplate<String, UserResponse> template = new RedisTemplate<>();
+
+        // Set Serializer
+        Jackson2JsonRedisSerializer<UserResponse> serializer = new Jackson2JsonRedisSerializer<>(UserResponse.class);
+        serializer.setObjectMapper(Utils.getObjectMapper());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(UserResponse.class));
+
+        // Set Connection Factory
+        template.setConnectionFactory(connectionFactory);
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, ManagerResponse> managerTemplate(RedisConnectionFactory connectionFactory) {
+
+        // Initialize RedisTemplate
+        RedisTemplate<String, ManagerResponse> template = new RedisTemplate<>();
+
+        // Set Serializer
+        Jackson2JsonRedisSerializer<ManagerResponse> serializer = new Jackson2JsonRedisSerializer<>(ManagerResponse.class);
+        serializer.setObjectMapper(Utils.getObjectMapper());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ManagerResponse.class));
 
         // Set Connection Factory
         template.setConnectionFactory(connectionFactory);

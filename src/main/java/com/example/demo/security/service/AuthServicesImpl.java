@@ -1,6 +1,7 @@
 package com.example.demo.security.service;
 
 import com.example.demo.constants.UserType;
+import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
@@ -9,6 +10,7 @@ import com.example.demo.security.dto.UserResetPasswordRequest;
 import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
+import com.example.demo.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ import java.util.UUID;
 public class AuthServicesImpl implements AuthServicesIf {
 
     private final AuthenticationManager authenticationManager;
+    private final RedisCacheService redisCacheService;
+
 
     @Autowired
     private UserRepoService userRepo;
@@ -38,6 +42,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     /**
      * Performs Signup & assigns JWT Token.
@@ -112,14 +117,24 @@ public class AuthServicesImpl implements AuthServicesIf {
      * @return The vendor information.
      */
     public UserResponse getVendorById(UUID vendorId) {
+        UserResponse response = redisCacheService.getUserById(vendorId.toString());
+
+        if (response != null)
+            return response;
+
+
         User user = userRepo.findById(vendorId);
 
-        return UserResponse.builder()
+        response = UserResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .userType(user.getUserType().toString())
                 .build();
+
+        redisCacheService.saveUserById(vendorId.toString(), response);
+        log.info("vendor Saved to Redis Cache : {}", user);
+        return response;
     }
 
     /**
