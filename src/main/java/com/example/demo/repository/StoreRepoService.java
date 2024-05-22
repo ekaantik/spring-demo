@@ -32,7 +32,7 @@ public class StoreRepoService {
                 log.info("Successfully found Store with id " + Store.getId());
                 return Store;
             } else {
-                log.warn("Store with id " + id + " not found.");
+                log.info("Store with id " + id + " not found.");
                 return null;
             }
         }

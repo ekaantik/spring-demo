@@ -1,5 +1,6 @@
 package com.example.demo.pojos.response;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class ManagerResponse {
+public class ManagerResponse implements Serializable {
     private UUID id;
     private String firstName;
     private String lastName;

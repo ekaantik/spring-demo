@@ -162,7 +162,7 @@ public class VideoService {
 
         // Log
         else {
-            log.warn("Video not found with id : {} ", videoId);
+            log.info("Video not found with id : {} ", videoId);
             // TODO : Throw Exception?
         }
     }

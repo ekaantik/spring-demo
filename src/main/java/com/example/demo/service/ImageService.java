@@ -151,7 +151,7 @@ public class ImageService {
 
         // Log
         else {
-            log.warn("Image not found with id : {} ", imageId);
+            log.info("Image not found with id : {} ", imageId);
             // TODO : Throw Exception?
         }
     }
