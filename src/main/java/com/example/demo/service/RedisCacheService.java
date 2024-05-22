@@ -90,6 +90,6 @@ public class RedisCacheService {
             return;
         }
 
-        managerTemplate.opsForValue().set(USER_BY_ID_KEY_PREFIX + key, value);
+        managerTemplate.opsForValue().set(MANAGER_BY_ID_KEY_PREFIX + key, value);
     }
 }

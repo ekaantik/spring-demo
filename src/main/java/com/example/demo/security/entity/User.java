@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 @SuperBuilder
 @Entity
 @Table(name = "user_details")
-public class User extends BaseUuidEntity implements UserDetails {
+public class User extends BaseUuidEntity implements UserDetails, Serializable {
 
     @Column(name = "first_name")
     @NonNull
