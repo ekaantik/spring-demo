@@ -33,7 +33,7 @@ public class ShiftRepoService {
                 log.info("Successfully found Shift with id " + Shift.getId());
                 return Shift;
             } else {
-                log.warn("Shift with id " + id + " not found.");
+                log.info("Shift with id " + id + " not found.");
                 return null;
             }
 
@@ -58,7 +58,7 @@ public class ShiftRepoService {
                 log.info("Successfully found Shift with id " + Shift.getId());
                 return Shift;
             } else {
-                log.warn("Shift with id " + id + " not found.");
+                log.info("Shift with id " + id + " not found.");
                 return null;
             }
         }

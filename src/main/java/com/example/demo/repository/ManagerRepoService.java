@@ -38,7 +38,7 @@ public class ManagerRepoService {
                 log.info("Successfully found Manager with id " + Manager.getId());
                 return Manager;
             } else {
-                log.warn("Manager with id " + id + " not found.");
+                log.info("Manager with id " + id + " not found.");
                 return null;
             }
 

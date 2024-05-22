@@ -38,7 +38,7 @@ public class TechnicianRepoService {
                 log.info("Successfully found Technician with id " + Technician.getId());
                 return Technician;
             } else {
-                log.warn("Technician with id " + id + " not found.");
+                log.info("Technician with id " + id + " not found.");
                 return null;
             }
 

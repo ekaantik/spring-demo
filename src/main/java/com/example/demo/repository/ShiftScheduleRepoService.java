@@ -38,7 +38,7 @@ public class ShiftScheduleRepoService {
                 log.info("Successfully found ShiftSchedule with id " + shiftSchedule.getId());
                 return shiftSchedule;
             } else {
-                log.warn("ShiftSchedule with id " + id + " not found.");
+                log.info("ShiftSchedule with id " + id + " not found.");
                 return null;
             }
 

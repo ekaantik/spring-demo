@@ -40,7 +40,7 @@ public class RedisCacheService {
     public void saveShiftById(String key, ShiftResponse value) {
 
         if (Objects.isNull(key)) {
-            log.warn("Key is null. Cannot save shift response to Redis Cache.");
+            log.info("Key is null. Cannot save shift response to Redis Cache.");
             return;
         }
 
@@ -75,7 +75,7 @@ public class RedisCacheService {
     public void saveUserById(String key, UserResponse value) {
 
         if (Objects.isNull(key)) {
-            log.warn("Key is null. Cannot save vendor response to Redis Cache.");
+            log.info("Key is null. Cannot save vendor response to Redis Cache.");
             return;
         }
 
@@ -90,7 +90,7 @@ public class RedisCacheService {
     public void saveManagerById(String key, ManagerResponse value) {
 
         if (Objects.isNull(key)) {
-            log.warn("Key is null. Cannot save manager response to Redis Cache.");
+            log.info("Key is null. Cannot save manager response to Redis Cache.");
             return;
         }
 
@@ -105,7 +105,7 @@ public class RedisCacheService {
     public void saveTechnicianById(String key, TechnicianResponse value) {
 
         if (Objects.isNull(key)) {
-            log.warn("Key is null. Cannot save technician response to Redis Cache.");
+            log.info("Key is null. Cannot save technician response to Redis Cache.");
             return;
         }
 

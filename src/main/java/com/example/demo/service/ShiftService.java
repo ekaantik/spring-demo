@@ -89,7 +89,7 @@ public class ShiftService {
                 .build();
 
         redisCacheService.saveShiftById(id.toString(), response);
-        log.debug("Shift Saved to Redis Cache : {}", shift);
+        log.info("Shift Saved to Redis Cache : {}", shift);
         return response;
     }
 
