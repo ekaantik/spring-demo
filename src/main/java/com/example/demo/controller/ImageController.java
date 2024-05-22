@@ -38,6 +38,7 @@ public class ImageController {
             @Valid @RequestHeader(value = "imageCategory") ImageCategories imageCategory,
             @RequestParam("file") MultipartFile file,
             @RequestParam("storeId") UUID storeId) {
+        log.info("ImageController uploadImage upload image request was called");
 
         // TODO : Move Business Logic to Service Layer
         ImageUploadResponse response;
@@ -61,19 +62,25 @@ public class ImageController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         response = imageService.processImageForUpload(imageCategory, file, storeId);
+        log.info("ImageController uploadImage Image upload response: {}", response);
+        log.info("ImageController uploadImage Image uploaded successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/download/{imageId}")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<InputStreamResource> downloadImage(@PathVariable UUID imageId) throws IOException {
+        log.info("ImageController downloadImage image download request was called");
         return imageService.downloadImage(imageId);
     }
 
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<String> deleteImageById(@RequestParam("id") UUID imageId) {
+        log.info("ImageController deleteImageById image delete request was called");
         imageService.deleteImageById(imageId);
+        log.info("ImageController deleteImageById image deleted successfully");
+
         return new ResponseEntity<>("Image deleted successfully", HttpStatus.OK);
     }
 }

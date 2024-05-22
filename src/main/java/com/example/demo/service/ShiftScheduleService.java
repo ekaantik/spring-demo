@@ -23,6 +23,7 @@ public class ShiftScheduleService {
     private final StoreRepoService storeRepoService;
 
     public ShiftScheduleResponse createShiftSchedule(ShiftScheduleRequest req) {
+        log.info("ShiftScheduleService createShiftSchedule request: {}", req);
 
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
@@ -53,7 +54,7 @@ public class ShiftScheduleService {
                 .endTime(savedShiftSchedule.getEndTime())
                 .build();
 
-        log.info("ShiftSchedule Created : {}", response);
+        log.info("ShiftScheduleService createShiftSchedule ShiftSchedule Created : {}", response);
 
         return response;
     }
@@ -65,7 +66,7 @@ public class ShiftScheduleService {
      * @return The ShiftSchedule object.
      */
     public ShiftScheduleResponse getShiftScheduleById(UUID id) {
-
+        log.info("ShiftScheduleService getShiftScheduleById requested ID: {}", id);
         ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
 
         ShiftScheduleResponse response = ShiftScheduleResponse.builder()
@@ -78,12 +79,12 @@ public class ShiftScheduleService {
                 .endTime(shiftSchedule.getEndTime())
                 .build();
 
-        log.info("ShiftSchedule Found : {}", response);
+        log.info("ShiftScheduleService getShiftScheduleById received response for ShiftSchedule : {}", response);
         return response;
     }
 
     public ShiftScheduleResponse updateShiftScheduleById(UUID id, ShiftScheduleRequest req) {
-
+        log.info("ShiftScheduleService updateShiftScheduleById \n request: {}\nrequested ID{}",req, id);
         // Extracting User from JWT Token
         ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
 
@@ -132,7 +133,7 @@ public class ShiftScheduleService {
                 .endTime(savedShiftSchedule.getEndTime())
                 .build();
 
-        log.info("ShiftSchedule Updated : {}", response);
+        log.info("ShiftScheduleService updateShiftScheduleById ShiftSchedule Updated : {}", response);
 
         return response;
     }
@@ -145,6 +146,7 @@ public class ShiftScheduleService {
      */
     public String deleteShiftScheduleById(UUID id) {
         shiftScheduleRepoService.deleteShiftScheduleById(id);
+        log.info("ShiftScheduleService deleteShiftScheduleById id {} deleted successfully", id);
         return "ShiftSchedule with id : " + id + " Deleted Successfully";
     }
 }

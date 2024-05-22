@@ -43,6 +43,7 @@ public class ManagerService {
      */
     public ManagerResponse createManager(String token, ManagerRequest managerRequest) {
 
+        log.info("ManagerService createManager request: {}", managerRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
@@ -73,6 +74,7 @@ public class ManagerService {
                 .updatedAt(ZonedDateTime.now())
                 .build();
 
+
         // Saving Manager
         Manager savedManager = managerRepoService.save(manager);
 
@@ -85,7 +87,7 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
-        log.info("Manager Created : {}", managerResponse);
+        log.info("ManagerService createManager Manager Created : {}", managerResponse);
 
         return managerResponse;
     }
@@ -97,10 +99,13 @@ public class ManagerService {
      * @return The manager object.
      */
     public ManagerResponse getManagerById(UUID id) {
+        log.info("ManagerService getManagerById requested ID: {}", id);
         ManagerResponse response = redisCacheService.getManagerById(id);
 
-        if (response != null)
+        if (response != null) {
+            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
             return response;
+        }
 
         Manager manager = managerRepoService.findManagerById(id);
 
@@ -112,9 +117,9 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
-        log.info("Manager Found : {}", managerResponse);
+        log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
         redisCacheService.saveManagerById(id.toString(), managerResponse);
-        log.info("manager Saved to Redis Cache : {}", manager);
+        log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
 
     }
@@ -126,7 +131,9 @@ public class ManagerService {
      * @return The message indicating the status of the deletion.
      */
     public String deleteManagerById(UUID id) {
+        log.info("ManagerService deleteManagerById requested ID: {}", id);
         managerRepoService.deleteManagerById(id);
+        log.info("ManagerService deleteManagerById Manager deleted successfully.");
         return "Manager Deleted Successfully";
     }
 

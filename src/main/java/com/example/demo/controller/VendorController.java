@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/vendor")
 public class VendorController {
 
@@ -21,6 +23,7 @@ public class VendorController {
 
     @GetMapping("/get-by-id")
     public ResponseEntity<UserResponse> getVendorById(@RequestParam("id") UUID vendorId) {
+        log.info("VendorController getVendorById get vendor request was called");
         return ResponseEntity.ok(userService.getVendorById(vendorId));
     }
 }

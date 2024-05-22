@@ -32,6 +32,7 @@ public class ShiftService {
      * @return The ShiftResponse object.
      */
     public ShiftResponse createShift(ShiftRequest req) {
+        log.info("ShiftService createShift request: {}", req);
 
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
@@ -60,7 +61,7 @@ public class ShiftService {
                 .endTime(savedShift.getEndTime())
                 .build();
 
-        log.info("Shift Created : {}", response);
+        log.info("ShiftService createShift Shift Created : {}", response);
 
         return response;
     }
@@ -72,11 +73,14 @@ public class ShiftService {
      * @return The Shift object.
      */
     public ShiftResponse getShiftById(UUID id) {
+        log.info("ShiftService getShiftById requested ID: {}", id);
 
         ShiftResponse response = redisCacheService.getShiftById(id.toString());
 
-        if (response != null)
+        if (response != null) {
+            log.info("ShiftService getShiftById getting response from redis cache: {}", id);
             return response;
+        }
 
         Shift shift = shiftRepoService.findShiftById(id);
 
@@ -89,7 +93,7 @@ public class ShiftService {
                 .build();
 
         redisCacheService.saveShiftById(id.toString(), response);
-        log.info("Shift Saved to Redis Cache : {}", shift);
+        log.info("ShiftService getShiftById Shift Saved to Redis Cache : {}", shift);
         return response;
     }
 
@@ -102,6 +106,8 @@ public class ShiftService {
     public ShiftResponse getShiftByStoreId(UUID id) {
         Store store = storeRepoService.findStoreById(id);
         Shift shift = shiftRepoService.findShiftByStoreId(store.getId());
+        log.info("ShiftService getShiftByStoreId requested Store ID: {}", id);
+        log.info("ShiftService getShiftByStoreId recieved ID of shift by store: {}", shift)
 
         ShiftResponse response = new ShiftResponse();
         if (!Objects.isNull(shift)) {
@@ -114,7 +120,7 @@ public class ShiftService {
                     .build();
         }
 
-        log.info("Shift Found : {}", response);
+        log.info("ShiftService getShiftByStoreId response received for Shift : {}", response);
         return response;
     }
 
@@ -127,6 +133,8 @@ public class ShiftService {
     public String deleteShiftById(UUID id) {
         redisCacheService.clearShiftById(id.toString());
         shiftRepoService.deleteShiftById(id);
+        log.info("ShiftService deleteShiftById deleted shift for ID: {}", id);
+
         return "Shift with id : " + id + " Deleted Successfully";
     }
 }

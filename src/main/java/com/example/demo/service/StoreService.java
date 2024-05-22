@@ -26,7 +26,7 @@ public class StoreService {
     private final UserRepoService userRepo;
 
     public StoreResponse createStore(String token, StoreRequest storeRequest) {
-
+        log.info("StoreService createStore request: {}", storeRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
@@ -53,7 +53,7 @@ public class StoreService {
                 .vendorUserId(savedStore.getVendorUser().getId())
                 .build();
 
-        log.info("Store Created : {}", storeResponse);
+        log.info("StoreService createStore Store Created : {}", storeResponse);
 
         return storeResponse;
     }
@@ -65,6 +65,7 @@ public class StoreService {
      * @return The Store object.
      */
     public StoreResponse getStoreById(UUID id) {
+        log.info("StoreService getStoreById get request requested ID : {}", id);
         Store store = storeRepoService.findStoreById(id);
 
         StoreResponse storeResponse = StoreResponse.builder()
@@ -75,7 +76,7 @@ public class StoreService {
                 .vendorUserId(store.getVendorUser().getId())
                 .build();
 
-        log.info("Store Found : {}", storeResponse);
+        log.info("StoreService getStoreById received response for get store by id : {}", storeResponse);
         return storeResponse;
     }
 
@@ -87,6 +88,7 @@ public class StoreService {
      */
     public String deleteStoreById(UUID id) {
         storeRepoService.deleteStoreById(id);
+        log.info("StoreService deleteStoreById id {} deleted successfully", id);
         return "Store Deleted Successfully";
     }
 }

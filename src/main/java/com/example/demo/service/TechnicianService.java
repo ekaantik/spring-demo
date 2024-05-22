@@ -31,7 +31,7 @@ public class TechnicianService {
     private final RedisCacheService redisCacheService;
 
     public TechnicianResponse createTechnician(String token, TechnicianRequest technicianRequest) {
-
+        log.info("TechnicianService createTechnician request: {}", technicianRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User managedByUser = userRepo.findById(userId);
@@ -71,8 +71,7 @@ public class TechnicianService {
                 .managedById(technician.getManagedByUser().getId())
                 .build();
 
-        log.info("Technician Created : {}", technicianResponse);
-
+        log.info("TechnicianService createTechnician Created : {}", technicianResponse);
         return technicianResponse;
     }
 
@@ -83,11 +82,13 @@ public class TechnicianService {
      * @return The Technician object.
      */
     public TechnicianResponse getTechnicianById(UUID id) {
+        log.info("TechnicianService getTechnicianById requested Id : {}", id);
         TechnicianResponse response = redisCacheService.getTechnicianById(id);
 
-        if (response != null)
+        if (response != null){
+            log.info("TechnicianService getTechnicianById getting response from redis cache: {}", response);
             return response;
-
+        }
         Technician Technician = technicianRepoService.findTechnicianById(id);
 
         TechnicianResponse technicianResponse = TechnicianResponse.builder()
@@ -98,9 +99,9 @@ public class TechnicianService {
                 .managedById(Technician.getManagedByUser().getId())
                 .build();
 
-        log.info("Technician Found : {}", technicianResponse);
+        log.info("TechnicianService getTechnicianById received Technician response : {}", technicianResponse);
         redisCacheService.saveTechnicianById(id.toString(), technicianResponse);
-        log.info("technician Saved to Redis Cache : {}", Technician);
+        log.info("TechnicianService getTechnicianById technician Saved to Redis Cache : {}", Technician);
         return technicianResponse;
     }
 
@@ -112,6 +113,7 @@ public class TechnicianService {
      */
     public String deleteTechnicianById(UUID id) {
         technicianRepoService.deleteTechnicianById(id);
+        log.info("TechnicianService deleteTechnicianById id {} deleted successfully", id);
         return "Technician Deleted Successfully";
     }
 }

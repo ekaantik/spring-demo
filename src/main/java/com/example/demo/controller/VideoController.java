@@ -40,6 +40,7 @@ public class VideoController {
             @RequestParam("storeId") UUID storeId) {
 
         // TODO : Move Business Logic to Service Layer
+        log.info("VideoController uploadVideo upload video request was called");
         VideoUploadResponse response;
         if (file.isEmpty()) {
             response = VideoUploadResponse.builder().message("Please select a file to upload")
@@ -55,19 +56,24 @@ public class VideoController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         response = videoService.processVideoForUpload(videoCategory, file, storeId);
+        log.info("VideoController uploadVideo video upload response: {}", response);
+        log.info("VideoController uploadVideo video uploaded successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/download/{id}")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<InputStreamResource> downloadVideo(@PathVariable("id") UUID videoId) throws IOException {
+        log.info("VideoController downloadVideo video download request was called");
         return videoService.downloadVideo(videoId);
     }
 
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<String> deleteVideoById(@RequestParam("id") UUID videoId) {
+        log.info("VideoController deleteVideoById video delete request was called");
         videoService.deleteVideoById(videoId);
+        log.info("VideoController deleteVideoById video deleted successfully");
         return new ResponseEntity<>("Video deleted successfully", HttpStatus.OK);
     }
 }

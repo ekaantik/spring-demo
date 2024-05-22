@@ -117,11 +117,13 @@ public class AuthServicesImpl implements AuthServicesIf {
      * @return The vendor information.
      */
     public UserResponse getVendorById(UUID vendorId) {
+        log.info("AuthServiceImpl getVendorById requested Id : {}", vendorId);
         UserResponse response = redisCacheService.getUserById(vendorId.toString());
 
-        if (response != null)
+        if (response != null){
+            log.info("AuthServiceImpl getVendorById getting response from redis cache: {}", response);
             return response;
-
+        }
 
         User user = userRepo.findById(vendorId);
 
@@ -132,8 +134,9 @@ public class AuthServicesImpl implements AuthServicesIf {
                 .userType(user.getUserType().toString())
                 .build();
 
+        log.info("AuthServiceImpl getVendorById received Technician response : {}", response);
         redisCacheService.saveUserById(vendorId.toString(), response);
-        log.info("vendor Saved to Redis Cache : {}", user);
+        log.info("AuthServiceImpl getVendorById vendor Saved to Redis Cache : {}", user);
         return response;
     }
 
