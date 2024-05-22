@@ -114,7 +114,7 @@ public class ManagerService {
 
         log.info("Manager Found : {}", managerResponse);
         redisCacheService.saveManagerById(id.toString(), managerResponse);
-        log.info("vendor Saved to Redis Cache : {}", manager);
+        log.info("manager Saved to Redis Cache : {}", manager);
         return managerResponse;
 
     }

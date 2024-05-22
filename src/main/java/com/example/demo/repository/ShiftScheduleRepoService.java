@@ -81,7 +81,7 @@ public class ShiftScheduleRepoService {
      * @param ShiftSchedule The ShiftSchedule to be saved.
      * @return The saved ShiftSchedule, or throws PersistenceException.
      */
-    public ShiftSchedule save(ShiftSchedule ShiftSchedule) {
+    public synchronized ShiftSchedule save(ShiftSchedule ShiftSchedule) {
 
         // Trying to save ShiftSchedule
         try {

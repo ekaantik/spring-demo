@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import com.example.demo.pojos.response.ManagerResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class TechnicianService {
     private final JwtTokenService jwtTokenService;
     private final UserRepoService userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RedisCacheService redisCacheService;
 
     public TechnicianResponse createTechnician(String token, TechnicianRequest technicianRequest) {
 
@@ -81,6 +83,11 @@ public class TechnicianService {
      * @return The Technician object.
      */
     public TechnicianResponse getTechnicianById(UUID id) {
+        TechnicianResponse response = redisCacheService.getTechnicianById(id);
+
+        if (response != null)
+            return response;
+
         Technician Technician = technicianRepoService.findTechnicianById(id);
 
         TechnicianResponse technicianResponse = TechnicianResponse.builder()
@@ -92,6 +99,8 @@ public class TechnicianService {
                 .build();
 
         log.info("Technician Found : {}", technicianResponse);
+        redisCacheService.saveTechnicianById(id.toString(), technicianResponse);
+        log.info("technician Saved to Redis Cache : {}", Technician);
         return technicianResponse;
     }
 

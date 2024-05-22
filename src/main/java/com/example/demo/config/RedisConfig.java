@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.pojos.response.ManagerResponse;
+import com.example.demo.pojos.response.TechnicianResponse;
 import com.example.demo.pojos.response.UserResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
@@ -84,6 +85,25 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ManagerResponse.class));
+
+        // Set Connection Factory
+        template.setConnectionFactory(connectionFactory);
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, TechnicianResponse> technicianTemplate(RedisConnectionFactory connectionFactory) {
+
+        // Initialize RedisTemplate
+        RedisTemplate<String, TechnicianResponse> template = new RedisTemplate<>();
+
+        // Set Serializer
+        Jackson2JsonRedisSerializer<TechnicianResponse> serializer = new Jackson2JsonRedisSerializer<>(TechnicianResponse.class);
+        serializer.setObjectMapper(Utils.getObjectMapper());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(TechnicianResponse.class));
 
         // Set Connection Factory
         template.setConnectionFactory(connectionFactory);
