@@ -6,6 +6,8 @@ import java.util.UUID;
 import com.example.demo.pojos.response.ManagerResponse;
 import com.example.demo.pojos.response.TechnicianResponse;
 import com.example.demo.pojos.response.UserResponse;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +26,13 @@ public class RedisCacheService {
     private static final String MANAGER_BY_ID_KEY_PREFIX = "manager_by_id_";
     private static final String TECHNICIAN_BY_ID_KEY_PREFIX = "technician_by_id_";
 
-
-
     private final RedisTemplate<String, ShiftResponse> shiftTemplate;
     private final RedisTemplate<String, UserResponse> userTemplate;
     private final RedisTemplate<String, ManagerResponse> managerTemplate;
     private final RedisTemplate<String, TechnicianResponse> technicianTemplate;
+
+    @Value("${spring.data.redis.enabled}")
+    private boolean redisEnabled;
 
     /**
      * Save Shift Response to Redis Cache.
@@ -54,8 +57,14 @@ public class RedisCacheService {
      * @return The shiftresponse value.
      */
     public ShiftResponse getShiftById(String key) {
-        log.info("Getting ShiftResponse from Redis Cache for key : {}", key);
-        return shiftTemplate.opsForValue().get(SHIFT_BY_ID_KEY_PREFIX + key);
+
+        if (redisEnabled) {
+            log.info("Getting ShiftResponse from Redis Cache for key : {}", key);
+            return shiftTemplate.opsForValue().get(SHIFT_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
+
     }
 
     /**
@@ -68,8 +77,13 @@ public class RedisCacheService {
     }
 
     public UserResponse getUserById(String key) {
-        log.info("Getting UserResponse from Redis Cache for key : {}", key);
-        return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
+
+        if (redisEnabled) {
+            log.info("Getting UserResponse from Redis Cache for key : {}", key);
+            return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
     }
 
     public void saveUserById(String key, UserResponse value) {
@@ -83,8 +97,13 @@ public class RedisCacheService {
     }
 
     public ManagerResponse getManagerById(UUID key) {
-        log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
-        return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
+
+        if (redisEnabled) {
+            log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
+            return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
     }
 
     public void saveManagerById(String key, ManagerResponse value) {
@@ -98,8 +117,13 @@ public class RedisCacheService {
     }
 
     public TechnicianResponse getTechnicianById(UUID key) {
-        log.info("Getting TechnicianResponse from Redis Cache for key : {}", key);
-        return technicianTemplate.opsForValue().get(TECHNICIAN_BY_ID_KEY_PREFIX + key);
+
+        if (redisEnabled) {
+            log.info("Getting TechnicianResponse from Redis Cache for key : {}", key);
+            return technicianTemplate.opsForValue().get(TECHNICIAN_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
     }
 
     public void saveTechnicianById(String key, TechnicianResponse value) {
