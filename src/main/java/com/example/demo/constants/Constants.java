@@ -35,6 +35,8 @@ public class Constants {
     public static final String TABLE_USER = "User";
     public static final String TABLE_TECHNICIAN = "Technician";
     public static final String TABLE_STORE = "Store";
+    public static final String TABLE_SHIFT = "Shift";
+    public static final String TABLE_SHIFT_SCHEDULE = "ShiftSchedule";
 
     public static final GenericResponse SUCCESS_RESPONSE = new GenericResponse(null, "SUCCESS",
             HttpStatus.CREATED.value(), null);

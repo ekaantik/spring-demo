@@ -102,6 +102,11 @@ public class TechnicianService {
     public TechnicianResponse getTechnicianById(UUID id) {
         Technician Technician = technicianRepoService.findTechnicianById(id);
 
+        if (Technician == null) {
+            log.error("Technician Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_TECHNICIAN);
+        }
+
         TechnicianResponse technicianResponse = TechnicianResponse.builder()
                 .id(Technician.getId())
                 .firstName(Technician.getTechnicianUser().getFirstName())

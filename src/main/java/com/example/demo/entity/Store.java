@@ -8,7 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
+
 
 import com.example.demo.constants.ServiceType;
 import com.example.demo.entity.base.BaseUuidEntity;

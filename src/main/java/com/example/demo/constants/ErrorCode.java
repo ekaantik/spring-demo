@@ -13,6 +13,9 @@ public enum ErrorCode {
         INVALID_DATA("Invalid input provided", HttpStatus.BAD_REQUEST.value(), "PAYMENTS-400101",
                         Constants.INVALID_REQUEST, "The value of field %s is invalid!"),
 
+        INVALID_TOKEN("Invalid token provided", HttpStatus.UNAUTHORIZED.value(), "Ekaantik-401101", "INVALID_TOKEN",
+                        "The token provided is invalid!"),
+
         NOT_EXISTS("Resource not found", HttpStatus.NOT_FOUND.value(), "IOT-404101", "NOT_FOUND",
                         "The value %s of field %s of table %s does not exist!"),
 

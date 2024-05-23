@@ -1,6 +1,5 @@
 package com.example.demo.exception;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +10,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,96 +29,222 @@ import jakarta.persistence.PersistenceException;
 public class ApiExceptionHandler {
 
         @ExceptionHandler(DataAccessException.class)
-        public ResponseEntity<Map<String, Object>> handleDataAccessException(DataAccessException ex,
+        public ResponseEntity<GenericResponse> handleDataAccessException(DataAccessException ex,
                         WebRequest request) {
-                Map<String, Object> body = new HashMap<>();
-                body.put("timestamp", ZonedDateTime.now());
-                body.put("message", "Database error occurred");
-                body.put("error", ex.getMessage());
 
-                log.error("DataAccessException: ", ex);
+                // Logging
+                log.info("DataAccessException in exception handler", ex);
 
-                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("DataAccessException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         @ExceptionHandler(EmptyResultDataAccessException.class)
-        public ResponseEntity<Map<String, Object>> handleEmptyResultDataAccessException(
+        public ResponseEntity<GenericResponse> handleEmptyResultDataAccessException(
                         EmptyResultDataAccessException ex, WebRequest request) {
-                Map<String, Object> body = new HashMap<>();
-                body.put("timestamp", ZonedDateTime.now());
-                body.put("message", "No data found");
-                body.put("error", ex.getMessage());
 
-                log.error("EmptyResultDataAccessException: ", ex);
+                // Logging
+                log.info("EmptyResultDataAccessException in exception handler", ex);
 
-                return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.NOT_FOUND.value())
+                                .details(Details.builder()
+                                                .appError("EmptyResultDataAccessException")
+                                                .appErrorCode("404")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.NOT_FOUND);
+
         }
 
         @ExceptionHandler(DataIntegrityViolationException.class)
-        public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(
+        public ResponseEntity<GenericResponse> handleDataIntegrityViolationException(
                         DataIntegrityViolationException ex, WebRequest request) {
-                Map<String, Object> body = new HashMap<>();
-                body.put("timestamp", ZonedDateTime.now());
-                body.put("message", "Data integrity violation");
-                body.put("error", ex.getMessage());
 
-                log.error("DataIntegrityViolationException: ", ex);
+                // Logging
+                log.info("DataIntegrityViolationException in exception handler", ex);
 
-                return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("DataIntegrityViolationException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         @ExceptionHandler(TransactionException.class)
-        public ResponseEntity<Map<String, Object>> handleTransactionException(TransactionException ex,
+        public ResponseEntity<GenericResponse> handleTransactionException(TransactionException ex,
                         WebRequest request) {
-                Map<String, Object> body = new HashMap<>();
-                body.put("timestamp", ZonedDateTime.now());
-                body.put("message", "Transaction failed");
-                body.put("error", ex.getMessage());
 
-                log.error("TransactionException: ", ex);
+                // Logging
+                log.info("TransactionException in exception handler", ex);
 
-                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("TransactionException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        @ExceptionHandler(PersistenceException.class)
-        public ResponseEntity<Map<String, Object>> handlePersistanceException(PersistenceException ex,
+        @ExceptionHandler(TransactionSystemException.class)
+        public ResponseEntity<GenericResponse> handleTransactionSystemException(TransactionSystemException ex,
                         WebRequest request) {
-                Map<String, Object> body = new HashMap<>();
-                body.put("timestamp", ZonedDateTime.now());
-                body.put("message", "Persistance error occurred");
-                body.put("error", ex.getMessage());
 
-                log.error("PersistenceException: ", ex);
+                // Logging
+                log.info("TransactionSystemException in exception handler", ex);
 
-                return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
-                log.info("handleValidationException...");
-                Map<String, String> errors = new HashMap<>();
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("TransactionSystemException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
 
-                // Extract field errors from the exception
-                for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-                        errors.put(error.getField(), error.getDefaultMessage());
-                }
-
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(genericResponse, headers,
+                                HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         @ExceptionHandler(ConstraintViolationException.class)
-        public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
-                log.info("handleConstraintViolationException...");
+        public ResponseEntity<GenericResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+
+                // Logging
+                log.info("ConstraintViolationException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Error Details
+                Details details = Details.builder()
+                                .appError("ConstraintViolationException")
+                                .appErrorCode("400")
+                                .appErrorMessage(ex.getMessage())
+                                .build();
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message("Constraint Violation Exception")
+                                .responseCode(HttpStatus.BAD_REQUEST.value())
+                                .details(details)
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(PersistenceException.class)
+        public ResponseEntity<GenericResponse> handlePersistanceException(PersistenceException ex) {
+
+                // Logging
+                log.info("PersistenceException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("PersistenceException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<GenericResponse> handleValidationException(MethodArgumentNotValidException ex) {
+
+                // Logging
+                log.info("MethodArgumentNotValidException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Error Details
                 Map<String, String> errors = new HashMap<>();
-
-                // Extract constraint violations from the exception
-                for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-                        String fieldName = violation.getPropertyPath().toString();
-                        String errorMessage = violation.getMessage();
+                ex.getBindingResult().getAllErrors().forEach((error) -> {
+                        String fieldName = ((FieldError) error).getField();
+                        String errorMessage = error.getDefaultMessage();
                         errors.put(fieldName, errorMessage);
-                }
+                });
 
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message("Validation Exception")
+                                .responseCode(HttpStatus.BAD_REQUEST.value())
+                                .details(Details.builder()
+                                                .appError("MethodArgumentNotValidException")
+                                                .appErrorCode("400")
+                                                .appErrorMessage(errors.toString())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
 
         @ExceptionHandler({ RequestValidationException.class })
@@ -218,4 +345,77 @@ public class ApiExceptionHandler {
 
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.UNAUTHORIZED);
         }
+
+        @ExceptionHandler({ InvalidTokenException.class })
+        public ResponseEntity<GenericResponse> handleInvalidTokenException(final InvalidTokenException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("InvalidTokenException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.UNAUTHORIZED.value())
+                                .details(ex.getDetails())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.UNAUTHORIZED);
+        }
+
+        @ExceptionHandler({ IllegalArgumentException.class })
+        public ResponseEntity<GenericResponse> handleIllegalArgumentException(final IllegalArgumentException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("IllegalArgumentException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.BAD_REQUEST.value())
+                                .details(Details.builder()
+                                                .appError("IllegalArgumentException")
+                                                .appErrorCode("400")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler({ HttpMessageNotReadableException.class })
+        public ResponseEntity<GenericResponse> handleHttpMessageNotReadableException(
+                        final HttpMessageNotReadableException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("HttpMessageNotReadableException in exception handler", ex);
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.BAD_REQUEST.value())
+                                .details(Details.builder()
+                                                .appError("HttpMessageNotReadableException")
+                                                .appErrorCode("400")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
+        }
+
 }

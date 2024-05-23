@@ -71,6 +71,12 @@ public class ShiftService {
      */
     public ShiftResponse getShiftById(UUID id) {
         Shift shift = shiftRepoService.findShiftById(id);
+
+        if (shift == null) {
+            log.error("Shift Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
+        }
+
         ShiftResponse response = ShiftResponse.builder()
                 .id(shift.getId())
                 .storeId(shift.getStore().getId())
@@ -90,6 +96,12 @@ public class ShiftService {
      */
     public ShiftResponse getShiftByStoreId(UUID id) {
         Store store = storeRepoService.findStoreById(id);
+
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_STORE);
+        }
+
         Shift shift = shiftRepoService.findShiftByStoreId(store.getId());
 
         ShiftResponse response = new ShiftResponse();

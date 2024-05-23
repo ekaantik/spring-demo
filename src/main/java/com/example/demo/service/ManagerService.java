@@ -103,6 +103,11 @@ public class ManagerService {
     public ManagerResponse getManagerById(UUID id) {
         Manager manager = managerRepoService.findManagerById(id);
 
+        if (manager == null) {
+            log.error("Manager Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_MANAGER);
+        }
+
         ManagerResponse managerResponse = ManagerResponse.builder()
                 .id(manager.getId())
                 .firstName(manager.getManagerUser().getFirstName())

@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 
-import org.springframework.lang.NonNull;
+
 
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.example.demo.security.entity.User;

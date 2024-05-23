@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.entity.ShiftSchedule;
 import com.example.demo.entity.Store;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.request.ShiftScheduleRequest;
 import com.example.demo.pojos.response.ShiftScheduleResponse;
 import com.example.demo.repository.ShiftScheduleRepoService;
@@ -26,6 +29,12 @@ public class ShiftScheduleService {
 
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
+
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", req.getStoreId());
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, req.getStoreId(), Constants.FIELD_ID,
+                    Constants.TABLE_STORE);
+        }
 
         // Creating ShiftSchedule
         ShiftSchedule shiftSchedule = ShiftSchedule.builder()
@@ -68,6 +77,11 @@ public class ShiftScheduleService {
 
         ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
 
+        if (shiftSchedule == null) {
+            log.error("ShiftSchedule Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
+        }
+
         ShiftScheduleResponse response = ShiftScheduleResponse.builder()
                 .id(shiftSchedule.getId())
                 .storeId(shiftSchedule.getShiftId())
@@ -88,26 +102,9 @@ public class ShiftScheduleService {
         ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
 
         if (shiftSchedule == null) {
-            throw new RuntimeException("Shift Schedule Not Found with  id : " + id);
+            log.error("ShiftSchedule Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
         }
-
-        // if(req.getStoreId() !=null)
-        // shiftSchedule.setStoreId(req.getStoreId());
-
-        // if(req.getShiftId() !=null)
-        // shiftSchedule.setShiftId(req.getShiftId());
-
-        // if(req.getShiftName() !=null)
-        // shiftSchedule.setName(req.getShiftName());
-
-        // if(req.getDate() !=null)
-        // shiftSchedule.setDate(req.getDate());
-
-        // if(req.getStartTime() !=null)
-        // shiftSchedule.setStartTime(req.getStartTime());
-
-        // if(req.getEndTime() !=null)
-        // shiftSchedule.setEndTime(req.getEndTime());
 
         Optional.ofNullable(req.getStoreId()).ifPresent(shiftSchedule::setStoreId);
         Optional.ofNullable(req.getShiftId()).ifPresent(shiftSchedule::setShiftId);
