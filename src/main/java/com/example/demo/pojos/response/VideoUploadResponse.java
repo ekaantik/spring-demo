@@ -1,22 +1,22 @@
 package com.example.demo.pojos.response;
 
+import com.example.demo.constants.VideoCategories;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.UUID;
-import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class ShiftResponse implements Serializable {
-    private UUID id;
+public class VideoUploadResponse {
     private UUID storeId;
-    private String shiftName;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private UUID videoId;
+    private String path;
+    private VideoCategories category;
+    private String message;
+
 }

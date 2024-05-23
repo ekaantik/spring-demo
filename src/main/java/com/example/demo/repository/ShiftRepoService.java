@@ -33,7 +33,7 @@ public class ShiftRepoService {
                 log.info("Successfully found Shift with id " + Shift.getId());
                 return Shift;
             } else {
-                log.warn("Shift with id " + id + " not found.");
+                log.info("Shift with id " + id + " not found.");
                 return null;
             }
 
@@ -57,7 +57,7 @@ public class ShiftRepoService {
                 log.info("Successfully found Shift with id " + Shift.getId());
                 return Shift;
             } else {
-                log.warn("Shift with id " + id + " not found.");
+                log.info("Shift with id " + id + " not found.");
                 return null;
             }
         } catch (Exception ex) {
@@ -95,6 +95,7 @@ public class ShiftRepoService {
      * @param Shift The Shift to be saved.
      * @return The saved Shift, or throws PersistenceException.
      */
+
     public Shift save(Shift Shift) {
         try {
             Shift savedShift = shiftRepo.save(Shift);

@@ -11,6 +11,7 @@ import com.example.demo.repository.ShiftRepoService;
 import com.example.demo.repository.StoreRepoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -25,7 +26,16 @@ public class ShiftService {
     private final ShiftRepoService shiftRepoService;
     private final StoreRepoService storeRepoService;
 
+    private final RedisCacheService redisCacheService;
+
+    /**
+     * Creates a new Shift.
+     *
+     * @param req The ShiftRequest object.
+     * @return The ShiftResponse object.
+     */
     public ShiftResponse createShift(ShiftRequest req) {
+        log.info("ShiftService createShift request: {}", req);
 
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
@@ -58,7 +68,7 @@ public class ShiftService {
                 .endTime(savedShift.getEndTime())
                 .build();
 
-        log.info("Shift Created : {}", response);
+        log.info("ShiftService createShift Shift Created : {}", response);
 
         return response;
     }
@@ -70,6 +80,15 @@ public class ShiftService {
      * @return The Shift object.
      */
     public ShiftResponse getShiftById(UUID id) {
+        log.info("ShiftService getShiftById requested ID: {}", id);
+
+        ShiftResponse response = redisCacheService.getShiftById(id.toString());
+
+        if (response != null) {
+            log.info("ShiftService getShiftById getting response from redis cache: {}", id);
+            return response;
+        }
+
         Shift shift = shiftRepoService.findShiftById(id);
 
         if (shift == null) {
@@ -77,14 +96,16 @@ public class ShiftService {
             throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
         }
 
-        ShiftResponse response = ShiftResponse.builder()
+        response = ShiftResponse.builder()
                 .id(shift.getId())
                 .storeId(shift.getStore().getId())
                 .shiftName(shift.getName())
                 .startTime(shift.getStartTime())
                 .endTime(shift.getEndTime())
                 .build();
-        log.info("Shift Found : {}", response);
+
+        redisCacheService.saveShiftById(id.toString(), response);
+        log.info("ShiftService getShiftById Shift Saved to Redis Cache : {}", shift);
         return response;
     }
 
@@ -117,7 +138,7 @@ public class ShiftService {
                     .build();
         }
 
-        log.info("Shift Found : {}", response);
+        log.info("ShiftService getShiftByStoreId response received for Shift : {}", response);
         return response;
     }
 
@@ -128,7 +149,10 @@ public class ShiftService {
      * @return The message indicating the status of the deletion.
      */
     public String deleteShiftById(UUID id) {
+        redisCacheService.clearShiftById(id.toString());
         shiftRepoService.deleteShiftById(id);
+        log.info("ShiftService deleteShiftById deleted shift for ID: {}", id);
+
         return "Shift with id : " + id + " Deleted Successfully";
     }
 }

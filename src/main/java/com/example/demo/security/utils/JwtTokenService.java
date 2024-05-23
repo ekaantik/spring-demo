@@ -26,6 +26,9 @@ public class JwtTokenService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
+    @Value("${token.expiration.time}")
+    private long jwtExpirationTime;
+
     /**
      * Generates a JWT (JSON Web Token) for the given user.
      *
@@ -56,10 +59,13 @@ public class JwtTokenService {
         claims.put("roles", roleList.toString());
 
         // Generate JWT token with provided claims and signing key
+
+        Date expirationTime = new Date(System.currentTimeMillis() + jwtExpirationTime);
+
         String token = Jwts.builder()
                 .setIssuer("Demo")
                 .setClaims(claims)
-                .setExpiration(cal.getTime())
+                .setExpiration(expirationTime)
                 .setIssuedAt(today)
                 .signWith(getSigningKey())
                 .compact();

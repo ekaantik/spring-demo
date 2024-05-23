@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Service
 @Slf4j
 public class ApiUsageRepoService {
@@ -38,6 +41,8 @@ public class ApiUsageRepoService {
             long endTime = System.currentTimeMillis();
             long timeTaken =  endTime - startTime;
 
+            responseBody = isValidUTF8(responseBody) ? responseBody : null;
+
             ApiUsage apiUsage = ApiUsage.builder()
                     .userId(userId)
                     .requestMethod(request.getMethod())
@@ -54,7 +59,19 @@ public class ApiUsageRepoService {
         }
         catch (Exception ex) {
             log.error("Failed to create AssetDetails, Exception : " + ex.getMessage(), ex);
-            throw new PersistenceException("Failed To create AssetDetails record into database!", ex);
+            throw new PersistenceException("Failed To create record into database!", ex);
         }
     }
+
+
+    public static boolean isValidUTF8(String input) {
+        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+        try {
+            encoder.encode(java.nio.CharBuffer.wrap(input));
+            return true;
+        } catch (java.nio.charset.CharacterCodingException e) {
+            return false;
+        }
+    }
+
 }

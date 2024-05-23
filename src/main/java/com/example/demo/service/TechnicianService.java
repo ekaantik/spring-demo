@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import com.example.demo.pojos.response.ManagerResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class TechnicianService {
     private final JwtTokenService jwtTokenService;
     private final UserRepoService userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RedisCacheService redisCacheService;
 
     /**
      * Creates a new technician user associated with a manager user and returns the
@@ -44,7 +46,7 @@ public class TechnicianService {
      */
     @Transactional
     public TechnicianResponse createTechnician(String token, TechnicianRequest technicianRequest) {
-
+        log.info("TechnicianService createTechnician request: {}", technicianRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User managedByUser = userRepo.findById(userId);
@@ -74,6 +76,8 @@ public class TechnicianService {
         Technician technician = Technician.builder()
                 .managedByUser(managedByUser)
                 .technicianUser(savedUser)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
 
         // Saving Technician
@@ -88,8 +92,7 @@ public class TechnicianService {
                 .managedById(technician.getManagedByUser().getId())
                 .build();
 
-        log.info("Technician Created : {}", technicianResponse);
-
+        log.info("TechnicianService createTechnician Created : {}", technicianResponse);
         return technicianResponse;
     }
 
@@ -100,6 +103,13 @@ public class TechnicianService {
      * @return The Technician object.
      */
     public TechnicianResponse getTechnicianById(UUID id) {
+        log.info("TechnicianService getTechnicianById requested Id : {}", id);
+        TechnicianResponse response = redisCacheService.getTechnicianById(id);
+
+        if (response != null){
+            log.info("TechnicianService getTechnicianById getting response from redis cache: {}", response);
+            return response;
+        }
         Technician Technician = technicianRepoService.findTechnicianById(id);
 
         if (Technician == null) {
@@ -115,7 +125,9 @@ public class TechnicianService {
                 .managedById(Technician.getManagedByUser().getId())
                 .build();
 
-        log.info("Technician Found : {}", technicianResponse);
+        log.info("TechnicianService getTechnicianById received Technician response : {}", technicianResponse);
+        redisCacheService.saveTechnicianById(id.toString(), technicianResponse);
+        log.info("TechnicianService getTechnicianById technician Saved to Redis Cache : {}", Technician);
         return technicianResponse;
     }
 
@@ -127,6 +139,7 @@ public class TechnicianService {
      */
     public String deleteTechnicianById(UUID id) {
         technicianRepoService.deleteTechnicianById(id);
+        log.info("TechnicianService deleteTechnicianById id {} deleted successfully", id);
         return "Technician Deleted Successfully";
     }
 }

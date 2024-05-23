@@ -11,18 +11,14 @@ import com.example.demo.repository.ManagerRepoService;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
-
-import jakarta.transaction.TransactionManager;
+import com.example.demo.service.RedisCacheService;
 import jakarta.transaction.Transactional;
-
-import java.time.ZonedDateTime;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -34,6 +30,7 @@ public class ManagerService {
     private final JwtTokenService jwtTokenService;
     private final UserRepoService userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RedisCacheService redisCacheService;
 
     /**
      * Creates a new manager user associated with a vendor user and returns the
@@ -46,6 +43,7 @@ public class ManagerService {
     @Transactional
     public ManagerResponse createManager(String token, ManagerRequest managerRequest) {
 
+        log.info("ManagerService createManager request: {}", managerRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
@@ -77,6 +75,7 @@ public class ManagerService {
                 .updatedAt(ZonedDateTime.now())
                 .build();
 
+
         // Saving Manager
         Manager savedManager = managerRepoService.save(manager);
 
@@ -89,7 +88,7 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
-        log.info("Manager Created : {}", managerResponse);
+        log.info("ManagerService createManager Manager Created : {}", managerResponse);
 
         return managerResponse;
     }
@@ -101,6 +100,14 @@ public class ManagerService {
      * @return The manager object.
      */
     public ManagerResponse getManagerById(UUID id) {
+        log.info("ManagerService getManagerById requested ID: {}", id);
+//        ManagerResponse response = redisCacheService.getManagerById(id);
+//
+//        if (response != null) {
+//            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
+//            return response;
+//        }
+
         Manager manager = managerRepoService.findManagerById(id);
 
         if (manager == null) {
@@ -116,7 +123,9 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
-        log.info("Manager Found : {}", managerResponse);
+        log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
+//        redisCacheService.saveManagerById(id.toString(), managerResponse);
+        log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
     }
 
@@ -127,7 +136,9 @@ public class ManagerService {
      * @return The message indicating the status of the deletion.
      */
     public String deleteManagerById(UUID id) {
+        log.info("ManagerService deleteManagerById requested ID: {}", id);
         managerRepoService.deleteManagerById(id);
+        log.info("ManagerService deleteManagerById Manager deleted successfully.");
         return "Manager Deleted Successfully";
     }
 
