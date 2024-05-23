@@ -106,8 +106,6 @@ public class ShiftService {
     public ShiftResponse getShiftByStoreId(UUID id) {
         Store store = storeRepoService.findStoreById(id);
         Shift shift = shiftRepoService.findShiftByStoreId(store.getId());
-        log.info("ShiftService getShiftByStoreId requested Store ID: {}", id);
-        log.info("ShiftService getShiftByStoreId recieved ID of shift by store: {}", shift)
 
         ShiftResponse response = new ShiftResponse();
         if (!Objects.isNull(shift)) {
