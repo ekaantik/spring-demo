@@ -3,7 +3,9 @@ package com.example.demo.security.service;
 import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.exception.AlreadyExistsException;
+import com.example.demo.exception.Details;
 import com.example.demo.exception.InvalidCredentialException;
+import com.example.demo.exception.RequestValidationException;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
 import com.example.demo.security.dto.UserAuthResponse;
@@ -52,9 +54,12 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         if (existingUser != null) {
             log.error("User already exists with PhoneNumber : {}", req.getPhoneNumber());
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
 
-            throw new AlreadyExistsException(
-                    ErrorCode.ALREADY_EXISTS, "User", req.getPhoneNumber());
+            throw new RequestValidationException(
+                    "User already exists with PhoneNumber : " + req.getPhoneNumber(),
+                    HttpStatus.BAD_REQUEST.value(),
+                    details);
         }
 
         User user = User.builder()

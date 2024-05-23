@@ -26,7 +26,7 @@ import jakarta.persistence.PersistenceException;
 
 @RestControllerAdvice
 @Slf4j
-public class ApiExceptionHandler {
+public class ApiExceptionHandler extends Exception{
 
         @ExceptionHandler(DataAccessException.class)
         public ResponseEntity<GenericResponse> handleDataAccessException(DataAccessException ex,

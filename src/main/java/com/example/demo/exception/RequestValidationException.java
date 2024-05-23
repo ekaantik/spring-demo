@@ -19,4 +19,9 @@ public class RequestValidationException extends BaseException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    public RequestValidationException(String message, int responseCode, Details details) {
+        super(message, responseCode, details);
+
+    }
+
 }
