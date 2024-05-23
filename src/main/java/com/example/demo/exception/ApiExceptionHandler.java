@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestControllerAdvice // (basePackages = {""})
 @Slf4j
-public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler  extends Exception { // ResponseEntityExceptionHandler {
 
         // @ExceptionHandler(MethodArgumentNotValidException.class)
         // public ResponseEntity<?> notValid(MethodArgumentNotValidException ex,
@@ -66,8 +66,6 @@ public class ApiExceptionHandler { // extends ResponseEntityExceptionHandler {
         @ExceptionHandler({ RequestValidationException.class })
         public ResponseEntity<GenericResponse> handleRequestValidationException(final RequestValidationException ex,
                         WebRequest request) {
-
-                // Logging
                 log.info("RequestValidationException in exception handler", ex);
 
                 // Build Header

@@ -54,6 +54,14 @@ public class BaseException extends RuntimeException {
         this.details = details;
     }
 
+    public BaseException(String message, Integer responseCode, Details details) {
+        this.timestamp = null;
+        this.message = message;
+        this.responseCode = responseCode;
+        this.details = details;
+    }
+
+
     public BaseException(ZonedDateTime timestamp, String message) {
         super(null, null, false, false);
         this.timestamp = timestamp;
