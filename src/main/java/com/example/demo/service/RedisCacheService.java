@@ -43,7 +43,7 @@ public class RedisCacheService {
     public void saveShiftById(String key, ShiftResponse value) {
 
         if (Objects.isNull(key)) {
-            log.debug("Key is null. Cannot save shift response to Redis Cache.");
+            log.info("Key is null. Cannot save shift response to Redis Cache.");
             return;
         }
 
@@ -59,7 +59,7 @@ public class RedisCacheService {
     public ShiftResponse getShiftById(String key) {
 
         if (redisEnabled) {
-            log.debug("Getting ShiftResponse from Redis Cache for key : {}", key);
+            log.info("Getting ShiftResponse from Redis Cache for key : {}", key);
             return shiftTemplate.opsForValue().get(SHIFT_BY_ID_KEY_PREFIX + key);
         } else {
             return null;
@@ -79,7 +79,7 @@ public class RedisCacheService {
     public UserResponse getUserById(String key) {
 
         if (redisEnabled) {
-            log.debug("Getting UserResponse from Redis Cache for key : {}", key);
+            log.info("Getting UserResponse from Redis Cache for key : {}", key);
             return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
         } else {
             return null;
@@ -89,7 +89,7 @@ public class RedisCacheService {
     public void saveUserById(String key, UserResponse value) {
 
         if (Objects.isNull(key)) {
-            log.debug("Key is null. Cannot save vendor response to Redis Cache.");
+            log.info("Key is null. Cannot save vendor response to Redis Cache.");
             return;
         }
 
@@ -99,7 +99,7 @@ public class RedisCacheService {
     public ManagerResponse getManagerById(UUID key) {
 
         if (redisEnabled) {
-            log.debug("Getting ManagerResponse from Redis Cache for key : {}", key);
+            log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
             return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
         } else {
             return null;
@@ -109,7 +109,7 @@ public class RedisCacheService {
     public void saveManagerById(String key, ManagerResponse value) {
 
         if (Objects.isNull(key)) {
-            log.debug("Key is null. Cannot save manager response to Redis Cache.");
+            log.info("Key is null. Cannot save manager response to Redis Cache.");
             return;
         }
 
@@ -119,7 +119,7 @@ public class RedisCacheService {
     public TechnicianResponse getTechnicianById(UUID key) {
 
         if (redisEnabled) {
-            log.debug("Getting TechnicianResponse from Redis Cache for key : {}", key);
+            log.info("Getting TechnicianResponse from Redis Cache for key : {}", key);
             return technicianTemplate.opsForValue().get(TECHNICIAN_BY_ID_KEY_PREFIX + key);
         } else {
             return null;
@@ -129,7 +129,7 @@ public class RedisCacheService {
     public void saveTechnicianById(String key, TechnicianResponse value) {
 
         if (Objects.isNull(key)) {
-            log.debug("Key is null. Cannot save technician response to Redis Cache.");
+            log.info("Key is null. Cannot save technician response to Redis Cache.");
             return;
         }
 
