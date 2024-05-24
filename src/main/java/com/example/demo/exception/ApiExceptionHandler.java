@@ -185,7 +185,6 @@ public class ApiExceptionHandler extends Exception{
                                 .responseCode(HttpStatus.BAD_REQUEST.value())
                                 .details(details)
                                 .build();
-
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
 
