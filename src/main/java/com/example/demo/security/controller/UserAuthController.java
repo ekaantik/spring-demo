@@ -5,6 +5,7 @@ import com.example.demo.security.dto.UserAuthResponse;
 import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.service.AuthServicesImpl;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UserAuthController {
     public AuthServicesImpl authServices;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserAuthResponse> signUp(@RequestBody UserSignUpRequest req) {
+    public ResponseEntity<UserAuthResponse> signUp(@Valid @RequestBody UserSignUpRequest req) {
         UserAuthResponse response = authServices.performSignUp(req);
         return ResponseEntity.ok(response);
     }
