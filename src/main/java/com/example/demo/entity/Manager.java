@@ -2,11 +2,14 @@ package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import lombok.NonNull;
-
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.example.demo.security.entity.User;
 
@@ -28,6 +31,6 @@ public class Manager extends BaseUuidEntity {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
-    @NonNull
+    @NotNull
     private User managerUser;
 }

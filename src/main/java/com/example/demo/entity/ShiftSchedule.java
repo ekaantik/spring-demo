@@ -26,7 +26,7 @@ public class ShiftSchedule extends BaseUuidEntity {
     @Column(name = "store_id")
     private UUID storeId;
 
-    @Column(name = "shift_id")
+    @Column(name = "shift_id" , unique = true)
     private UUID shiftId;
 
     @Column(name = "name")

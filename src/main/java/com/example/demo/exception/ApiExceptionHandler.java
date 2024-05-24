@@ -33,7 +33,7 @@ public class ApiExceptionHandler extends Exception{
                         WebRequest request) {
 
                 // Logging
-                log.info("DataAccessException in exception handler", ex);
+                log.info("DataAccessException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -59,7 +59,7 @@ public class ApiExceptionHandler extends Exception{
                         EmptyResultDataAccessException ex, WebRequest request) {
 
                 // Logging
-                log.info("EmptyResultDataAccessException in exception handler", ex);
+                log.info("EmptyResultDataAccessException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -86,7 +86,7 @@ public class ApiExceptionHandler extends Exception{
                         DataIntegrityViolationException ex, WebRequest request) {
 
                 // Logging
-                log.info("DataIntegrityViolationException in exception handler", ex);
+                log.info("DataIntegrityViolationException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -112,7 +112,7 @@ public class ApiExceptionHandler extends Exception{
                         WebRequest request) {
 
                 // Logging
-                log.info("TransactionException in exception handler", ex);
+                log.info("TransactionException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -139,7 +139,7 @@ public class ApiExceptionHandler extends Exception{
                         WebRequest request) {
 
                 // Logging
-                log.info("TransactionSystemException in exception handler", ex);
+                log.info("TransactionSystemException in exception handler {}", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -165,7 +165,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleConstraintViolationException(ConstraintViolationException ex) {
 
                 // Logging
-                log.info("ConstraintViolationException in exception handler", ex);
+                log.info("ConstraintViolationException in exception handler {}", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -192,7 +192,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handlePersistanceException(PersistenceException ex) {
 
                 // Logging
-                log.info("PersistenceException in exception handler", ex);
+                log.info("PersistenceException in exception handler {}", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -217,7 +217,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleValidationException(MethodArgumentNotValidException ex) {
 
                 // Logging
-                log.info("MethodArgumentNotValidException in exception handler", ex);
+                log.info("MethodArgumentNotValidException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -251,7 +251,7 @@ public class ApiExceptionHandler extends Exception{
                         WebRequest request) {
 
                 // Logging
-                log.info("RequestValidationException in exception handler", ex);
+                log.info("RequestValidationException in exception handler");
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -279,7 +279,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleNotFoundException(final NotFoundException ex, WebRequest request) {
 
                 // Logging
-                log.info("NotFoundException in exception handler", ex);
+                log.info("NotFoundException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -300,7 +300,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleAlreadyExistsException(final AlreadyExistsException ex,
                         WebRequest request) {
                 // Logging
-                log.info("AlreadyExistsException in exception handler", ex);
+                log.info("AlreadyExistsException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -328,7 +328,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleInvalidCredentialException(final InvalidCredentialException ex,
                         WebRequest request) {
                 // Logging
-                log.info("InvalidCredentialException in exception handler", ex);
+                log.info("InvalidCredentialException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -349,7 +349,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleInvalidTokenException(final InvalidTokenException ex,
                         WebRequest request) {
                 // Logging
-                log.info("InvalidTokenException in exception handler", ex);
+                log.info("InvalidTokenException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -370,7 +370,7 @@ public class ApiExceptionHandler extends Exception{
         public ResponseEntity<GenericResponse> handleIllegalArgumentException(final IllegalArgumentException ex,
                         WebRequest request) {
                 // Logging
-                log.info("IllegalArgumentException in exception handler", ex);
+                log.info("IllegalArgumentException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();
@@ -396,7 +396,7 @@ public class ApiExceptionHandler extends Exception{
                         final HttpMessageNotReadableException ex,
                         WebRequest request) {
                 // Logging
-                log.info("HttpMessageNotReadableException in exception handler", ex);
+                log.info("HttpMessageNotReadableException in exception handler {} ", ex.getMessage());
 
                 // Build Header
                 HttpHeaders headers = new HttpHeaders();

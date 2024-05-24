@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +42,7 @@ public class Store extends BaseUuidEntity implements Serializable {
     private String address;
 
     @Column(name = "service_type")
-    @NonNull
+    @NotNull
     private ServiceType serviceType;
 
     @ManyToOne
@@ -48,6 +50,7 @@ public class Store extends BaseUuidEntity implements Serializable {
     private User vendorUser;
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Shift> shiftList;
 
 }
