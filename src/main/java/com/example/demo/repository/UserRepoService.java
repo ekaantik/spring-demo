@@ -15,9 +15,10 @@ public class UserRepoService {
 
     private final UserRepo userRepo;
 
-    public UserRepoService(UserRepo userRepo){
+    public UserRepoService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
+
     /**
      * Handles Repo Exception & finds a User by id.
      *
@@ -31,18 +32,15 @@ public class UserRepoService {
                 User user = optionalUser.get();
                 log.info("Successfully found User with id " + user.getId());
                 return user;
-            }
-            else {
+            } else {
                 log.info("No User found with id " + id + ", returning null!");
                 return null;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find User with Id " + id + ".", ex);
         }
     }
-
 
     public User findByPhoneNumber(String phoneNumber) {
         try {
@@ -51,15 +49,13 @@ public class UserRepoService {
                 User user = optionalUser.get();
                 log.info("Successfully found User with phoneNumber " + user.getPhoneNumber());
                 return user;
-            }
-            else {
+            } else {
                 log.info("No User found with phoneNumber  " + phoneNumber + ", returning null!");
                 return null;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find User with PhoneNumber " + phoneNumber + ".", ex);
         }
     }
 
@@ -68,20 +64,19 @@ public class UserRepoService {
             Optional<User> optionalUser = userRepo.findByPhoneNumberAndPassword(phoneNumber, password);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                log.info("Successfully found User with phoneNumber {} & password  {} ", user.getPhoneNumber() ,  user.getPassword());
+                log.info("Successfully found User with phoneNumber {} & password  {} ", user.getPhoneNumber(),
+                        user.getPassword());
                 return user;
-            }
-            else {
-                log.info("No User found with phoneNumber phoneNumber {} & password  {} ", phoneNumber , password);
+            } else {
+                log.info("No User found with phoneNumber phoneNumber {} & password  {} ", phoneNumber, password);
                 return null;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find User with PhoneNumber " + phoneNumber + ".", ex);
         }
     }
- 
+
     /**
      * Handles Repo Exception & saves a User entity.
      *
@@ -93,8 +88,7 @@ public class UserRepoService {
             User savedUser = userRepo.save(user);
             log.info("Successfully saved User with id " + savedUser.getId());
             return savedUser;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Failed to create User, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create User record into database!", ex);
         }
@@ -109,10 +103,10 @@ public class UserRepoService {
         try {
             userRepo.deleteById(id);
             log.info("Successfully deleted User with id " + id);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Unexpected error occured!", ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete User with Id " + id + ".", ex);
+
         }
     }
 
@@ -120,27 +114,26 @@ public class UserRepoService {
      * Handles Repo Exception & Deletes all User for a Customer.
      *
      */
-//    public void deleteUserDetailsById(CustomerDetails customerDetails) {
-//        //Trying to delete all User for a customer
-//        try {
-//
-//            //All User deleted succesfully
-//            List<User> users = userRepo.findByCustomerDetails(customerDetails);
-//            userRepo.deleteAll(users);
-//        }
-//        catch (Exception ex) {
-//            log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-//            throw new PersistenceException(ex);
-//        }
-//    }
+    // public void deleteUserDetailsById(CustomerDetails customerDetails) {
+    // //Trying to delete all User for a customer
+    // try {
+    //
+    // //All User deleted succesfully
+    // List<User> users = userRepo.findByCustomerDetails(customerDetails);
+    // userRepo.deleteAll(users);
+    // }
+    // catch (Exception ex) {
+    // log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
+    // throw new PersistenceException(ex);
+    // }
+    // }
 
     public void delete(User user) {
         try {
             userRepo.delete(user);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete User with Id " + user.getId() + ".", ex);
         }
     }
 }

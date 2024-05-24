@@ -1,5 +1,7 @@
 package com.example.demo.security.utils;
 
+import com.example.demo.constants.ErrorCode;
+import com.example.demo.exception.InvalidTokenException;
 import com.example.demo.security.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -81,23 +83,15 @@ public class JwtTokenService {
     // Check if the token is valid and not expired
     public boolean validateToken(String token) {
         try {
-            log.info("####### JwtTokenService : validateToken ");
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey()).build()
                     .parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException ex) {
-            log.error("Invalid JWT token");
-        } catch (ExpiredJwtException ex) {
-            log.error("Expired JWT token");
-        } catch (UnsupportedJwtException ex) {
-            log.error("Unsupported JWT token");
-        } catch (IllegalArgumentException ex) {
-            log.error("JWT claims string is empty");
-        } catch (SignatureException e) {
-            log.error("there is an error with the signature of you token ");
+        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException
+                | SignatureException ex) {
+            log.error("Error Validating Token : " + ex.getMessage());
+            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
         }
-        return false;
     }
 
     private Key getSigningKey() {

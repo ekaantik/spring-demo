@@ -5,20 +5,22 @@ import com.example.demo.security.dto.UserAuthResponse;
 import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.service.AuthServicesImpl;
 
-import org.apache.catalina.connector.Response;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/auth")
+@Slf4j
 public class UserAuthController {
 
     @Autowired
     public AuthServicesImpl authServices;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserAuthResponse> signUp(@RequestBody UserSignUpRequest req) {
+    public ResponseEntity<UserAuthResponse> signUp(@Valid @RequestBody UserSignUpRequest req) {
         UserAuthResponse response = authServices.performSignUp(req);
         return ResponseEntity.ok(response);
     }
@@ -29,9 +31,10 @@ public class UserAuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("refresh-token")
-    public ResponseEntity<UserAuthResponse> refreshToken(@RequestParam("token") String token) {
-        return ResponseEntity.ok(authServices.refreshToken(token));
+    @GetMapping("refresh-token")
+    public ResponseEntity<UserAuthResponse> refreshToken(@RequestHeader(name = "Authorization") String token) {
+        String jwtToken = token.split(" ")[1].trim();
+        return ResponseEntity.ok(authServices.refreshToken(jwtToken));
     }
 
     // @PostMapping("/reset-password")
@@ -41,11 +44,5 @@ public class UserAuthController {
     // authServices.resetPassword(token, req);
     // return ResponseEntity.ok("Password changed successfully!");
     // }
-
-    // TODO : Remove this unnecessary endpoint
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Ok");
-    }
 
 }

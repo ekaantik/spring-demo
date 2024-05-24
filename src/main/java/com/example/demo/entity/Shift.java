@@ -1,11 +1,10 @@
 package com.example.demo.entity;
 
 import com.example.demo.entity.base.BaseUuidEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
@@ -27,14 +26,19 @@ public class Shift extends BaseUuidEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "store_details_id")
+    @JsonBackReference
+    @ToString.Exclude
     private Store store;
 
     @Column(name = "name")
+    @NotNull
     private String name;
 
     @Column(name = "start_time")
+    @NotNull
     private LocalTime startTime;
 
     @Column(name = "end_time")
+    @NotNull
     private LocalTime endTime;
 }

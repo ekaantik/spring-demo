@@ -7,8 +7,11 @@ import com.example.demo.pojos.response.ManagerResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.entity.Technician;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.request.TechnicianRequest;
 import com.example.demo.pojos.response.TechnicianResponse;
 import com.example.demo.repository.TechnicianRepoService;
@@ -16,6 +19,7 @@ import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,11 +34,29 @@ public class TechnicianService {
     private final PasswordEncoder passwordEncoder;
     private final RedisCacheService redisCacheService;
 
+    /**
+     * Creates a new technician user associated with a manager user and returns the
+     * technician response.
+     * 
+     * @param token             The JWT token containing user information.
+     * @param technicianRequest The request object containing technician
+     *                          information.
+     * @return The response object containing details of the created technician
+     *         user.
+     */
+    @Transactional
     public TechnicianResponse createTechnician(String token, TechnicianRequest technicianRequest) {
         log.info("TechnicianService createTechnician request: {}", technicianRequest);
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User managedByUser = userRepo.findById(userId);
+
+        // Managed User Not Found
+        if (managedByUser == null) {
+            log.error("Managed By User Not Found with Id : {}", userId);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, userId, Constants.FIELD_ID,
+                    Constants.TABLE_VENDOR + "/" + Constants.TABLE_MANAGER);
+        }
 
         // Creating Technician User
         User user = User.builder()
@@ -50,7 +72,6 @@ public class TechnicianService {
         // Saving Technician User
         User savedUser = userRepo.save(user);
 
-        // TODO : if Technician failed to create then rollaback the user creation
         // Creating Technician
         Technician technician = Technician.builder()
                 .managedByUser(managedByUser)
@@ -90,6 +111,11 @@ public class TechnicianService {
             return response;
         }
         Technician Technician = technicianRepoService.findTechnicianById(id);
+
+        if (Technician == null) {
+            log.error("Technician Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_TECHNICIAN);
+        }
 
         TechnicianResponse technicianResponse = TechnicianResponse.builder()
                 .id(Technician.getId())

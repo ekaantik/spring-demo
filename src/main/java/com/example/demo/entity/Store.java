@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +10,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
+
 
 import com.example.demo.constants.ServiceType;
 import com.example.demo.entity.base.BaseUuidEntity;
@@ -39,7 +42,7 @@ public class Store extends BaseUuidEntity implements Serializable {
     private String address;
 
     @Column(name = "service_type")
-    @NonNull
+    @NotNull
     private ServiceType serviceType;
 
     @ManyToOne
@@ -47,6 +50,7 @@ public class Store extends BaseUuidEntity implements Serializable {
     private User vendorUser;
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Shift> shiftList;
 
 }

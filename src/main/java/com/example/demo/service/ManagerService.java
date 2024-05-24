@@ -1,25 +1,24 @@
 package com.example.demo.service;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.entity.Manager;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.request.ManagerRequest;
 import com.example.demo.pojos.response.ManagerResponse;
-import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.ManagerRepoService;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
-
 import com.example.demo.service.RedisCacheService;
-
-import java.time.ZonedDateTime;
-
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -41,6 +40,7 @@ public class ManagerService {
      * @param managerRequest The request object containing manager information.
      * @return The response object containing details of the created manager user.
      */
+    @Transactional
     public ManagerResponse createManager(String token, ManagerRequest managerRequest) {
 
         log.info("ManagerService createManager request: {}", managerRequest);
@@ -48,7 +48,10 @@ public class ManagerService {
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
 
-        //TODO: Throw Error If Vendor User Not Found
+        if (vendorUser == null) {
+            log.error("Vendor User Not Found for Id : {}", userId);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, userId, Constants.FIELD_ID, Constants.TABLE_VENDOR);
+        }
 
         // Creating Manager User
         User user = User.builder()
@@ -64,8 +67,6 @@ public class ManagerService {
         // Saving Manager User
         User savedUser = userRepo.save(user);
 
-        // TODO : if manager failed to create then rollaback the user creation
-        // Create into 1 method and make @Transactional
         // Creating Manager
         Manager manager = Manager.builder()
                 .vendorUser(vendorUser)
@@ -100,14 +101,19 @@ public class ManagerService {
      */
     public ManagerResponse getManagerById(UUID id) {
         log.info("ManagerService getManagerById requested ID: {}", id);
-        ManagerResponse response = redisCacheService.getManagerById(id);
-
-        if (response != null) {
-            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
-            return response;
-        }
+//        ManagerResponse response = redisCacheService.getManagerById(id);
+//
+//        if (response != null) {
+//            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
+//            return response;
+//        }
 
         Manager manager = managerRepoService.findManagerById(id);
+
+        if (manager == null) {
+            log.error("Manager Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_MANAGER);
+        }
 
         ManagerResponse managerResponse = ManagerResponse.builder()
                 .id(manager.getId())
@@ -118,10 +124,9 @@ public class ManagerService {
                 .build();
 
         log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
-        redisCacheService.saveManagerById(id.toString(), managerResponse);
+//        redisCacheService.saveManagerById(id.toString(), managerResponse);
         log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
-
     }
 
     /**
