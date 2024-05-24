@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -136,6 +137,14 @@ public class AuthServicesImpl implements AuthServicesIf {
         }
 
         User user = userRepo.findById(vendorId);
+
+        if(Objects.isNull(user)){
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
+            throw new RequestValidationException(
+                    "Invalid vendorId : " + vendorId,
+                    HttpStatus.BAD_REQUEST.value(),
+                    details);
+        }
 
         response = UserResponse.builder()
                 .firstName(user.getFirstName())
