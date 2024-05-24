@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class StoreController {
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<StoreResponse> createStore(@RequestHeader("Authorization") String token,
-            @RequestBody StoreRequest req) {
+                                                     @Valid @RequestBody StoreRequest req) {
         log.info("StoreController createStore create store request was called");
         return ResponseEntity.ok(storeService.createStore(token, req));
     }

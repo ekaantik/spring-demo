@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class ManagerController {
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<ManagerResponse> createManager(@RequestHeader("Authorization") String token,
-            @RequestBody ManagerRequest req) {
+            @Valid @RequestBody ManagerRequest req) {
         log.info("ManagerController createManager creating manager request was called");
         return ResponseEntity.ok(managerService.createManager(token, req));
     }

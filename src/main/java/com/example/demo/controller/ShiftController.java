@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ShiftController {
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<ShiftResponse> createShift(@RequestBody ShiftRequest req) {
+    public ResponseEntity<ShiftResponse> createShift(@Valid @RequestBody ShiftRequest req) {
         log.info("ShiftController createShift create shift request was called");
         return ResponseEntity.ok(shiftService.createShift(req));
     }
