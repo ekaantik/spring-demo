@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -30,11 +31,14 @@ public class Shift extends BaseUuidEntity implements Serializable {
     private Store store;
 
     @Column(name = "name")
+    @NotNull
     private String name;
 
     @Column(name = "start_time")
+    @NotNull
     private LocalTime startTime;
 
     @Column(name = "end_time")
+    @NotNull
     private LocalTime endTime;
 }
