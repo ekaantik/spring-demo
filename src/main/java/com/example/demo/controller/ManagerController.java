@@ -4,6 +4,7 @@ import com.example.demo.pojos.request.ManagerRequest;
 import com.example.demo.pojos.response.ManagerResponse;
 import com.example.demo.service.ManagerService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
