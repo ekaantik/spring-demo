@@ -33,8 +33,6 @@ public class UserAuthController {
 
     @GetMapping("refresh-token")
     public ResponseEntity<UserAuthResponse> refreshToken(@RequestHeader(name = "Authorization") String token) {
-
-        log.info("Refresh otkebn : {} ",token);
         String jwtToken = token.split(" ")[1].trim();
         return ResponseEntity.ok(authServices.refreshToken(jwtToken));
     }
