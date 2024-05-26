@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -71,6 +72,57 @@ public class ShiftService {
         log.info("ShiftService createShift Shift Created : {}", response);
 
         return response;
+    }
+
+    /**
+     * Updates a Shift.
+     * 
+     * @param id  The id of the Shift.
+     * @param req The ShiftRequest object.
+     * @return The ShiftResponse object.
+     */
+    public ShiftResponse updateShift(UUID id, ShiftRequest req) {
+
+        log.info("ShiftService updateShift requested ID: {}", id);
+        log.info("ShiftService updateShift requested Shift: {}", req);
+
+        // Shift & Store from request
+        Shift shift = shiftRepoService.findShiftById(id);
+        Store store = storeRepoService.findStoreById(req.getStoreId());
+
+        // Shift Not Found
+        if (shift == null) {
+            log.error("Shift Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
+        }
+
+        // Updating Shift
+        if (Optional.ofNullable(req.getStoreId()).isPresent())
+            shift.setStore(store);
+        Optional.ofNullable(req.getShiftName()).ifPresent(shift::setName);
+        Optional.ofNullable(req.getStartTime()).ifPresent(shift::setStartTime);
+        Optional.ofNullable(req.getEndTime()).ifPresent(shift::setEndTime);
+
+        shift.setUpdatedAt(ZonedDateTime.now());
+
+        // Saving Shift
+        Shift savedShift = shiftRepoService.save(shift);
+
+        // Creating Shift Response
+        ShiftResponse shiftResponse = ShiftResponse.builder()
+                .id(savedShift.getId())
+                .storeId(savedShift.getStore().getId())
+                .shiftName(savedShift.getName())
+                .startTime(savedShift.getStartTime())
+                .endTime(savedShift.getEndTime())
+                .build();
+
+        redisCacheService.saveShiftById(id.toString(), shiftResponse);
+
+        log.info("ShiftService updateShift Shift Updated : {}", shiftResponse);
+
+        return shiftResponse;
+
     }
 
     /**

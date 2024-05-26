@@ -30,6 +30,14 @@ public class ManagerController {
         return ResponseEntity.ok(managerService.createManager(token, req));
     }
 
+    @PutMapping("/update-by-id/{id}")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<ManagerResponse> updateManagerById(@PathVariable UUID id,
+            @RequestBody ManagerRequest req) {
+        log.info("ManagerController updateManagerById update manager request was called");
+        return ResponseEntity.ok(managerService.updateManagerById(id, req));
+    }
+
     @GetMapping("/get-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER','TECHNICIAN')")
     public ResponseEntity<ManagerResponse> getManagerById(@RequestParam UUID id) {

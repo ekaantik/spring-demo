@@ -21,7 +21,8 @@ public class ShiftScheduleController {
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<ShiftScheduleResponse> createShiftScheduleSchedule(@Valid @RequestBody ShiftScheduleRequest req) {
+    public ResponseEntity<ShiftScheduleResponse> createShiftScheduleSchedule(
+            @Valid @RequestBody ShiftScheduleRequest req) {
         log.info("ShiftScheduleController createShiftScheduleSchedule create shift schedule request was called");
         return ResponseEntity.ok(shiftScheduleService.createShiftSchedule(req));
     }
@@ -33,9 +34,9 @@ public class ShiftScheduleController {
         return ResponseEntity.ok(shiftScheduleService.getShiftScheduleById(id));
     }
 
-    @PutMapping("update-by-id")
+    @PutMapping("update-by-id/{id}")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<ShiftScheduleResponse> updateShiftScheduleScheduleById(@RequestParam UUID id,
+    public ResponseEntity<ShiftScheduleResponse> updateShiftScheduleScheduleById(@PathVariable UUID id,
             @RequestBody ShiftScheduleRequest req) {
         log.info("ShiftScheduleController updateShiftScheduleScheduleById update shift schedule request was called");
         return ResponseEntity.ok(shiftScheduleService.updateShiftScheduleById(id, req));

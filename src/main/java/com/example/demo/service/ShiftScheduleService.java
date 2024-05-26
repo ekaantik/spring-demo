@@ -25,6 +25,12 @@ public class ShiftScheduleService {
     private final ShiftScheduleRepoService shiftScheduleRepoService;
     private final StoreRepoService storeRepoService;
 
+    /**
+     * Creates a new ShiftSchedule.
+     * 
+     * @param req The ShiftScheduleRequest object.
+     * @return The ShiftScheduleResponse object.
+     */
     public ShiftScheduleResponse createShiftSchedule(ShiftScheduleRequest req) {
         log.info("ShiftScheduleService createShiftSchedule request: {}", req);
 
@@ -69,37 +75,17 @@ public class ShiftScheduleService {
     }
 
     /**
-     * Finds a ShiftSchedule by its id.
+     * Updates a ShiftSchedule by its id.
      * 
-     * @param id The id of the ShiftSchedule.
-     * @return The ShiftSchedule object.
+     * @param id  The id of the ShiftSchedule.
+     * @param req The ShiftScheduleRequest object.
+     * @return The ShiftScheduleResponse object.
      */
-    public ShiftScheduleResponse getShiftScheduleById(UUID id) {
-        log.info("ShiftScheduleService getShiftScheduleById requested ID: {}", id);
-        ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
-
-        if (shiftSchedule == null) {
-            log.error("ShiftSchedule Not Found for Id : {}", id);
-            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
-        }
-
-        ShiftScheduleResponse response = ShiftScheduleResponse.builder()
-                .id(shiftSchedule.getId())
-                .storeId(shiftSchedule.getShiftId())
-                .shiftId(shiftSchedule.getShiftId())
-                .shiftName(shiftSchedule.getName())
-                .date(shiftSchedule.getDate())
-                .startTime(shiftSchedule.getStartTime())
-                .endTime(shiftSchedule.getEndTime())
-                .build();
-
-        log.info("ShiftScheduleService getShiftScheduleById received response for ShiftSchedule : {}", response);
-        return response;
-    }
-
     public ShiftScheduleResponse updateShiftScheduleById(UUID id, ShiftScheduleRequest req) {
-        log.info("ShiftScheduleService updateShiftScheduleById \n request: {}\nrequested ID{}",req, id);
-        // Extracting User from JWT Token
+
+        log.info("ShiftScheduleService updateShiftScheduleById \n request: {}\nrequested ID{}", req, id);
+
+        // ShiftSchedule from Request
         ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
 
         if (shiftSchedule == null) {
@@ -107,6 +93,7 @@ public class ShiftScheduleService {
             throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
         }
 
+        // Updating ShiftSchedule
         Optional.ofNullable(req.getStoreId()).ifPresent(shiftSchedule::setStoreId);
         Optional.ofNullable(req.getShiftId()).ifPresent(shiftSchedule::setShiftId);
         Optional.ofNullable(req.getShiftName()).ifPresent(shiftSchedule::setName);
@@ -132,6 +119,35 @@ public class ShiftScheduleService {
 
         log.info("ShiftScheduleService updateShiftScheduleById ShiftSchedule Updated : {}", response);
 
+        return response;
+    }
+
+    /**
+     * Finds a ShiftSchedule by its id.
+     * 
+     * @param id The id of the ShiftSchedule.
+     * @return The ShiftSchedule object.
+     */
+    public ShiftScheduleResponse getShiftScheduleById(UUID id) {
+        log.info("ShiftScheduleService getShiftScheduleById requested ID: {}", id);
+        ShiftSchedule shiftSchedule = shiftScheduleRepoService.findShiftScheduleById(id);
+
+        if (shiftSchedule == null) {
+            log.error("ShiftSchedule Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
+        }
+
+        ShiftScheduleResponse response = ShiftScheduleResponse.builder()
+                .id(shiftSchedule.getId())
+                .storeId(shiftSchedule.getShiftId())
+                .shiftId(shiftSchedule.getShiftId())
+                .shiftName(shiftSchedule.getName())
+                .date(shiftSchedule.getDate())
+                .startTime(shiftSchedule.getStartTime())
+                .endTime(shiftSchedule.getEndTime())
+                .build();
+
+        log.info("ShiftScheduleService getShiftScheduleById received response for ShiftSchedule : {}", response);
         return response;
     }
 

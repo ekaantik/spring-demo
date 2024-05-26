@@ -1,10 +1,13 @@
 package com.example.demo.security.service;
 
+import com.example.demo.constants.Constants;
 import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.exception.Details;
 import com.example.demo.exception.InvalidCredentialException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.RequestValidationException;
+import com.example.demo.pojos.request.UserRequest;
 import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
@@ -27,6 +30,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +39,6 @@ public class AuthServicesImpl implements AuthServicesIf {
 
     private final AuthenticationManager authenticationManager;
     private final RedisCacheService redisCacheService;
-
 
     @Autowired
     private UserRepoService userRepo;
@@ -58,7 +61,9 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         if (existingUser != null) {
             log.error("User already exists with PhoneNumber : {}", req.getPhoneNumber());
-            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),
+                    ErrorCode.INVALID_DATA.getAppErrorCode(),
+                    String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
 
             throw new RequestValidationException(
                     "User already exists with PhoneNumber : " + req.getPhoneNumber(),
@@ -122,6 +127,48 @@ public class AuthServicesImpl implements AuthServicesIf {
     }
 
     /**
+     * Update the vendor by their ID.
+     *
+     * @param id  The ID of the vendor to update.
+     * @param req The updated vendor information.
+     * @return The updated vendor information.
+     */
+    public UserResponse updateVendor(String token, UserRequest req) {
+
+        log.info("AuthServiceImpl Vendor Token : {}", token);
+        UUID id = jwtTokenService.extractClaimsId(token);
+        User user = userRepo.findById(id);
+
+        // User Not Found
+        if (Objects.isNull(user)) {
+            log.error("User Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_VENDOR);
+        }
+
+        // Update User
+        Optional.ofNullable(req.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(req.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(req.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+        user.setUpdatedAt(ZonedDateTime.now());
+
+        // Save User
+        userRepo.save(user);
+
+        // Create UserResponse
+        UserResponse response = UserResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .userType(user.getUserType().toString())
+                .build();
+
+        // Save User to Redis Cache
+        redisCacheService.saveUserById(id.toString(), response);
+        log.info("User Info Updated to Redis Cache");
+        return response;
+    }
+
+    /**
      * Get the vendor by their ID.
      *
      * @param vendorId The ID of the vendor to retrieve.
@@ -131,15 +178,17 @@ public class AuthServicesImpl implements AuthServicesIf {
         log.info("AuthServiceImpl getVendorById requested Id : {}", vendorId);
         UserResponse response = redisCacheService.getUserById(vendorId.toString());
 
-        if (response != null){
+        if (response != null) {
             log.info("AuthServiceImpl getVendorById getting response from redis cache: {}", response);
             return response;
         }
 
         User user = userRepo.findById(vendorId);
 
-        if(Objects.isNull(user)){
-            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
+        if (Objects.isNull(user)) {
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),
+                    ErrorCode.INVALID_DATA.getAppErrorCode(),
+                    String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
             throw new RequestValidationException(
                     "Invalid vendorId : " + vendorId,
                     HttpStatus.BAD_REQUEST.value(),

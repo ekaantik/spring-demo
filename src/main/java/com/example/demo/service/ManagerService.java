@@ -11,7 +11,6 @@ import com.example.demo.repository.ManagerRepoService;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
-import com.example.demo.service.RedisCacheService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class ManagerService {
     public ManagerResponse createManager(String token, ManagerRequest managerRequest) {
 
         log.info("ManagerService createManager request: {}", managerRequest);
+
         // Extracting User from JWT Token
         UUID userId = jwtTokenService.extractClaimsId(token);
         User vendorUser = userRepo.findById(userId);
@@ -75,7 +77,6 @@ public class ManagerService {
                 .updatedAt(ZonedDateTime.now())
                 .build();
 
-
         // Saving Manager
         Manager savedManager = managerRepoService.save(manager);
 
@@ -88,7 +89,60 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
+        redisCacheService.saveManagerById(savedManager.getId().toString(), managerResponse);
+
         log.info("ManagerService createManager Manager Created : {}", managerResponse);
+
+        return managerResponse;
+    }
+
+    /**
+     * Updates a manager user by its id and returns the manager response.
+     * 
+     * @param id             The id of the manager.
+     * @param managerRequest The request object containing manager information.
+     * @return The response object containing details of the updated manager user.
+     */
+    public ManagerResponse updateManagerById(UUID id, ManagerRequest managerRequest) {
+
+        log.info("ManagerService updateManagerById requested ID: {}", id);
+
+        // Finding Manager by Id
+        Manager manager = managerRepoService.findManagerById(id);
+
+        // Manager Not Found
+        if (Objects.isNull(manager)) {
+            log.error("Manager Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_STORE);
+        }
+
+        // Updating Manager User
+        if (Optional.ofNullable(managerRequest.getFirstName()).isPresent())
+            manager.getManagerUser().setFirstName(managerRequest.getFirstName());
+
+        if (Optional.ofNullable(managerRequest.getLastName()).isPresent())
+            manager.getManagerUser().setLastName(managerRequest.getLastName());
+
+        if (Optional.ofNullable(managerRequest.getPhoneNumber()).isPresent())
+            manager.getManagerUser().setPhoneNumber(managerRequest.getPhoneNumber());
+
+        manager.getManagerUser().setUpdatedAt(ZonedDateTime.now());
+
+        // Saving Manager
+        Manager updatedManager = managerRepoService.save(manager);
+
+        // Creating Manager Response
+        ManagerResponse managerResponse = ManagerResponse.builder()
+                .id(updatedManager.getId())
+                .firstName(updatedManager.getManagerUser().getFirstName())
+                .lastName(updatedManager.getManagerUser().getLastName())
+                .phoneNumber(updatedManager.getManagerUser().getPhoneNumber())
+                .vendorId(updatedManager.getVendorUser().getId())
+                .build();
+
+        redisCacheService.saveManagerById(updatedManager.getId().toString(), managerResponse);
+
+        log.info("ManagerService updateManagerById Manager Updated : {}", managerResponse);
 
         return managerResponse;
     }
@@ -101,12 +155,15 @@ public class ManagerService {
      */
     public ManagerResponse getManagerById(UUID id) {
         log.info("ManagerService getManagerById requested ID: {}", id);
-//        ManagerResponse response = redisCacheService.getManagerById(id);
-//
-//        if (response != null) {
-//            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
-//            return response;
-//        }
+
+        // TODO : Manger Redis Cache is disabled?
+        // ManagerResponse response = redisCacheService.getManagerById(id);
+        //
+        // if (response != null) {
+        // log.info("ManagerService getManagerById getting response from redis cache:
+        // {}", response);
+        // return response;
+        // }
 
         Manager manager = managerRepoService.findManagerById(id);
 
@@ -124,7 +181,7 @@ public class ManagerService {
                 .build();
 
         log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
-//        redisCacheService.saveManagerById(id.toString(), managerResponse);
+        // redisCacheService.saveManagerById(id.toString(), managerResponse);
         log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
     }
