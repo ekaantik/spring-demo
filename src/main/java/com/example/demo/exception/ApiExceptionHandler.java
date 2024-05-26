@@ -1,5 +1,6 @@
 package com.example.demo.exception;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import jakarta.persistence.PersistenceException;
 
-@RestControllerAdvice
+@RestControllerAdvice // (basePackages = {""})
 @Slf4j
 public class ApiExceptionHandler extends Exception{
 

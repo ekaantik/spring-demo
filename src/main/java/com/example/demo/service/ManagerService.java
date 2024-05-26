@@ -98,7 +98,7 @@ public class ManagerService {
 
     /**
      * Updates a manager user by its id and returns the manager response.
-     * 
+     *
      * @param id             The id of the manager.
      * @param managerRequest The request object containing manager information.
      * @return The response object containing details of the updated manager user.
@@ -181,7 +181,7 @@ public class ManagerService {
                 .build();
 
         log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
-        // redisCacheService.saveManagerById(id.toString(), managerResponse);
+//        redisCacheService.saveManagerById(id.toString(), managerResponse);
         log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
     }

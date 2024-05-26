@@ -29,8 +29,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +48,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     /**
      * Performs Signup & assigns JWT Token.

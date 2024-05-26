@@ -85,16 +85,12 @@ public class ShiftScheduleRepoService {
 
         // Trying to save ShiftSchedule
         try {
-
-            // ShiftSchedule saved succesfully
             ShiftSchedule savedShiftSchedule = shiftScheduleRepo.save(ShiftSchedule);
             log.info("Successfully saved ShiftSchedule with id " + ShiftSchedule.getId());
             return savedShiftSchedule;
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
-            log.error("Failed to create ShiftSchedule, Exception : " + ex.getMessage(), ex);
+            log.error("Failed to create ShiftSchedule, Exception : {} ", ex.getMessage());
             throw new PersistenceException("Failed To create ShiftSchedule record into database!", ex);
         }
     }
