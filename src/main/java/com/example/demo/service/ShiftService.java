@@ -9,6 +9,8 @@ import com.example.demo.pojos.request.ShiftRequest;
 import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.repository.ShiftRepoService;
 import com.example.demo.repository.StoreRepoService;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,6 +83,7 @@ public class ShiftService {
      * @param req The ShiftRequest object.
      * @return The ShiftResponse object.
      */
+    @Transactional
     public ShiftResponse updateShift(UUID id, ShiftRequest req) {
 
         log.info("ShiftService updateShift requested ID: {}", id);
