@@ -3,6 +3,9 @@ package com.example.demo.security.service;
 import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.exception.Details;
+import com.example.demo.exception.InvalidCredentialException;
+import com.example.demo.exception.RequestValidationException;
+import com.example.demo.exception.Details;
 import com.example.demo.exception.RequestValidationException;
 import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.pojos.response.UserResponse;
@@ -24,8 +27,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import java.time.ZonedDateTime;
 
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -59,7 +63,6 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         if (existingUser != null) {
             log.error("User already exists with PhoneNumber : {}", req.getPhoneNumber());
-
             Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
 
             throw new RequestValidationException(
@@ -102,18 +105,25 @@ public class AuthServicesImpl implements AuthServicesIf {
      */
     public UserAuthResponse performLogin(UserAuthRequest req) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
-        User user = userRepo.findByPhoneNumber(req.getPhoneNumber());
-        String jwtToken = jwtTokenService.generateToken(user);
-        UserAuthResponse response = UserAuthResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phoneNumber(user.getPhoneNumber())
-                .jwtToken(jwtToken)
-                .userType(user.getUserType())
-                .build();
-        return response;
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getPhoneNumber(), req.getPassword()));
+            User user = userRepo.findByPhoneNumber(req.getPhoneNumber());
+
+            String jwtToken = jwtTokenService.generateToken(user);
+            UserAuthResponse response = UserAuthResponse.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .phoneNumber(user.getPhoneNumber())
+                    .jwtToken(jwtToken)
+                    .userType(user.getUserType())
+                    .build();
+
+            return response;
+        } catch (Exception e) {
+            log.error("Invalid Credentials : {}", e.getMessage());
+            throw new InvalidCredentialException(ErrorCode.INVALID_DATA, "PhoneNumber/Password");
+        }
     }
 
     /**
@@ -132,6 +142,14 @@ public class AuthServicesImpl implements AuthServicesIf {
         }
 
         User user = userRepo.findById(vendorId);
+
+        if(Objects.isNull(user)){
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
+            throw new RequestValidationException(
+                    "Invalid vendorId : " + vendorId,
+                    HttpStatus.BAD_REQUEST.value(),
+                    details);
+        }
 
         response = UserResponse.builder()
                 .firstName(user.getFirstName())

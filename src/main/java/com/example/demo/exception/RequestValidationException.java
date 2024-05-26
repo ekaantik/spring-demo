@@ -23,4 +23,5 @@ public class RequestValidationException extends BaseException {
         super(message, responseCode, details);
 
     }
+
 }

@@ -7,13 +7,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotNull;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 public class StoreRequest {
 
+    @NotNull
     private String name;
+
+    @NotNull
     private String address;
+
+    @NotNull
     private ServiceType serviceType;
 }

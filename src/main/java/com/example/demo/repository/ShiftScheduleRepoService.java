@@ -47,7 +47,7 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Shift Schedule with Id " + id + ".", ex);
         }
 
     }
@@ -71,7 +71,7 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Shift Schedules.", ex);
         }
     }
 
@@ -82,19 +82,13 @@ public class ShiftScheduleRepoService {
      * @return The saved ShiftSchedule, or throws PersistenceException.
      */
     public synchronized ShiftSchedule save(ShiftSchedule ShiftSchedule) {
-
-        // Trying to save ShiftSchedule
         try {
-
-            // ShiftSchedule saved succesfully
             ShiftSchedule savedShiftSchedule = shiftScheduleRepo.save(ShiftSchedule);
             log.info("Successfully saved ShiftSchedule with id " + ShiftSchedule.getId());
             return savedShiftSchedule;
         }
-
-        // Unexpected Error Occured
         catch (Exception ex) {
-            log.error("Failed to create ShiftSchedule, Exception : " + ex.getMessage(), ex);
+            log.error("Failed to create ShiftSchedule, Exception : {} ", ex.getMessage());
             throw new PersistenceException("Failed To create ShiftSchedule record into database!", ex);
         }
     }
@@ -117,7 +111,8 @@ public class ShiftScheduleRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Shift Schedule with Id " + id + ".", ex);
+
         }
     }
 

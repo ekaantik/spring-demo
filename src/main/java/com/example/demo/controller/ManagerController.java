@@ -4,6 +4,7 @@ import com.example.demo.pojos.request.ManagerRequest;
 import com.example.demo.pojos.response.ManagerResponse;
 import com.example.demo.service.ManagerService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class ManagerController {
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<ManagerResponse> createManager(@RequestHeader("Authorization") String token,
-            @RequestBody ManagerRequest req) {
+            @Valid @RequestBody ManagerRequest req) {
         log.info("ManagerController createManager creating manager request was called");
         return ResponseEntity.ok(managerService.createManager(token, req));
     }

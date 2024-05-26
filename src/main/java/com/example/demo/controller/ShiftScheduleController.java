@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class ShiftScheduleController {
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<ShiftScheduleResponse> createShiftScheduleSchedule(@RequestBody ShiftScheduleRequest req) {
+    public ResponseEntity<ShiftScheduleResponse> createShiftScheduleSchedule(@Valid @RequestBody ShiftScheduleRequest req) {
         log.info("ShiftScheduleController createShiftScheduleSchedule create shift schedule request was called");
         return ResponseEntity.ok(shiftScheduleService.createShiftSchedule(req));
     }

@@ -37,10 +37,9 @@ public class ShiftRepoService {
                 return null;
             }
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Shift with Id " + id + ".", ex);
         }
     }
 
@@ -61,10 +60,9 @@ public class ShiftRepoService {
                 log.info("Shift with id " + id + " not found.");
                 return null;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Shift with StoreId " + id + ".", ex);
         }
     }
 
@@ -87,7 +85,7 @@ public class ShiftRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Shifts.", ex);
         }
     }
 
@@ -103,9 +101,8 @@ public class ShiftRepoService {
             Shift savedShift = shiftRepo.save(Shift);
             log.info("Successfully saved Shift with id " + Shift.getId());
             return savedShift;
-        }
-        catch (Exception ex) {
-            log.error("Failed to create Shift, Exception : {}",ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Failed to create Shift, Exception : {}", ex.getMessage());
             throw new PersistenceException("Failed To create Shift record into database!", ex);
         }
     }
@@ -119,10 +116,10 @@ public class ShiftRepoService {
         try {
             shiftRepo.deleteById(id);
             log.info("Successfully deleted Shift with id " + id);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Shift with Id " + id + ".", ex);
+
         }
     }
 

@@ -47,7 +47,7 @@ public class TechnicianRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find Technician with Id " + id + ".", ex);
         }
 
     }
@@ -71,7 +71,7 @@ public class TechnicianRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to find All Shifts.", ex);
         }
     }
 
@@ -117,7 +117,8 @@ public class TechnicianRepoService {
         // Unexpected Error
         catch (Exception ex) {
             log.error(Constants.UNEXPECTED_ERROR_MSG, ex);
-            throw new PersistenceException(ex);
+            throw new PersistenceException("Failed to delete Technician with Id " + id + ".", ex);
+
         }
     }
 

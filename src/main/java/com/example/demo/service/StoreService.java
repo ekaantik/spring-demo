@@ -1,8 +1,13 @@
 package com.example.demo.service;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
+import com.example.demo.constants.ErrorCode;
+import com.example.demo.exception.Details;
+import com.example.demo.exception.RequestValidationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Store;
@@ -68,6 +73,13 @@ public class StoreService {
         log.info("StoreService getStoreById get request requested ID : {}", id);
         Store store = storeRepoService.findStoreById(id);
 
+        if(Objects.isNull(store)){
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "storeId"));
+            throw new RequestValidationException(
+                    "Invalid storeId : " + id,
+                    HttpStatus.BAD_REQUEST.value(),
+                    details);
+        }
         StoreResponse storeResponse = StoreResponse.builder()
                 .id(store.getId())
                 .name(store.getName())

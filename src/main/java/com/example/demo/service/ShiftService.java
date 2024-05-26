@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.entity.Shift;
 import com.example.demo.entity.Store;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.request.ShiftRequest;
 import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.repository.ShiftRepoService;
@@ -27,7 +30,7 @@ public class ShiftService {
 
     /**
      * Creates a new Shift.
-     * 
+     *
      * @param req The ShiftRequest object.
      * @return The ShiftResponse object.
      */
@@ -37,7 +40,11 @@ public class ShiftService {
         // Extracting User from JWT Token
         Store store = storeRepoService.findStoreById(req.getStoreId());
 
-        // TODO : Throw Error If Store Not Found
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", req.getStoreId());
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, req.getStoreId(), Constants.FIELD_ID,
+                    Constants.TABLE_STORE);
+        }
 
         // Creating Shift
         Shift shift = Shift.builder()
@@ -84,6 +91,11 @@ public class ShiftService {
 
         Shift shift = shiftRepoService.findShiftById(id);
 
+        if (shift == null) {
+            log.error("Shift Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
+        }
+
         response = ShiftResponse.builder()
                 .id(shift.getId())
                 .storeId(shift.getStore().getId())
@@ -105,6 +117,12 @@ public class ShiftService {
      */
     public ShiftResponse getShiftByStoreId(UUID id) {
         Store store = storeRepoService.findStoreById(id);
+
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_STORE);
+        }
+
         Shift shift = shiftRepoService.findShiftByStoreId(store.getId());
         log.info("ShiftService getShiftByStoreId requested Store ID: {}", id);
         log.info("ShiftService getShiftByStoreId recieved ID of shift by store: {}", shift);

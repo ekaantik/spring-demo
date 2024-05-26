@@ -6,11 +6,11 @@ import com.example.demo.entity.Manager;
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,28 +31,28 @@ import java.util.List;
 public class User extends BaseUuidEntity implements UserDetails, Serializable {
 
     @Column(name = "first_name")
-    @NonNull
+    @NotNull
     @Size(max = 255, message = "First Name must be at most 255 characters.")
     private String firstName;
 
     @Column(name = "last_name")
-    @NonNull
+    @NotNull
     @Size(max = 255, message = "Last Name must be at most 255 characters.")
     private String lastName;
 
     @Column
-    @NonNull
+    @NotNull
     @Size(max = 255, message = "password Name must be at most 255 characters.")
     private String password;
 
     @Column(name = "phone_number", unique = true)
-    @NonNull
+    @NotNull
     @Pattern(regexp = "(^$|[0-9]{10})")
     private String phoneNumber;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
-    @NonNull
+    @NotNull
     private UserType userType;
 
     @OneToMany(mappedBy = "vendorUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class TechnicianController {
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
     public ResponseEntity<TechnicianResponse> createTechnician(@RequestHeader("Authorization") String token,
-            @RequestBody TechnicianRequest req) {
+                                                               @Valid @RequestBody TechnicianRequest req) {
         log.info("TechnicianController createTechnician create technician request was called");
         return ResponseEntity.ok(technicianService.createTechnician(token, req));
     }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -14,7 +15,9 @@ import java.util.UUID;
 @Builder
 @Data
 public class ShiftRequest {
+    @NotNull
     private UUID storeId;
+    @NotNull
     private String shiftName;
     private LocalTime startTime;
     private LocalTime  endTime;
