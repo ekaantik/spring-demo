@@ -5,6 +5,9 @@ import com.example.demo.constants.UserType;
 import com.example.demo.exception.Details;
 import com.example.demo.exception.InvalidCredentialException;
 import com.example.demo.exception.RequestValidationException;
+import com.example.demo.exception.Details;
+import com.example.demo.exception.RequestValidationException;
+import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,6 +49,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     /**
      * Performs Signup & assigns JWT Token.
