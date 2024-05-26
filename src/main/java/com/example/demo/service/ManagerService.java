@@ -101,12 +101,12 @@ public class ManagerService {
      */
     public ManagerResponse getManagerById(UUID id) {
         log.info("ManagerService getManagerById requested ID: {}", id);
-//        ManagerResponse response = redisCacheService.getManagerById(id);
-//
-//        if (response != null) {
-//            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
-//            return response;
-//        }
+        ManagerResponse response = redisCacheService.getManagerById(id);
+
+        if (response != null) {
+            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
+            return response;
+        }
 
         Manager manager = managerRepoService.findManagerById(id);
 
@@ -123,8 +123,8 @@ public class ManagerService {
                 .vendorId(manager.getVendorUser().getId())
                 .build();
 
-        log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
-//        redisCacheService.saveManagerById(id.toString(), managerResponse);
+        log.info("ManagerService getManagerById received managerResponse : {}", managerResponse);
+        redisCacheService.saveManagerById(id.toString(), managerResponse);
         log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
     }
