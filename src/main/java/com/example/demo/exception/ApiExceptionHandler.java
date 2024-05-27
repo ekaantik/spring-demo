@@ -1,6 +1,5 @@
 package com.example.demo.exception;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,11 +22,14 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
 
 @RestControllerAdvice // (basePackages = {""})
 @Slf4j
-public class ApiExceptionHandler extends Exception{
+public class ApiExceptionHandler extends Exception {
 
         @ExceptionHandler(DataAccessException.class)
         public ResponseEntity<GenericResponse> handleDataAccessException(DataAccessException ex,
@@ -418,4 +420,28 @@ public class ApiExceptionHandler extends Exception{
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler({ PessimisticLockException.class, LockTimeoutException.class, PersistenceException.class })
+        public ResponseEntity<GenericResponse> handlePersistenceException(final PersistenceException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("PersistenceException in exception handler {} ", ex.getMessage());
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .details(Details.builder()
+                                                .appError("PersistenceException")
+                                                .appErrorCode("500")
+                                                .appErrorMessage(ex.getMessage())
+                                                .build())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 }

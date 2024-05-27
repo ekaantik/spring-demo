@@ -198,6 +198,7 @@ public class TechnicianService {
      * @return The message indicating the status of the deletion.
      */
     public String deleteTechnicianById(UUID id) {
+        redisCacheService.clearTechnicianById(id.toString());
         technicianRepoService.deleteTechnicianById(id);
         log.info("TechnicianService deleteTechnicianById id {} deleted successfully", id);
         return "Technician Deleted Successfully";
