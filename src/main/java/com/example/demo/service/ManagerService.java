@@ -192,6 +192,7 @@ public class ManagerService {
      */
     public String deleteManagerById(UUID id) {
         log.info("ManagerService deleteManagerById requested ID: {}", id);
+        redisCacheService.clearManagerById(id.toString());
         managerRepoService.deleteManagerById(id);
         redisCacheService.clearManagerById(id.toString());
         log.info("ManagerService deleteManagerById Manager deleted successfully.");

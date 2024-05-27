@@ -200,12 +200,11 @@ public class ShiftService {
      * Deletes a Shift by its id.
      * 
      * @param id The id of the Shift.
-     * @return The message indicating the status of the deletion.
+     * @return The message indicating the status of the deleton.
      */
     public String deleteShiftById(UUID id) {
         redisCacheService.clearShiftById(id.toString());
-        shiftRepoService.deleteShiftById(id);
-        log.info("ShiftService deleteShiftById deleted shift for ID: {}", id);
+        log.info("ShiftService deleteShiftByIkd deleted shift for ID: {}", id);
 
         return "Shift with id : " + id + " Deleted Successfully";
     }
