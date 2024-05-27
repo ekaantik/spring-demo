@@ -420,7 +420,7 @@ public class ApiExceptionHandler extends Exception {
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
         }
 
-        @ExceptionHandler({ PessimisticLockException.class, LockTimeoutException.class, PersistenceException.class })
+        @ExceptionHandler({ PessimisticLockException.class, LockTimeoutException.class })
         public ResponseEntity<GenericResponse> handlePersistenceException(final PersistenceException ex,
                         WebRequest request) {
                 // Logging
