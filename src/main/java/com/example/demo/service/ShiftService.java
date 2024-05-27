@@ -86,8 +86,7 @@ public class ShiftService {
     @Transactional
     public ShiftResponse updateShift(UUID id, ShiftRequest req) {
 
-        log.info("ShiftService updateShift requested ID: {}", id);
-        log.info("ShiftService updateShift requested Shift: {}", req);
+        log.info("ShiftService updateShift requested ID: {} req {} ", id, req);
 
         // Shift & Store from request
         Shift shift = shiftRepoService.findShiftById(id);

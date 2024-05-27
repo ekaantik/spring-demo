@@ -13,7 +13,10 @@ import java.util.UUID;
 public interface ShiftRepo extends JpaRepository<Shift, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    @Lock(LockModeType.OPTIMISTIC)
     Optional<Shift> findByStoreId(UUID id);
+
+
 
 
 }

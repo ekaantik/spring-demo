@@ -36,7 +36,7 @@ public class RedisCacheService {
 
     /**
      * Save User Response to Redis Cache.
-     * 
+     *
      * @param key   The key under which the user response will be stored.
      * @param value The user response value to be stored.
      */
@@ -52,7 +52,7 @@ public class RedisCacheService {
 
     /**
      * Save Manager Response to Redis Cache.
-     * 
+     *
      * @param key   The key under which the manager response will be stored.
      * @param value The manager response value to be stored.
      */
@@ -68,7 +68,7 @@ public class RedisCacheService {
 
     /**
      * Save Technician Response to Redis Cache.
-     * 
+     *
      * @param key   The key under which the technician response will be stored.
      * @param value The technician response value to be stored.
      */
@@ -98,12 +98,6 @@ public class RedisCacheService {
         shiftTemplate.opsForValue().set(SHIFT_BY_ID_KEY_PREFIX + key, value);
     }
 
-    /**
-     * Get UserResponse from Redis Cache.
-     * 
-     * @param key The key under which the userresponse are stored.
-     * @return The userresponse value.
-     */
     public UserResponse getUserById(String key) {
 
         if (redisEnabled) {
@@ -116,7 +110,7 @@ public class RedisCacheService {
 
     /**
      * Get ManagerResponse from Redis Cache.
-     * 
+     *
      * @param key The key under which the managerresponse are stored.
      * @return The managerresponse value.
      */
@@ -132,7 +126,7 @@ public class RedisCacheService {
 
     /**
      * Get TechnicianResponse from Redis Cache.
-     * 
+     *
      * @param key The key under which the technicianresponse are stored.
      * @return The technicianresponse value.
      */
@@ -148,7 +142,7 @@ public class RedisCacheService {
 
     /**
      * Get ShiftResponse from Redis Cache.
-     * 
+     *
      * @param key The key under which the shiftresponse are stored.
      * @return The shiftresponse value.
      */
@@ -165,7 +159,7 @@ public class RedisCacheService {
 
     /**
      * Clear User from Redis Cache.
-     * 
+     *
      * @param key The key under which the user is stored.
      */
     public void clearUserById(String key) {
@@ -174,7 +168,7 @@ public class RedisCacheService {
 
     /**
      * Clear Manager from Redis Cache.
-     * 
+     *
      * @param key The key under which the manager is stored.
      */
     public void clearManagerById(String key) {
@@ -183,7 +177,7 @@ public class RedisCacheService {
 
     /**
      * Clear Technician from Redis Cache.
-     * 
+     *
      * @param key The key under which the technician is stored.
      */
     public void clearTechnicianById(String key) {
@@ -192,7 +186,7 @@ public class RedisCacheService {
 
     /**
      * Clear Shift from Redis Cache.
-     * 
+     *
      * @param key The key under which the shift is stored.
      */
     public void clearShiftById(String key) {
