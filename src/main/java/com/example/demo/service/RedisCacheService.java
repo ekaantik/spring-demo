@@ -76,6 +76,10 @@ public class RedisCacheService {
         shiftTemplate.delete(SHIFT_BY_ID_KEY_PREFIX + key);
     }
 
+    public void clearManagerById(String key) {
+        managerTemplate.delete(MANAGER_BY_ID_KEY_PREFIX + key);
+    }
+
     public UserResponse getUserById(String key) {
 
         if (redisEnabled) {

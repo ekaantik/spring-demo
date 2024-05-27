@@ -156,14 +156,12 @@ public class ManagerService {
     public ManagerResponse getManagerById(UUID id) {
         log.info("ManagerService getManagerById requested ID: {}", id);
 
-        // TODO : Manger Redis Cache is disabled?
-        // ManagerResponse response = redisCacheService.getManagerById(id);
-        //
-        // if (response != null) {
-        // log.info("ManagerService getManagerById getting response from redis cache:
-        // {}", response);
-        // return response;
-        // }
+         ManagerResponse response = redisCacheService.getManagerById(id);
+
+         if (response != null) {
+            log.info("ManagerService getManagerById getting response from redis cache: {}", response);
+            return response;
+         }
 
         Manager manager = managerRepoService.findManagerById(id);
 
@@ -181,7 +179,7 @@ public class ManagerService {
                 .build();
 
         log.info("ManagerService getManagerById recieved managerResponse : {}", managerResponse);
-//        redisCacheService.saveManagerById(id.toString(), managerResponse);
+        redisCacheService.saveManagerById(id.toString(), managerResponse);
         log.info("ManagerService getManagerById manager Saved to Redis Cache : {}", manager);
         return managerResponse;
     }
@@ -195,6 +193,7 @@ public class ManagerService {
     public String deleteManagerById(UUID id) {
         log.info("ManagerService deleteManagerById requested ID: {}", id);
         managerRepoService.deleteManagerById(id);
+        redisCacheService.clearManagerById(id.toString());
         log.info("ManagerService deleteManagerById Manager deleted successfully.");
         return "Manager Deleted Successfully";
     }

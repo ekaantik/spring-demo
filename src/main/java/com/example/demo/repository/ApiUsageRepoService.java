@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -43,10 +44,17 @@ public class ApiUsageRepoService {
 
             responseBody = isValidUTF8(responseBody) ? responseBody : null;
 
+            String queryString = null ;
+            if (Objects.isNull(request.getQueryString())){
+                queryString = request.getRequestURI();
+            } else {
+                queryString = request.getRequestURI()+ "?" + request.getQueryString();
+            }
+
             ApiUsage apiUsage = ApiUsage.builder()
                     .userId(userId)
                     .requestMethod(request.getMethod())
-                    .requestUrl(request.getRequestURI()+ "?" + request.getQueryString())
+                    .requestUrl(queryString)
                     .requestBody(requestBody)
                     .responseBody(responseBody)
                     .responseStatus(response.getStatus())
