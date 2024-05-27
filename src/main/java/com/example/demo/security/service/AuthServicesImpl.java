@@ -5,9 +5,6 @@ import com.example.demo.constants.UserType;
 import com.example.demo.exception.Details;
 import com.example.demo.exception.InvalidCredentialException;
 import com.example.demo.exception.RequestValidationException;
-import com.example.demo.exception.Details;
-import com.example.demo.exception.RequestValidationException;
-import com.example.demo.pojos.response.ShiftResponse;
 import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
@@ -19,11 +16,9 @@ import com.example.demo.security.utils.JwtTokenService;
 import com.example.demo.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,16 +35,9 @@ public class AuthServicesImpl implements AuthServicesIf {
     private final AuthenticationManager authenticationManager;
     private final RedisCacheService redisCacheService;
 
-
-    @Autowired
     private UserRepoService userRepo;
-
-    @Autowired
     private JwtTokenService jwtTokenService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
-
 
     /**
      * Performs Signup & assigns JWT Token.
@@ -63,7 +51,9 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         if (existingUser != null) {
             log.error("User already exists with PhoneNumber : {}", req.getPhoneNumber());
-            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),
+                    ErrorCode.INVALID_DATA.getAppErrorCode(),
+                    String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "phoneNumber"));
 
             throw new RequestValidationException(
                     "User already exists with PhoneNumber : " + req.getPhoneNumber(),
@@ -136,15 +126,17 @@ public class AuthServicesImpl implements AuthServicesIf {
         log.info("AuthServiceImpl getVendorById requested Id : {}", vendorId);
         UserResponse response = redisCacheService.getUserById(vendorId.toString());
 
-        if (response != null){
+        if (response != null) {
             log.info("AuthServiceImpl getVendorById getting response from redis cache: {}", response);
             return response;
         }
 
         User user = userRepo.findById(vendorId);
 
-        if(Objects.isNull(user)){
-            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
+        if (Objects.isNull(user)) {
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),
+                    ErrorCode.INVALID_DATA.getAppErrorCode(),
+                    String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "vendorId"));
             throw new RequestValidationException(
                     "Invalid vendorId : " + vendorId,
                     HttpStatus.BAD_REQUEST.value(),

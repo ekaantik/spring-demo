@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import com.example.demo.pojos.response.ManagerResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -106,7 +105,7 @@ public class TechnicianService {
         log.info("TechnicianService getTechnicianById requested Id : {}", id);
         TechnicianResponse response = redisCacheService.getTechnicianById(id);
 
-        if (response != null){
+        if (response != null) {
             log.info("TechnicianService getTechnicianById getting response from redis cache: {}", response);
             return response;
         }
@@ -138,6 +137,7 @@ public class TechnicianService {
      * @return The message indicating the status of the deletion.
      */
     public String deleteTechnicianById(UUID id) {
+        redisCacheService.clearTechnicianById(id.toString());
         technicianRepoService.deleteTechnicianById(id);
         log.info("TechnicianService deleteTechnicianById id {} deleted successfully", id);
         return "Technician Deleted Successfully";

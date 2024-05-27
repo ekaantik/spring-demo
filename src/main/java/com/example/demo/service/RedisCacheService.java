@@ -35,6 +35,54 @@ public class RedisCacheService {
     private boolean redisEnabled;
 
     /**
+     * Save User Response to Redis Cache.
+     * 
+     * @param key   The key under which the user response will be stored.
+     * @param value The user response value to be stored.
+     */
+    public void saveUserById(String key, UserResponse value) {
+
+        if (Objects.isNull(key)) {
+            log.info("Key is null. Cannot save vendor response to Redis Cache.");
+            return;
+        }
+
+        userTemplate.opsForValue().set(USER_BY_ID_KEY_PREFIX + key, value);
+    }
+
+    /**
+     * Save Manager Response to Redis Cache.
+     * 
+     * @param key   The key under which the manager response will be stored.
+     * @param value The manager response value to be stored.
+     */
+    public void saveManagerById(String key, ManagerResponse value) {
+
+        if (Objects.isNull(key)) {
+            log.info("Key is null. Cannot save manager response to Redis Cache.");
+            return;
+        }
+
+        managerTemplate.opsForValue().set(MANAGER_BY_ID_KEY_PREFIX + key, value);
+    }
+
+    /**
+     * Save Technician Response to Redis Cache.
+     * 
+     * @param key   The key under which the technician response will be stored.
+     * @param value The technician response value to be stored.
+     */
+    public void saveTechnicianById(String key, TechnicianResponse value) {
+
+        if (Objects.isNull(key)) {
+            log.info("Key is null. Cannot save technician response to Redis Cache.");
+            return;
+        }
+
+        technicianTemplate.opsForValue().set(TECHNICIAN_BY_ID_KEY_PREFIX + key, value);
+    }
+
+    /**
      * Save Shift Response to Redis Cache.
      * 
      * @param key   The key under which the shift response will be stored.
@@ -48,6 +96,54 @@ public class RedisCacheService {
         }
 
         shiftTemplate.opsForValue().set(SHIFT_BY_ID_KEY_PREFIX + key, value);
+    }
+
+    /**
+     * Get UserResponse from Redis Cache.
+     * 
+     * @param key The key under which the userresponse are stored.
+     * @return The userresponse value.
+     */
+    public UserResponse getUserById(String key) {
+
+        if (redisEnabled) {
+            log.info("Getting UserResponse from Redis Cache for key : {}", key);
+            return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get ManagerResponse from Redis Cache.
+     * 
+     * @param key The key under which the managerresponse are stored.
+     * @return The managerresponse value.
+     */
+    public ManagerResponse getManagerById(UUID key) {
+
+        if (redisEnabled) {
+            log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
+            return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get TechnicianResponse from Redis Cache.
+     * 
+     * @param key The key under which the technicianresponse are stored.
+     * @return The technicianresponse value.
+     */
+    public TechnicianResponse getTechnicianById(UUID key) {
+
+        if (redisEnabled) {
+            log.info("Getting TechnicianResponse from Redis Cache for key : {}", key);
+            return technicianTemplate.opsForValue().get(TECHNICIAN_BY_ID_KEY_PREFIX + key);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -68,6 +164,33 @@ public class RedisCacheService {
     }
 
     /**
+     * Clear User from Redis Cache.
+     * 
+     * @param key The key under which the user is stored.
+     */
+    public void clearUserById(String key) {
+        userTemplate.delete(USER_BY_ID_KEY_PREFIX + key);
+    }
+
+    /**
+     * Clear Manager from Redis Cache.
+     * 
+     * @param key The key under which the manager is stored.
+     */
+    public void clearManagerById(String key) {
+        managerTemplate.delete(MANAGER_BY_ID_KEY_PREFIX + key);
+    }
+
+    /**
+     * Clear Technician from Redis Cache.
+     * 
+     * @param key The key under which the technician is stored.
+     */
+    public void clearTechnicianById(String key) {
+        technicianTemplate.delete(TECHNICIAN_BY_ID_KEY_PREFIX + key);
+    }
+
+    /**
      * Clear Shift from Redis Cache.
      * 
      * @param key The key under which the shift is stored.
@@ -76,63 +199,4 @@ public class RedisCacheService {
         shiftTemplate.delete(SHIFT_BY_ID_KEY_PREFIX + key);
     }
 
-    public UserResponse getUserById(String key) {
-
-        if (redisEnabled) {
-            log.info("Getting UserResponse from Redis Cache for key : {}", key);
-            return userTemplate.opsForValue().get(USER_BY_ID_KEY_PREFIX + key);
-        } else {
-            return null;
-        }
-    }
-
-    public void saveUserById(String key, UserResponse value) {
-
-        if (Objects.isNull(key)) {
-            log.info("Key is null. Cannot save vendor response to Redis Cache.");
-            return;
-        }
-
-        userTemplate.opsForValue().set(USER_BY_ID_KEY_PREFIX + key, value);
-    }
-
-    public ManagerResponse getManagerById(UUID key) {
-
-        if (redisEnabled) {
-            log.info("Getting ManagerResponse from Redis Cache for key : {}", key);
-            return managerTemplate.opsForValue().get(MANAGER_BY_ID_KEY_PREFIX + key);
-        } else {
-            return null;
-        }
-    }
-
-    public void saveManagerById(String key, ManagerResponse value) {
-
-        if (Objects.isNull(key)) {
-            log.info("Key is null. Cannot save manager response to Redis Cache.");
-            return;
-        }
-
-        managerTemplate.opsForValue().set(MANAGER_BY_ID_KEY_PREFIX + key, value);
-    }
-
-    public TechnicianResponse getTechnicianById(UUID key) {
-
-        if (redisEnabled) {
-            log.info("Getting TechnicianResponse from Redis Cache for key : {}", key);
-            return technicianTemplate.opsForValue().get(TECHNICIAN_BY_ID_KEY_PREFIX + key);
-        } else {
-            return null;
-        }
-    }
-
-    public void saveTechnicianById(String key, TechnicianResponse value) {
-
-        if (Objects.isNull(key)) {
-            log.info("Key is null. Cannot save technician response to Redis Cache.");
-            return;
-        }
-
-        technicianTemplate.opsForValue().set(TECHNICIAN_BY_ID_KEY_PREFIX + key, value);
-    }
 }
