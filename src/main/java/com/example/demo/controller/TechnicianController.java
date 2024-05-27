@@ -24,9 +24,17 @@ public class TechnicianController {
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
     public ResponseEntity<TechnicianResponse> createTechnician(@RequestHeader("Authorization") String token,
-                                                               @Valid @RequestBody TechnicianRequest req) {
+            @Valid @RequestBody TechnicianRequest req) {
         log.info("TechnicianController createTechnician create technician request was called");
         return ResponseEntity.ok(technicianService.createTechnician(token, req));
+    }
+
+    @PutMapping("update-by-id/{id}")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
+    public ResponseEntity<TechnicianResponse> updateTechnicianById(@PathVariable UUID id,
+            @RequestBody TechnicianRequest req) {
+        log.info("TechnicianController updateTechnicianById update technician request was called");
+        return ResponseEntity.ok(technicianService.updateTechnicianById(id, req));
     }
 
     @GetMapping("get-by-id")

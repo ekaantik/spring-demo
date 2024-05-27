@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +29,15 @@ public class ShiftController {
     public ResponseEntity<ShiftResponse> createShift(@Valid @RequestBody ShiftRequest req) {
         log.info("ShiftController createShift create shift request was called");
         return ResponseEntity.ok(shiftService.createShift(req));
+    }
+
+    @PutMapping("update-by-id/{id}")
+    @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
+    public ResponseEntity<ShiftResponse> upateShift(@PathVariable UUID id, @RequestBody ShiftRequest shiftRequest) {
+
+        log.info("ShiftController updateShift update shift request was called");
+        ShiftResponse shiftResponse = shiftService.updateShift(id, shiftRequest);
+        return ResponseEntity.ok(shiftResponse);
     }
 
     @GetMapping("get-by-id")

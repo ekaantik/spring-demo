@@ -2,10 +2,13 @@ package com.example.demo.service;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
+import com.example.demo.constants.Constants;
 import com.example.demo.constants.ErrorCode;
 import com.example.demo.exception.Details;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.RequestValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,13 @@ public class StoreService {
     private final JwtTokenService jwtTokenService;
     private final UserRepoService userRepo;
 
+    /**
+     * Creates a new Store.
+     * 
+     * @param token        The JWT token.
+     * @param storeRequest The StoreRequest object.
+     * @return The StoreResponse object.
+     */
     public StoreResponse createStore(String token, StoreRequest storeRequest) {
         log.info("StoreService createStore request: {}", storeRequest);
         // Extracting User from JWT Token
@@ -64,6 +74,48 @@ public class StoreService {
     }
 
     /**
+     * Updates a Store by its id.
+     * 
+     * @param id           The id of the Store.
+     * @param storeRequest The StoreRequest object.
+     * @return The StoreResponse object.
+     */
+    public StoreResponse updateStoreById(UUID id, StoreRequest storeRequest) {
+
+        log.info("StoreService updateStoreById request: {}", storeRequest);
+
+        // Store fom Request
+        Store store = storeRepoService.findStoreById(id);
+
+        if (Objects.isNull(store)) {
+            log.error("Store Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_STORE);
+        }
+
+        // Updating Store
+        Optional.ofNullable(storeRequest.getName()).ifPresent(store::setName);
+        Optional.ofNullable(storeRequest.getAddress()).ifPresent(store::setAddress);
+        Optional.ofNullable(storeRequest.getServiceType()).ifPresent(store::setServiceType);
+
+        store.setUpdatedAt(ZonedDateTime.now());
+
+        // Saving Store
+        Store updatedStore = storeRepoService.save(store);
+
+        // Creating Store Response
+        StoreResponse storeResponse = StoreResponse.builder()
+                .id(updatedStore.getId())
+                .name(updatedStore.getName())
+                .address(updatedStore.getAddress())
+                .serviceType(updatedStore.getServiceType().toString())
+                .vendorUserId(updatedStore.getVendorUser().getId())
+                .build();
+
+        log.info("StoreService updateStoreById updated store : {}", storeResponse);
+        return storeResponse;
+    }
+
+    /**
      * Finds a Store by its id.
      * 
      * @param id The id of the Store.
@@ -73,8 +125,10 @@ public class StoreService {
         log.info("StoreService getStoreById get request requested ID : {}", id);
         Store store = storeRepoService.findStoreById(id);
 
-        if(Objects.isNull(store)){
-            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),  ErrorCode.INVALID_DATA.getAppErrorCode(), String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "storeId"));
+        if (Objects.isNull(store)) {
+            Details details = new Details(ErrorCode.INVALID_DATA.getAppError(),
+                    ErrorCode.INVALID_DATA.getAppErrorCode(),
+                    String.format(ErrorCode.INVALID_DATA.getAppErrorMessage(), "storeId"));
             throw new RequestValidationException(
                     "Invalid storeId : " + id,
                     HttpStatus.BAD_REQUEST.value(),

@@ -22,6 +22,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -91,8 +93,67 @@ public class TechnicianService {
                 .managedById(technician.getManagedByUser().getId())
                 .build();
 
+        redisCacheService.saveTechnicianById(savedTechnician.getId().toString(), technicianResponse);
+
         log.info("TechnicianService createTechnician Created : {}", technicianResponse);
         return technicianResponse;
+    }
+
+    /**
+     * Updates a technician user associated with a manager user and returns the
+     * technician response.
+     * 
+     * @param id                The id of the technician user.
+     * @param technicianRequest The request object containing technician
+     *                          information.
+     * @return The response object containing details of the updated technician
+     *         user.
+     */
+    public TechnicianResponse updateTechnicianById(UUID id, TechnicianRequest technicianRequest) {
+
+        log.info("TechnicianService updateTechnicianById requested Id : {}", id);
+
+        // Find Technician by Id
+        Technician technician = technicianRepoService.findTechnicianById(id);
+
+        // Technician Not Found
+        if (technician == null) {
+            log.error("Technician Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_TECHNICIAN);
+        }
+
+        // Update Technician Details
+        if (Optional.ofNullable(technicianRequest.getFirstName()).isPresent()) {
+            technician.getTechnicianUser().setFirstName(technicianRequest.getFirstName());
+        }
+
+        if (Optional.ofNullable(technicianRequest.getLastName()).isPresent()) {
+            technician.getTechnicianUser().setLastName(technicianRequest.getLastName());
+        }
+
+        if (Optional.ofNullable(technicianRequest.getPhoneNumber()).isPresent()) {
+            technician.getTechnicianUser().setPhoneNumber(technicianRequest.getPhoneNumber());
+        }
+
+        // Save Technician
+        Technician updatedTechnician = technicianRepoService.save(technician);
+
+        // Create Technician Response
+        TechnicianResponse technicianResponse = TechnicianResponse.builder()
+                .id(updatedTechnician.getId())
+                .firstName(updatedTechnician.getTechnicianUser().getFirstName())
+                .lastName(updatedTechnician.getTechnicianUser().getLastName())
+                .phoneNumber(updatedTechnician.getTechnicianUser().getPhoneNumber())
+                .managedById(updatedTechnician.getManagedByUser().getId())
+                .build();
+
+        // Save Technician to Redis Cache
+        redisCacheService.saveTechnicianById(updatedTechnician.getId().toString(), technicianResponse);
+
+        log.info("TechnicianService updateTechnicianById updated Technician : {}", technicianResponse);
+
+        return technicianResponse;
+
     }
 
     /**

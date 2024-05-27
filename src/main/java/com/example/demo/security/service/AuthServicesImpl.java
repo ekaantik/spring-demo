@@ -1,10 +1,13 @@
 package com.example.demo.security.service;
 
+import com.example.demo.constants.Constants;
 import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.UserType;
 import com.example.demo.exception.Details;
 import com.example.demo.exception.InvalidCredentialException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.RequestValidationException;
+import com.example.demo.pojos.request.UserRequest;
 import com.example.demo.pojos.response.UserResponse;
 import com.example.demo.repository.UserRepoService;
 import com.example.demo.security.dto.UserAuthRequest;
@@ -16,6 +19,7 @@ import com.example.demo.security.utils.JwtTokenService;
 import com.example.demo.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,9 +40,15 @@ public class AuthServicesImpl implements AuthServicesIf {
     private final AuthenticationManager authenticationManager;
     private final RedisCacheService redisCacheService;
 
+    @Autowired
     private UserRepoService userRepo;
+
+    @Autowired
     private JwtTokenService jwtTokenService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     /**
      * Performs Signup & assigns JWT Token.
@@ -114,6 +125,48 @@ public class AuthServicesImpl implements AuthServicesIf {
             log.error("Invalid Credentials : {}", e.getMessage());
             throw new InvalidCredentialException(ErrorCode.INVALID_DATA, "PhoneNumber/Password");
         }
+    }
+
+    /**
+     * Update the vendor by their ID.
+     *
+     * @param id  The ID of the vendor to update.
+     * @param req The updated vendor information.
+     * @return The updated vendor information.
+     */
+    public UserResponse updateVendor(String token, UserRequest req) {
+
+        log.info("AuthServiceImpl Vendor Token : {}", token);
+        UUID id = jwtTokenService.extractClaimsId(token);
+        User user = userRepo.findById(id);
+
+        // User Not Found
+        if (Objects.isNull(user)) {
+            log.error("User Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_VENDOR);
+        }
+
+        // Update User
+        Optional.ofNullable(req.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(req.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(req.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+        user.setUpdatedAt(ZonedDateTime.now());
+
+        // Save User
+        userRepo.save(user);
+
+        // Create UserResponse
+        UserResponse response = UserResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .userType(user.getUserType().toString())
+                .build();
+
+        // Save User to Redis Cache
+        redisCacheService.saveUserById(id.toString(), response);
+        log.info("User Info Updated to Redis Cache");
+        return response;
     }
 
     /**

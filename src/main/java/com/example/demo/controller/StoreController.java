@@ -24,9 +24,16 @@ public class StoreController {
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<StoreResponse> createStore(@RequestHeader("Authorization") String token,
-                                                     @Valid @RequestBody StoreRequest req) {
+            @Valid @RequestBody StoreRequest req) {
         log.info("StoreController createStore create store request was called");
         return ResponseEntity.ok(storeService.createStore(token, req));
+    }
+
+    @PutMapping("update-by-id/{id}")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<StoreResponse> updateStore(@PathVariable UUID id, @RequestBody StoreRequest storeRequest) {
+        log.info("StoreController updateStore update store request was called");
+        return ResponseEntity.ok(storeService.updateStoreById(id, storeRequest));
     }
 
     @GetMapping("get-by-id")

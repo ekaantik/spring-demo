@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalTime;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +17,9 @@ import java.util.UUID;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "shift")
+@Table(name = "shift", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "store_details_id", "name" })
+})
 public class Shift extends BaseUuidEntity implements Serializable {
 
     @Serial
