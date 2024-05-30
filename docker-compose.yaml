@@ -3,12 +3,12 @@ version: '3.8'
 services:
 
   web-app:
-    image: vickythawne/springboot-demo:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: web-app
-    #    environment:
-    #      POSTGRES_DATABASE_HOST: postgres-ecard
     ports:
-      - "8080:8080"
+      - "8000:8000"
     depends_on:
       - redis-cache
       - postgres-db
