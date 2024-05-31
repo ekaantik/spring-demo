@@ -51,4 +51,4 @@ token:
   signing:
     key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
   expiration:
-    time: 60000000
+    time: 864000000
