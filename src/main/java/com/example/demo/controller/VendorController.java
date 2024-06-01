@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,12 +28,14 @@ public class VendorController {
     private final AuthServicesImpl userService;
 
     @GetMapping("/get-by-id")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<UserResponse> getVendorById(@RequestParam("id") UUID vendorId) {
         log.info("VendorController getVendorById get vendor request was called");
         return ResponseEntity.ok(userService.getVendorById(vendorId));
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<UserResponse> updateVendorById(@RequestHeader("Authorization") String token,
             @RequestBody UserRequest req) {
         log.info("VendorController updateVendorById update vendor request was called");
