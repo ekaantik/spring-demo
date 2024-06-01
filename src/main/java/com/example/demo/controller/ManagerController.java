@@ -48,7 +48,7 @@ public class ManagerController {
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
     public ResponseEntity<String> deleteManagerById(@RequestParam UUID id) {
-        log.info("dManagerController deleteManagerById elete manager request was called");
+        log.info("ManagerController deleteManagerById delete manager request was called");
         return ResponseEntity.ok(managerService.deleteManagerById(id));
     }
 

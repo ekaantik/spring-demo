@@ -38,12 +38,12 @@ management:
       show-details: always
 
 image:
-    path: E:\Temp_Spring_Demo
+    path: /home/ubuntu/workspace/
     max-file-size: 5242880 # bytes = 5 MB
     file-format: jpg, jpeg , png
 
 video:
-    path: E:\Temp_Spring_Demo
+    path: /home/ubuntu/workspace/
     max-file-size: 10000000 #bytes = 10MB
     file-format: mp4
 
@@ -51,4 +51,4 @@ token:
   signing:
     key: u5kLX1yVaiArajokYDFkGiFNTGzQbYJt6uQ7QtcI
   expiration:
-    time: 60000000
+    time: 864000000
