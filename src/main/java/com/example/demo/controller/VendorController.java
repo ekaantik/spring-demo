@@ -27,7 +27,7 @@ public class VendorController {
     private final AuthServicesImpl userService;
 
     @GetMapping("/get-by-id")
-    @PreAuthorize("hasRole('ROLE_VENDOR')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> getVendorById(@RequestParam("id") UUID vendorId) {
         log.info("VendorController getVendorById get vendor request was called");
         return ResponseEntity.ok(userService.getVendorById(vendorId));
