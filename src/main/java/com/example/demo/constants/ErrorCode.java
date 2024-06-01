@@ -19,6 +19,15 @@ public enum ErrorCode {
         NOT_EXISTS("Resource not found", HttpStatus.NOT_FOUND.value(), "APP-404101", "NOT_FOUND",
                         "The value %s of field %s of table %s does not exist!"),
 
+        FILE_NOT_FOUND("File not found", HttpStatus.NOT_FOUND.value(), "APP-404102", "FILE_NOT_FOUND",
+                        "The %s file does not exist wtih id %s!"),
+
+        INVALID_FILE_SIZE("Invalid file size provided", HttpStatus.BAD_REQUEST.value(), "APP-400101",
+                        "INVALID_FILE_SIZE", "The %s file size provided is invalid!"),
+
+        INVALID_FILE("Invalid file provided", HttpStatus.BAD_REQUEST.value(), "APP-400102", "INVALID_FILE",
+                        "The file provided is invalid!"),
+
         ALREADY_EXISTS("Resource already exists", HttpStatus.CONFLICT.value(), "APP-409101",
                         "ALREADY_EXISTS", "%s already exists with id %s!"),
 

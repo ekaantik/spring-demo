@@ -18,6 +18,8 @@ public class Constants {
     public static final String TABLE_STORE = "Store";
     public static final String TABLE_SHIFT = "Shift";
     public static final String TABLE_SHIFT_SCHEDULE = "ShiftSchedule";
+    public static final String TABLE_IMAGE = "images";
+    public static final String TABLE_VIDEO = "videos";
 
     public static final GenericResponse SUCCESS_RESPONSE = new GenericResponse(null, "SUCCESS",HttpStatus.CREATED.value(), null);
 }

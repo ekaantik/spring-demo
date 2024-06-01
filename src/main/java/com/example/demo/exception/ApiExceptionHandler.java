@@ -369,6 +369,27 @@ public class ApiExceptionHandler extends Exception {
                 return new ResponseEntity<>(genericResponse, headers, HttpStatus.UNAUTHORIZED);
         }
 
+        @ExceptionHandler({ InvalidFileException.class })
+        public ResponseEntity<GenericResponse> handleInvalidFileException(final InvalidFileException ex,
+                        WebRequest request) {
+                // Logging
+                log.info("InvalidFileException in exception handler {} ", ex.getMessage());
+
+                // Build Header
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // Build Generic Response
+                GenericResponse genericResponse = GenericResponse.builder()
+                                .timestamp(ZonedDateTime.now())
+                                .message(ex.getMessage())
+                                .responseCode(HttpStatus.BAD_REQUEST.value())
+                                .details(ex.getDetails())
+                                .build();
+
+                return new ResponseEntity<>(genericResponse, headers, HttpStatus.BAD_REQUEST);
+        }
+
         @ExceptionHandler({ IllegalArgumentException.class })
         public ResponseEntity<GenericResponse> handleIllegalArgumentException(final IllegalArgumentException ex,
                         WebRequest request) {

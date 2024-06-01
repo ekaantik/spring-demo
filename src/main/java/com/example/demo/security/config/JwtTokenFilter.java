@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,8 +25,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.StandardCharsets;
 
 import java.util.stream.Collectors;
 
@@ -37,9 +34,7 @@ import java.util.stream.Collectors;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtTokenService;
-
-    @Autowired
-    private ApiUsageRepoService apiUsageRepoService;
+    private final ApiUsageRepoService apiUsageRepoService;
 
     private String getStringValue(byte[] contentAsByteArray, String characterEncoding) {
         try {
@@ -52,7 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+            @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
@@ -80,7 +75,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         setAuthenticationContext(jwtToken, request);
         log.info("return from third");
-//        filterChain.doFilter(request, response);
+        // filterChain.doFilter(request, response);
         filterChain.doFilter(requestWrapper, responseWrapper);
 
         requestBody = getStringValue(requestWrapper.getContentAsByteArray(),
@@ -89,22 +84,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 response.getCharacterEncoding());
         responseWrapper.copyBodyToResponse();
 
+        apiUsageRepoService.save(request, response, requestBody, responseBody, jwtToken, startTime);
 
-        apiUsageRepoService.save(request, response, requestBody,responseBody,jwtToken, startTime);
-
-//        log.info("responseBody : {}  ",responseBody);
+        // log.info("responseBody : {} ",responseBody);
 
     }
 
-
     private void setAuthenticationContext(String token, HttpServletRequest request) {
         UserDetails userDetails = getUserDetails(token);
-//        log.info("########### JwtTokenFilter setAuthenticationContext userDetails authorities : {}  Username : {}  Password : {}",
-//                userDetails.getAuthorities(), userDetails.getUsername(), userDetails.getPassword());
-        UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        // log.info("########### JwtTokenFilter setAuthenticationContext userDetails
+        // authorities : {} Username : {} Password : {}",
+        // userDetails.getAuthorities(), userDetails.getUsername(),
+        // userDetails.getPassword());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
 
-        String authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        String authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
         log.info("########### Authorities granted : " + authorities);
 
         authentication.setDetails(
@@ -120,13 +116,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         roles = roles.replace("[", "").replace("]", "");
         String[] roleNames = roles.replaceAll("\\s", "").split(",");
-        log.info("get uer roleNames : {}",roleNames);
+        log.info("get uer roleNames : {}", roleNames);
         for (String aRoleName : roleNames) {
-//            userDetails.setUserType(UserType.valueOf(aRoleName));
+            // userDetails.setUserType(UserType.valueOf(aRoleName));
             userDetails.setUserType(UserType.valueOf(aRoleName));
         }
         userDetails.setPhoneNumber(phoneNumber);
-        log.info("get uer details : {}",userDetails);
+        log.info("get uer details : {}", userDetails);
         return userDetails;
     }
 

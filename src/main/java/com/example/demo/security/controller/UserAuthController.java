@@ -6,14 +6,12 @@ import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.service.AuthServicesImpl;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/auth")
-@Slf4j
 public class UserAuthController {
 
     @Autowired

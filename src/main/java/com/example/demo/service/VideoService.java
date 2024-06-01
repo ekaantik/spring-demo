@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.Utils;
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.VideoCategories;
 import com.example.demo.entity.Videos;
+import com.example.demo.exception.InvalidFileException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.response.VideoUploadResponse;
 import com.example.demo.repository.VideoRepoService;
 
@@ -10,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,6 +54,17 @@ public class VideoService {
      */
     public VideoUploadResponse processVideoForUpload(VideoCategories videoCategory, MultipartFile file, UUID storeId) {
 
+        if (file.isEmpty()) {
+            log.error("UploadVideo file is empty");
+            throw new InvalidFileException(ErrorCode.INVALID_DATA, "file");
+        }
+
+        log.info("file.getContentType() : {} ", file.getContentType());
+
+        if (!fileFormat.contains(file.getContentType().replace("video/", ""))) {
+            log.error("UploadVideo file format is invalid");
+            throw new InvalidFileException(ErrorCode.INVALID_FILE);
+        }
         try {
 
             // Original Path
@@ -112,7 +126,8 @@ public class VideoService {
 
             // No Video Found
             if (video == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                log.error("Video Not Found for Id : {}", videoId);
+                throw new NotFoundException(ErrorCode.NOT_EXISTS, videoId, Constants.FIELD_ID, Constants.TABLE_VIDEO);
             }
 
             // Get File
@@ -120,7 +135,8 @@ public class VideoService {
 
             // No File Found
             if (!file.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                log.error("Video File Not Found for Id : {}", videoId);
+                throw new NotFoundException(ErrorCode.FILE_NOT_FOUND, Constants.TABLE_VIDEO, videoId);
             }
 
             // Open Stream
@@ -132,7 +148,7 @@ public class VideoService {
                     .contentLength(file.length())
                     .body(resource);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("IO Exception while downloading : {} ", e.getMessage());
             throw new RuntimeException("Error while downloading video, Exception : " + e.getMessage());
         }
@@ -151,19 +167,24 @@ public class VideoService {
 
         // Delete Video
         if (video != null) {
+
+            // Deleting Video from DB even if file is not found
+            videoRepoService.deleteById(videoId);
+
             File file = new File(video.getPath());
             if (file.exists()) {
+                log.info("Deleted Video with id : {} ", videoId);
                 file.delete();
+            } else {
+                log.error("Video File Not Found for Id : {}", videoId);
+                throw new NotFoundException(ErrorCode.FILE_NOT_FOUND, Constants.TABLE_VIDEO, videoId);
             }
-
-            // TODO : Handle case where file does not exist but data is present in DB
-            videoRepoService.deleteById(videoId);
         }
 
         // Log
         else {
-            log.info("Video not found with id : {} ", videoId);
-            // TODO : Throw Exception?
+            log.error("Video Not Found for Id : {}", videoId);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, videoId, Constants.FIELD_ID, Constants.TABLE_VIDEO);
         }
     }
 

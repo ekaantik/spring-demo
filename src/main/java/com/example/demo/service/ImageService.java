@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.Utils;
+import com.example.demo.constants.Constants;
+import com.example.demo.constants.ErrorCode;
 import com.example.demo.constants.ImageCategories;
 import com.example.demo.entity.Images;
+import com.example.demo.exception.InvalidFileException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.pojos.response.ImageUploadResponse;
 import com.example.demo.repository.ImageRepoService;
 
@@ -10,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,6 +33,12 @@ public class ImageService {
 
     @Value("${image.path}")
     private String imagePath;
+
+    @Value("${image.max-file-size}")
+    private Integer imageFileSize;
+
+    @Value("${image.file-format}")
+    private List<String> fileFormat;
 
     private final ImageRepoService imageRepoService;
 
@@ -43,6 +53,26 @@ public class ImageService {
      * @throws RuntimeException if an error occurs during the upload process.
      */
     public ImageUploadResponse processImageForUpload(ImageCategories imageCategory, MultipartFile file, UUID storeId) {
+
+        // Empty File
+        if (file.isEmpty()) {
+            log.error("UploadImage file is empty");
+            throw new InvalidFileException(ErrorCode.INVALID_DATA, "file");
+        }
+
+        // Invalid File Size
+        if (file.getSize() > imageFileSize) {
+            log.error("UploadImage file size is too large");
+            throw new InvalidFileException(ErrorCode.INVALID_FILE_SIZE, "file");
+        }
+
+        log.info("file.getContentType() : {} ", file.getContentType());
+
+        // Invalid File Format
+        if (!fileFormat.contains(file.getContentType().replace("image/", ""))) {
+            log.error("ImageController uploadImage file format is invalid");
+            throw new InvalidFileException(ErrorCode.INVALID_FILE, file.getOriginalFilename());
+        }
 
         try {
 
@@ -101,7 +131,8 @@ public class ImageService {
 
             // No Image Found
             if (image == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                log.error("Image Not Found for Id : {}", imageId);
+                throw new NotFoundException(ErrorCode.NOT_EXISTS, imageId, Constants.FIELD_ID, Constants.TABLE_IMAGE);
             }
 
             // Get File
@@ -109,7 +140,8 @@ public class ImageService {
 
             // No File Found
             if (!file.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                log.error("Image File Not Found for Id : {}", imageId);
+                throw new NotFoundException(ErrorCode.FILE_NOT_FOUND, Constants.TABLE_IMAGE, imageId);
             }
 
             // Open Stream
@@ -121,7 +153,7 @@ public class ImageService {
                     .contentLength(file.length())
                     .body(resource);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("IO Exception while downloading : {} ", e.getMessage());
             throw new RuntimeException("Error while downloading image, Exception : " + e.getMessage());
         }
@@ -140,13 +172,16 @@ public class ImageService {
 
         // Delete Image
         if (image != null) {
+            imageRepoService.deleteById(imageId);
+
             File file = new File(image.getPath());
             if (file.exists()) {
+                log.info("Deleted Image with id : {} ", imageId);
                 file.delete();
+            } else {
+                log.error("Image File Not Found for Id : {}", imageId);
+                throw new NotFoundException(ErrorCode.FILE_NOT_FOUND, Constants.TABLE_IMAGE, imageId);
             }
-
-            // TODO : Handle case where file does not exist but data is present in DB
-            imageRepoService.deleteById(imageId);
         }
 
         // Log
