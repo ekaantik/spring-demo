@@ -42,13 +42,15 @@ public class ApiUsageRepoService {
             long endTime = System.currentTimeMillis();
             long timeTaken =  endTime - startTime;
 
-            responseBody = isValidUTF8(responseBody) ? responseBody : null;
-
             String queryString = null ;
             if (Objects.isNull(request.getQueryString())){
                 queryString = request.getRequestURI();
             } else {
                 queryString = request.getRequestURI()+ "?" + request.getQueryString();
+            }
+
+            if (queryString.contains("/download/")){
+                responseBody = null;
             }
 
             ApiUsage apiUsage = ApiUsage.builder()
@@ -68,17 +70,6 @@ public class ApiUsageRepoService {
         catch (Exception ex) {
             log.error("Failed to create AssetDetails, Exception : " + ex.getMessage(), ex);
             throw new PersistenceException("Failed To create record into database!", ex);
-        }
-    }
-
-
-    public static boolean isValidUTF8(String input) {
-        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
-        try {
-            encoder.encode(java.nio.CharBuffer.wrap(input));
-            return true;
-        } catch (java.nio.charset.CharacterCodingException e) {
-            return false;
         }
     }
 
