@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "technician_mapping")
 public class Technician extends BaseUuidEntity {
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "managed_by_id")
     private User managedByUser;
 

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -48,10 +50,12 @@ public class VideoController {
 
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<String> deleteVideoById(@RequestParam("id") UUID videoId) {
+    public ResponseEntity<Map<String, String>> deleteVideoById(@RequestParam("id") UUID videoId) {
         log.info("VideoController deleteVideoById video delete request was called");
         videoService.deleteVideoById(videoId);
         log.info("VideoController deleteVideoById video deleted successfully");
-        return new ResponseEntity<>("Video deleted successfully", HttpStatus.OK);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Video deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

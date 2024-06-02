@@ -14,10 +14,15 @@ import com.example.demo.security.utils.JwtTokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -156,12 +161,12 @@ public class ManagerService {
     public ManagerResponse getManagerById(UUID id) {
         log.info("ManagerService getManagerById requested ID: {}", id);
 
-         ManagerResponse response = redisCacheService.getManagerById(id);
+        ManagerResponse response = redisCacheService.getManagerById(id);
 
-         if (response != null) {
+        if (response != null) {
             log.info("ManagerService getManagerById getting response from redis cache: {}", response);
             return response;
-         }
+        }
 
         Manager manager = managerRepoService.findManagerById(id);
 
@@ -190,13 +195,28 @@ public class ManagerService {
      * @param id The id of the manager.
      * @return The message indicating the status of the deletion.
      */
-    public String deleteManagerById(UUID id) {
+    public ResponseEntity<Map<String, String>> deleteManagerById(UUID id) {
+
         log.info("ManagerService deleteManagerById requested ID: {}", id);
+
+        boolean isManagerExists = managerRepoService.existsById(id);
+
+        if (!isManagerExists) {
+            log.error("Manager Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_MANAGER);
+        }
+
+        // Clearing from Redis & Deleting Manager
         redisCacheService.clearManagerById(id.toString());
         managerRepoService.deleteManagerById(id);
-        redisCacheService.clearManagerById(id.toString());
+
+        // Logging
         log.info("ManagerService deleteManagerById Manager deleted successfully.");
-        return "Manager Deleted Successfully";
+
+        // Response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Manager deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

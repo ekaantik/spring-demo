@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class UserAuthResponse {
+    private String id;
     private String firstName;
     private String lastName;
     private String phoneNumber;

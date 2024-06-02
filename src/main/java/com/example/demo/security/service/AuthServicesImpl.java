@@ -49,7 +49,6 @@ public class AuthServicesImpl implements AuthServicesIf {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     /**
      * Performs Signup & assigns JWT Token.
      *
@@ -89,6 +88,7 @@ public class AuthServicesImpl implements AuthServicesIf {
         String jwtToken = jwtTokenService.generateToken(user);
 
         return UserAuthResponse.builder()
+                .id(savedUser.getId().toString())
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
                 .phoneNumber(savedUser.getPhoneNumber())
@@ -113,6 +113,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
             String jwtToken = jwtTokenService.generateToken(user);
             UserAuthResponse response = UserAuthResponse.builder()
+                    .id(user.getId().toString())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .phoneNumber(user.getPhoneNumber())
@@ -157,6 +158,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         // Create UserResponse
         UserResponse response = UserResponse.builder()
+                .id(user.getId().toString())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())

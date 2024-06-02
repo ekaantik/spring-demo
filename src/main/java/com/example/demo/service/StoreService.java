@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import com.example.demo.exception.Details;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.RequestValidationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Store;
@@ -152,9 +155,11 @@ public class StoreService {
      * @param id The id of the Store.
      * @return The message indicating the status of the deletion.
      */
-    public String deleteStoreById(UUID id) {
+    public ResponseEntity<Map<String, String>> deleteStoreById(UUID id) {
         storeRepoService.deleteStoreById(id);
         log.info("StoreService deleteStoreById id {} deleted successfully", id);
-        return "Store Deleted Successfully";
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Store deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

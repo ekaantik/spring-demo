@@ -14,14 +14,22 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class VideoRepoService {
 
     private final VideoRepo videoRepo;
     private final StoreRepoService storeRepoService;
 
+    /**
+     * Handles Repo Exception & saves a new Video record.
+     *
+     * @param path          The path of the Video to save.
+     * @param storeId       The Id of the Store to associate the Video with.
+     * @param videoCategory The category of the Video.
+     * @return The saved Video, or null if Exception.
+     */
     public Videos save(String path, UUID storeId, VideoCategories videoCategory) {
         try {
             Store store = storeRepoService.findStoreById(storeId);
@@ -45,6 +53,11 @@ public class VideoRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & finds all Videos.
+     *
+     * @return A list of all Videos, or null if Exception.
+     */
     public Videos findById(UUID id) {
         try {
             Optional<Videos> videos = videoRepo.findById(id);
@@ -55,6 +68,11 @@ public class VideoRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & finds all Videos.
+     *
+     * @return A list of all Videos, or null if Exception.
+     */
     public Videos findByPath(String path) {
         try {
             Optional<Videos> videos = videoRepo.findByPath(path);
@@ -65,6 +83,11 @@ public class VideoRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & deletes a Video by its Id.
+     *
+     * @param id The Id of the Video to delete.
+     */
     public void deleteById(UUID id) {
         try {
             videoRepo.deleteById(id);
@@ -75,4 +98,13 @@ public class VideoRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & finds a Video by its path.
+     *
+     * @param path The path of the Video to find.
+     * @return The found Video, or null if Exception.
+     */
+    public boolean existsById(UUID id) {
+        return videoRepo.existsById(id);
+    }
 }

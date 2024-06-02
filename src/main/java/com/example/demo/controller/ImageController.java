@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -47,11 +49,13 @@ public class ImageController {
 
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<String> deleteImageById(@RequestParam("id") UUID imageId) {
+    public ResponseEntity<Map<String, String>> deleteImageById(@RequestParam("id") UUID imageId) {
         log.info("ImageController deleteImageById image delete request was called");
         imageService.deleteImageById(imageId);
         log.info("ImageController deleteImageById image deleted successfully");
 
-        return new ResponseEntity<>("Image deleted successfully", HttpStatus.OK);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Image deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -3,6 +3,8 @@ package com.example.demo.service;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -197,10 +201,25 @@ public class TechnicianService {
      * @param id The id of the Technician.
      * @return The message indicating the status of the deletion.
      */
-    public String deleteTechnicianById(UUID id) {
+    public ResponseEntity<Map<String, String>> deleteTechnicianById(UUID id) {
+
+        boolean technicianExists = technicianRepoService.existsById(id);
+
+        if (!technicianExists) {
+            log.error("Technician Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_TECHNICIAN);
+        }
+
+        // Clear from Redis & Delete Technician
         redisCacheService.clearTechnicianById(id.toString());
         technicianRepoService.deleteTechnicianById(id);
+
+        // Logging
         log.info("TechnicianService deleteTechnicianById id {} deleted successfully", id);
-        return "Technician Deleted Successfully";
+
+        // Response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Technician deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

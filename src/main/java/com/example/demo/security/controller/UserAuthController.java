@@ -29,10 +29,9 @@ public class UserAuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("refresh-token")
-    public ResponseEntity<UserAuthResponse> refreshToken(@RequestHeader(name = "Authorization") String token) {
-        String jwtToken = token.split(" ")[1].trim();
-        return ResponseEntity.ok(authServices.refreshToken(jwtToken));
+    @GetMapping("/refresh-token")
+    public ResponseEntity<UserAuthResponse> refreshToken(@RequestParam(name = "token") String token) {
+        return ResponseEntity.ok(authServices.refreshToken(token));
     }
 
     // @PostMapping("/reset-password")

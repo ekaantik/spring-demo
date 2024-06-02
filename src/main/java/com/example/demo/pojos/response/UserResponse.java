@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Data
 public class UserResponse implements Serializable {
 
+    private String id;
     private String firstName;
     private String lastName;
     private String phoneNumber;

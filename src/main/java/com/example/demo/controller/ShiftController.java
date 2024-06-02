@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,9 +58,9 @@ public class ShiftController {
 
     @DeleteMapping("delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<String> deleteShiftById(@RequestParam UUID id) {
+    public ResponseEntity<Map<String, String>> deleteShiftById(@RequestParam UUID id) {
         log.info("ShiftController deleteShiftById delete shift request was called");
-        return ResponseEntity.ok(shiftService.deleteShiftById(id));
+        return shiftService.deleteShiftById(id);
     }
 
 }

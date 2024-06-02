@@ -88,8 +88,7 @@ public class ShiftScheduleRepoService {
             ShiftSchedule savedShiftSchedule = shiftScheduleRepo.save(ShiftSchedule);
             log.info("Successfully saved ShiftSchedule with id " + ShiftSchedule.getId());
             return savedShiftSchedule;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Failed to create ShiftSchedule, Exception : {} ", ex.getMessage());
             throw new PersistenceException("Failed To create ShiftSchedule record into database!", ex);
         }
@@ -118,4 +117,12 @@ public class ShiftScheduleRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & deletes a ShiftSchedule by its Id.
+     *
+     * @param id The Id of the ShiftSchedule to be deleted.
+     */
+    public boolean existsById(UUID id) {
+        return shiftScheduleRepo.existsById(id);
+    }
 }

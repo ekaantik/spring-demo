@@ -78,7 +78,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             jwtToken = authHeader.split(" ")[1].trim();
             jwtTokenService.validateToken(jwtToken);
 
-
             setAuthenticationContext(jwtToken, request);
             // filterChain.doFilter(request, response);
             filterChain.doFilter(requestWrapper, responseWrapper);
@@ -91,32 +90,32 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             apiUsageRepoService.save(request, response, requestBody, responseBody, jwtToken, startTime);
 
-        }
-        catch (SignatureException ex){
+        } catch (SignatureException ex) {
             resolver.resolveException(request, response, null, ex);
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT signature");
-        }
-        catch (MalformedJwtException ex){
+            // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT
+            // signature");
+        } catch (MalformedJwtException ex) {
             resolver.resolveException(request, response, null, ex);
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
-        }
-        catch (ExpiredJwtException ex){
+            // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
             resolver.resolveException(request, response, null, ex);
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+            // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
 
-//            response.sendError(SC_UNAUTHORIZED, "JWT token has expired");
-//            ResponseEntity<>
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN, ex.getMessage()) ; //ErrorCode.INVALID_TOKEN, ex);
-//            return new ResponseEntity<>("genericResponse", "headers", HttpStatus.UNAUTHORIZED);
-        }
-        catch (UnsupportedJwtException ex){
+            // response.sendError(SC_UNAUTHORIZED, "JWT token has expired");
+            // ResponseEntity<>
+            // return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            // throw new InvalidTokenException(ErrorCode.INVALID_TOKEN, ex.getMessage()) ;
+            // //ErrorCode.INVALID_TOKEN, ex);
+            // return new ResponseEntity<>("genericResponse", "headers",
+            // HttpStatus.UNAUTHORIZED);
+        } catch (UnsupportedJwtException ex) {
             resolver.resolveException(request, response, null, ex);
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported JWT token");
-        }
-        catch (IllegalArgumentException ex){
+            // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported JWT
+            // token");
+        } catch (IllegalArgumentException ex) {
             resolver.resolveException(request, response, null, ex);
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT claims string is empty");
+            // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT claims string is
+            // empty");
         }
     }
 

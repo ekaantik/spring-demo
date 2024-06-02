@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -44,9 +46,9 @@ public class ShiftScheduleController {
 
     @DeleteMapping("delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR','MANAGER')")
-    public ResponseEntity<String> deleteShiftScheduleScheduleById(@RequestParam UUID id) {
+    public ResponseEntity<Map<String, String>> deleteShiftScheduleScheduleById(@RequestParam UUID id) {
         log.info("ShiftScheduleController deleteShiftScheduleScheduleById delete shift schedule request was called");
-        return ResponseEntity.ok(shiftScheduleService.deleteShiftScheduleById(id));
+        return shiftScheduleService.deleteShiftScheduleById(id);
     }
 
 }

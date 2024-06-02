@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -47,9 +48,9 @@ public class ManagerController {
 
     @DeleteMapping("/delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<String> deleteManagerById(@RequestParam UUID id) {
+    public ResponseEntity<Map<String, String>> deleteManagerById(@RequestParam UUID id) {
         log.info("ManagerController deleteManagerById delete manager request was called");
-        return ResponseEntity.ok(managerService.deleteManagerById(id));
+        return managerService.deleteManagerById(id);
     }
 
 }
