@@ -3,7 +3,8 @@ version: '3.8'
 services:
 
   web-app:
-    image: vickythawne/springboot-demo:latest
+#    image: vickythawne/springboot-demo:latest
+    image: archit/spring-demo
     container_name: web-app
     #    environment:
     #      POSTGRES_DATABASE_HOST: postgres-ecard
@@ -20,7 +21,7 @@ services:
   redis-cache:
     container_name: redis-cache
     image: redis:7.2.4-alpine
-    restart: always
+#    restart: always
     ports:
       - "6379:6379"
     command: redis-server --loglevel warning
