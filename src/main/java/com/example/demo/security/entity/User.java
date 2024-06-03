@@ -1,10 +1,7 @@
 package com.example.demo.security.entity;
 
-
 import com.example.demo.constants.UserType;
-import com.example.demo.entity.Manager;
 import com.example.demo.entity.base.BaseUuidEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,7 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +24,7 @@ import java.util.List;
 @SuperBuilder
 @Entity
 @Table(name = "user_details")
-public class User extends BaseUuidEntity implements UserDetails, Serializable {
+public class User extends BaseUuidEntity implements UserDetails {
 
     @Column(name = "first_name")
     @NotNull
@@ -55,19 +51,14 @@ public class User extends BaseUuidEntity implements UserDetails, Serializable {
     @NotNull
     private UserType userType;
 
-    @OneToMany(mappedBy = "vendorUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Manager> managerList;
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        for (UserRoles role : userRolesList) {
-//            authorities.add(new SimpleGrantedAuthority(role.getRole().getName()));
-//            // authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getName()));
-//        }
-            authorities.add(new SimpleGrantedAuthority(userType.getUserTypes()));
+        // for (UserRoles role : userRolesList) {
+        // authorities.add(new SimpleGrantedAuthority(role.getRole().getName()));
+        // // authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getName()));
+        // }
+        authorities.add(new SimpleGrantedAuthority(userType.getUserTypes()));
         return authorities;
     }
 
