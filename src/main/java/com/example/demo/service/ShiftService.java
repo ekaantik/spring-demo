@@ -102,6 +102,13 @@ public class ShiftService {
             throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
         }
 
+        // Store Not Found
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", req.getStoreId());
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, req.getStoreId(), Constants.FIELD_ID,
+                    Constants.TABLE_STORE);
+        }
+
         // Updating Shift
         if (Optional.ofNullable(req.getStoreId()).isPresent())
             shift.setStore(store);
