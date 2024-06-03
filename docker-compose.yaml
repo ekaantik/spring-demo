@@ -3,8 +3,10 @@ version: '3.8'
 services:
 
   web-app:
-#    image: vickythawne/springboot-demo:latest
-    image: archit/spring-demo
+    #    image: vickythawne/springboot-demo:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: web-app
     #    environment:
     #      POSTGRES_DATABASE_HOST: postgres-ecard

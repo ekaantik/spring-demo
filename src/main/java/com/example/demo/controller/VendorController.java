@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -32,6 +33,13 @@ public class VendorController {
             @RequestBody UserRequest req) {
         log.info("VendorController updateVendorById update vendor request was called");
         return ResponseEntity.ok(userService.updateVendor(token, req));
+    }
+
+    @DeleteMapping("/delete-by-token")
+    @PreAuthorize("hasAnyAuthority('VENDOR')")
+    public ResponseEntity<Map<String, String>> deleteVendorByToken(@RequestHeader("Authorization") String token) {
+        log.info("VendorController deleteVendorById delete vendor request was called");
+        return userService.deleteVendorByToken(token);
     }
 
 }
