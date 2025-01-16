@@ -123,4 +123,13 @@ public class ShiftRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & deletes a Shift by its Id.
+     *
+     * @param id The Id of the Shift to be deleted.
+     */
+    public boolean existsById(UUID id) {
+        return shiftRepo.existsById(id);
+    }
+
 }

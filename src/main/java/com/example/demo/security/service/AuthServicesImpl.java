@@ -17,10 +17,13 @@ import com.example.demo.security.dto.UserSignUpRequest;
 import com.example.demo.security.entity.User;
 import com.example.demo.security.utils.JwtTokenService;
 import com.example.demo.service.RedisCacheService;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,7 +53,6 @@ public class AuthServicesImpl implements AuthServicesIf {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
 
     /**
      * Performs Signup & assigns JWT Token.
@@ -89,6 +93,7 @@ public class AuthServicesImpl implements AuthServicesIf {
         String jwtToken = jwtTokenService.generateToken(user);
 
         return UserAuthResponse.builder()
+                .id(savedUser.getId().toString())
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
                 .phoneNumber(savedUser.getPhoneNumber())
@@ -113,6 +118,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
             String jwtToken = jwtTokenService.generateToken(user);
             UserAuthResponse response = UserAuthResponse.builder()
+                    .id(user.getId().toString())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .phoneNumber(user.getPhoneNumber())
@@ -157,6 +163,7 @@ public class AuthServicesImpl implements AuthServicesIf {
 
         // Create UserResponse
         UserResponse response = UserResponse.builder()
+                .id(user.getId().toString())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
@@ -207,6 +214,37 @@ public class AuthServicesImpl implements AuthServicesIf {
         redisCacheService.saveUserById(vendorId.toString(), response);
         log.info("AuthServiceImpl getVendorById vendor Saved to Redis Cache : {}", user);
         return response;
+    }
+
+    /**
+     * Delete the vendor by their ID.
+     *
+     * @param vendorId The ID of the vendor to delete.
+     * @return The response message.
+     */
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteVendorByToken(String token) {
+        log.info("AuthServiceImpl deleteVendorByToken requested Token : {}", token);
+
+        UUID id = jwtTokenService.extractClaimsId(token);
+
+        User user = userRepo.findById(id);
+
+        if (Objects.isNull(user)) {
+            log.error("User Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_VENDOR);
+        }
+
+        userRepo.delete(user);
+
+        // Delete User from Redis Cache
+        redisCacheService.clearUserById(id.toString());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Vendor Deleted Successfully");
+
+        return ResponseEntity.ok(response);
+
     }
 
     /**

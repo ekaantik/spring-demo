@@ -11,9 +11,14 @@ import com.example.demo.repository.ShiftScheduleRepoService;
 import com.example.demo.repository.StoreRepoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -157,9 +162,23 @@ public class ShiftScheduleService {
      * @param id The id of the ShiftSchedule.
      * @return The message indicating the status of the deletion.
      */
-    public String deleteShiftScheduleById(UUID id) {
-        shiftScheduleRepoService.deleteShiftScheduleById(id);
+    public ResponseEntity<Map<String, String>> deleteShiftScheduleById(UUID id) {
+
         log.info("ShiftScheduleService deleteShiftScheduleById id {} deleted successfully", id);
-        return "ShiftSchedule with id : " + id + " Deleted Successfully";
+
+        boolean isShiftScheduleExists = shiftScheduleRepoService.existsById(id);
+
+        if (!isShiftScheduleExists) {
+            log.error("ShiftSchedule Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT_SCHEDULE);
+        }
+
+        // Deleting ShiftSchedule
+        shiftScheduleRepoService.deleteShiftScheduleById(id);
+
+        // Response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "ShiftSchedule deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

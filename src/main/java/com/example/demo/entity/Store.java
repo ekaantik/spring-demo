@@ -10,9 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import lombok.NonNull;
-
-
 import com.example.demo.constants.ServiceType;
 import com.example.demo.entity.base.BaseUuidEntity;
 import com.example.demo.security.entity.User;
@@ -45,7 +42,7 @@ public class Store extends BaseUuidEntity implements Serializable {
     @NotNull
     private ServiceType serviceType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_user_id")
     private User vendorUser;
 

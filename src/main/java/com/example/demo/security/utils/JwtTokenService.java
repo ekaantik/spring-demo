@@ -1,11 +1,9 @@
 package com.example.demo.security.utils;
 
-import com.example.demo.constants.ErrorCode;
-import com.example.demo.exception.InvalidTokenException;
 import com.example.demo.security.entity.User;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,16 +80,19 @@ public class JwtTokenService {
 
     // Check if the token is valid and not expired
     public boolean validateToken(String token) {
-        try {
+//        try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey()).build()
                     .parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException
-                | SignatureException ex) {
-            log.error("Error Validating Token : " + ex.getMessage());
-            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
-        }
+//        }
+//        catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException
+//                | SignatureException ex) {
+//            log.error("Error Validating Token : " + ex.getMessage());
+//            throw ex;
+////            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+//        }
+
     }
 
     private Key getSigningKey() {

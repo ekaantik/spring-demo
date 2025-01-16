@@ -136,4 +136,13 @@ public class UserRepoService {
             throw new PersistenceException("Failed to delete User with Id " + user.getId() + ".", ex);
         }
     }
+
+    /**
+     * Handles Repo Exception & deletes a User by its Id.
+     *
+     * @param id The Id of the User to be deleted.
+     */
+    public boolean existsById(UUID id) {
+        return userRepo.existsById(id);
+    }
 }

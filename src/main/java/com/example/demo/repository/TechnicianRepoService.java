@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import jakarta.persistence.PersistenceException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -104,6 +105,7 @@ public class TechnicianRepoService {
      *
      * @param id The Id of the Technician to be deleted.
      */
+    @Transactional
     public void deleteTechnicianById(UUID id) {
 
         // Trying to delete Technician
@@ -120,6 +122,16 @@ public class TechnicianRepoService {
             throw new PersistenceException("Failed to delete Technician with Id " + id + ".", ex);
 
         }
+    }
+
+    /**
+     * Handles Repo Exception & checks if a Technician exists by its Id.
+     *
+     * @param id The Id of the Technician to check.
+     * @return True if Technician exists, False if not.
+     */
+    public boolean existsById(UUID id) {
+        return technicianRepo.existsById(id);
     }
 
 }

@@ -14,9 +14,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -96,6 +100,13 @@ public class ShiftService {
         if (shift == null) {
             log.error("Shift Not Found for Id : {}", id);
             throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
+        }
+
+        // Store Not Found
+        if (store == null) {
+            log.error("Store Not Found for Id : {}", req.getStoreId());
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, req.getStoreId(), Constants.FIELD_ID,
+                    Constants.TABLE_STORE);
         }
 
         // Updating Shift
@@ -202,10 +213,24 @@ public class ShiftService {
      * @param id The id of the Shift.
      * @return The message indicating the status of the deleton.
      */
-    public String deleteShiftById(UUID id) {
-        redisCacheService.clearShiftById(id.toString());
-        log.info("ShiftService deleteShiftByIkd deleted shift for ID: {}", id);
+    public ResponseEntity<Map<String, String>> deleteShiftById(UUID id) {
 
-        return "Shift with id : " + id + " Deleted Successfully";
+        log.info("ShiftService deleteShiftById deleted shift for ID: {}", id);
+
+        boolean exists = shiftRepoService.existsById(id);
+
+        if (!exists) {
+            log.error("Shift Not Found for Id : {}", id);
+            throw new NotFoundException(ErrorCode.NOT_EXISTS, id, Constants.FIELD_ID, Constants.TABLE_SHIFT);
+        }
+
+        // Clearing Redis & Deleting Shift
+        redisCacheService.clearShiftById(id.toString());
+        shiftRepoService.deleteShiftById(id);
+
+        // Response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Shift deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

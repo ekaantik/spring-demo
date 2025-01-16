@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -45,9 +47,9 @@ public class StoreController {
 
     @DeleteMapping("delete-by-id")
     @PreAuthorize("hasAnyAuthority('VENDOR')")
-    public ResponseEntity<String> deleteStoreById(@RequestParam UUID id) {
+    public ResponseEntity<Map<String, String>> deleteStoreById(@RequestParam UUID id) {
         log.info("StoreController deleteStoreById delete store request was called");
-        return ResponseEntity.ok(storeService.deleteStoreById(id));
+        return storeService.deleteStoreById(id);
     }
 
 }

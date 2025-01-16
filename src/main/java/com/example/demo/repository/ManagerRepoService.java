@@ -120,4 +120,14 @@ public class ManagerRepoService {
         }
     }
 
+    /**
+     * Handles Repo Exception & finds a Manager by its email.
+     *
+     * @param email The email of the Manager to find.
+     * @return The found Manager, or null if Exception.
+     */
+    public boolean existsById(UUID id) {
+        return managerRepo.existsById(id);
+    }
+
 }
